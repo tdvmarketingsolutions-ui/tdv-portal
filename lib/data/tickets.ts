@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
-import type { Ticket, TicketPriority } from "@/types/domain";
+import type { Ticket, TicketPriority, TicketWithMessages } from "@/types/domain";
 
 export async function getTicketsForCurrentUser(): Promise<Ticket[]> {
   const supabase = createClient();
@@ -18,7 +18,7 @@ export async function createTicket(input: {
   priority: TicketPriority;
   projectId?: string;
   firstMessage: string;
-}) {
+}): Promise<Ticket> {
   const supabase = createClient();
   const {
     data: { user },
@@ -52,5 +52,31 @@ export async function createTicket(input: {
 
   if (messageError) throw new Error(`Kon eerste bericht niet opslaan: ${messageError.message}`);
 
-  return ticket;
+  return ticket as unknown as Ticket;
+}
+
+export async function getTicketById(ticketId: string): Promise<TicketWithMessages | null> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("tickets")
+    .select(`*, ticket_messages (*, profiles ( full_name, avatar_url ))`)
+    .eq("id", ticketId)
+    .maybeSingle();
+
+  if (error) throw new Error(`Kon ticket niet laden: ${error.message}`);
+  return data as unknown as TicketWithMessages | null;
+}
+
+export async function addTicketMessage(ticketId: string, body: string) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Niet ingelogd.");
+
+  const { error } = await supabase
+    .from("ticket_messages")
+    .insert({ ticket_id: ticketId, author_id: user.id, body });
+
+  if (error) throw new Error(`Kon bericht niet plaatsen: ${error.message}`);
 }

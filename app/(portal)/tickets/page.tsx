@@ -1,20 +1,9 @@
 import Link from "next/link";
+import { Ticket as TicketIcon } from "lucide-react";
 import { getTicketsForCurrentUser } from "@/lib/data/tickets";
-import type { TicketStatus } from "@/types/domain";
-
-const STATUS_STYLE: Record<TicketStatus, string> = {
-  new: "bg-blue-50 text-status-new dark:bg-blue-500/10",
-  in_progress: "bg-amber-50 text-status-progress dark:bg-amber-500/10",
-  waiting_on_client: "bg-violet-50 text-status-waiting dark:bg-violet-500/10",
-  resolved: "bg-green-50 text-status-done dark:bg-green-500/10",
-};
-
-const STATUS_LABEL: Record<TicketStatus, string> = {
-  new: "Nieuw",
-  in_progress: "In behandeling",
-  waiting_on_client: "Wachten op klant",
-  resolved: "Afgerond",
-};
+import { Badge } from "@/components/ui/Badge";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { TICKET_STATUS_LABEL, TICKET_STATUS_TONE } from "@/lib/ticket-status";
 
 export default async function TicketsPage() {
   const tickets = await getTicketsForCurrentUser();
@@ -31,18 +20,29 @@ export default async function TicketsPage() {
         <Link href="/tickets/new" className="btn-primary">Nieuw ticket</Link>
       </header>
 
-      <ul className="space-y-3">
-        {tickets.map((ticket) => (
-          <li key={ticket.id}>
-            <Link href={`/tickets/${ticket.id}`} className="card flex items-center justify-between p-5 hover:shadow-md">
-              <span className="font-medium">{ticket.subject}</span>
-              <span className={`rounded-full px-3 py-1 text-xs font-medium ${STATUS_STYLE[ticket.status]}`}>
-                {STATUS_LABEL[ticket.status]}
-              </span>
+      {tickets.length === 0 ? (
+        <EmptyState
+          icon={TicketIcon}
+          title="Nog geen tickets"
+          description="Heb je een vraag of probleem? Maak je eerste ticket aan."
+          action={
+            <Link href="/tickets/new" className="btn-primary">
+              Nieuw ticket
             </Link>
-          </li>
-        ))}
-      </ul>
+          }
+        />
+      ) : (
+        <ul className="space-y-3">
+          {tickets.map((ticket) => (
+            <li key={ticket.id}>
+              <Link href={`/tickets/${ticket.id}`} className="card flex items-center justify-between p-5 hover:shadow-md">
+                <span className="font-medium">{ticket.subject}</span>
+                <Badge tone={TICKET_STATUS_TONE[ticket.status]}>{TICKET_STATUS_LABEL[ticket.status]}</Badge>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

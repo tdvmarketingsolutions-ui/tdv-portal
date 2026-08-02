@@ -1,14 +1,9 @@
 import Link from "next/link";
+import { FolderKanban } from "lucide-react";
 import { getProjectsForCurrentUser } from "@/lib/data/projects";
-import type { ProjectStatus } from "@/types/domain";
-
-const STATUS_LABEL: Record<ProjectStatus, string> = {
-  planning: "Planning",
-  in_progress: "In uitvoering",
-  in_review: "In review",
-  on_hold: "On hold",
-  completed: "Afgerond",
-};
+import { Badge } from "@/components/ui/Badge";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { PROJECT_STATUS_LABEL, PROJECT_STATUS_TONE } from "@/lib/project-status";
 
 export default async function ProjectsPage() {
   const projects = await getProjectsForCurrentUser();
@@ -23,9 +18,11 @@ export default async function ProjectsPage() {
       </header>
 
       {projects.length === 0 ? (
-        <div className="card p-8 text-center text-sm text-ink-muted dark:text-ink-dark-muted">
-          Er lopen momenteel geen projecten. Zodra TDV een project opstart, verschijnt het hier.
-        </div>
+        <EmptyState
+          icon={FolderKanban}
+          title="Nog geen projecten"
+          description="Zodra TDV een project opstart, verschijnt het hier."
+        />
       ) : (
         <ul className="space-y-3">
           {projects.map((project) => (
@@ -39,9 +36,7 @@ export default async function ProjectsPage() {
                     </p>
                   )}
                 </div>
-                <span className="rounded-full bg-accent-soft px-3 py-1 text-xs font-medium text-accent dark:bg-accent/20 dark:text-accent-dark">
-                  {STATUS_LABEL[project.status]}
-                </span>
+                <Badge tone={PROJECT_STATUS_TONE[project.status]}>{PROJECT_STATUS_LABEL[project.status]}</Badge>
               </Link>
             </li>
           ))}
