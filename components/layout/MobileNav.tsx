@@ -5,21 +5,26 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { AccountMenu } from "@/components/layout/AccountMenu";
 import { NavLinks } from "@/components/layout/NavLinks";
+import { NotificationBell } from "@/components/layout/NotificationBell";
 
 export function MobileNav({
   variant,
   title,
   subtitle,
+  userId,
   userEmail,
   fullName,
+  unreadCount,
   accountHref,
   settingsHref,
 }: {
   variant: "portal" | "admin";
   title: string;
   subtitle?: string;
+  userId?: string;
   userEmail: string;
   fullName?: string | null;
+  unreadCount?: number;
   accountHref?: string;
   settingsHref?: string;
 }) {
@@ -52,15 +57,20 @@ export function MobileNav({
           <span className="font-display text-base font-semibold">{title}</span>
           {subtitle && <span className="ml-1 text-sm text-ink-muted dark:text-ink-dark-muted">{subtitle}</span>}
         </div>
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          aria-label="Menu openen"
-          aria-expanded={open}
-          className="rounded-lg p-2 text-ink transition-colors hover:bg-canvas dark:text-ink-dark dark:hover:bg-canvas-dark"
-        >
-          <Menu size={20} strokeWidth={1.75} />
-        </button>
+        <div className="flex items-center gap-1">
+          {userId !== undefined && unreadCount !== undefined && (
+            <NotificationBell userId={userId} initialUnreadCount={unreadCount} />
+          )}
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            aria-label="Menu openen"
+            aria-expanded={open}
+            className="rounded-lg p-2 text-ink transition-colors hover:bg-canvas dark:text-ink-dark dark:hover:bg-canvas-dark"
+          >
+            <Menu size={20} strokeWidth={1.75} />
+          </button>
+        </div>
       </header>
 
       {open && (
