@@ -20,7 +20,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         <section className="card p-6 md:col-span-2">
           <h2 className="font-display text-lg font-medium">Tijdlijn</h2>
           <ol className="mt-4 space-y-4 border-l border-border pl-4 dark:border-border-dark">
-            {project.project_timeline_events?.map((event: { id: string; title: string; occurred_at: string }) => (
+            {project.project_timeline_events?.map((event) => (
               <li key={event.id} className="relative">
                 <span className="absolute -left-[1.32rem] top-1 h-2 w-2 rounded-full bg-accent" />
                 <p className="text-sm font-medium">{event.title}</p>
@@ -37,7 +37,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
             <h2 className="font-display text-base font-medium">Gekoppelde tickets</h2>
             <ul className="mt-3 space-y-2 text-sm">
               {project.tickets?.length
-                ? project.tickets.map((t: { id: string; subject: string }) => (
+                ? project.tickets.map((t) => (
                     <li key={t.id}>
                       <a href={`/tickets/${t.id}`} className="text-accent hover:underline">
                         {t.subject}
@@ -52,7 +52,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
             <h2 className="font-display text-base font-medium">Bestanden</h2>
             <ul className="mt-3 space-y-2 text-sm">
               {project.files?.length
-                ? project.files.map((f: { id: string; file_name: string }) => (
+                ? project.files.map((f) => (
                     <li key={f.id} className="truncate">{f.file_name}</li>
                   ))
                 : <li className="text-ink-muted dark:text-ink-dark-muted">Nog geen bestanden.</li>}

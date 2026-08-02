@@ -53,8 +53,8 @@ export async function POST(req: Request) {
     console.error("RAG retrieval failed:", matchError.message);
   }
 
-  const context = (matches ?? [])
-    .map((m: { content: string }) => `- ${m.content}`)
+  const context = ((matches ?? []) as { content: string }[])
+    .map((m) => `- ${m.content}`)
     .join("\n");
 
   // --- Generation ------------------------------------------------------------

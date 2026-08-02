@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
-import type { Project } from "@/types/domain";
+import type { Project, ProjectWithRelations } from "@/types/domain";
 
 /**
  * Data-access functions are intentionally thin: they never take a companyId
@@ -20,7 +20,7 @@ export async function getProjectsForCurrentUser(): Promise<Project[]> {
   return (data ?? []) as unknown as Project[];
 }
 
-export async function getProjectById(projectId: string) {
+export async function getProjectById(projectId: string): Promise<ProjectWithRelations | null> {
   const supabase = createClient();
   const { data, error } = await supabase
     .from("projects")
@@ -32,10 +32,10 @@ export async function getProjectById(projectId: string) {
       files ( id, file_name, category, created_at )`
     )
     .eq("id", projectId)
-    .single();
+    .maybeSingle();
 
   if (error) throw new Error(`Kon project niet laden: ${error.message}`);
-  return data;
+  return data as ProjectWithRelations | null;
 }
 
 export async function addProjectComment(projectId: string, body: string) {

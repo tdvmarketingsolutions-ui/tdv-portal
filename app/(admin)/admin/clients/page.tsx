@@ -6,10 +6,17 @@ export default async function AdminClientsPage() {
   // is reserved for actions RLS genuinely can't express (e.g. creating an
   // auth.users row for a new client contact via the Admin API).
   const supabase = createClient();
-  const { data: companies } = await supabase
+  const { data } = await supabase
     .from("companies")
     .select("*, projects(count), profiles(count)")
     .order("name");
+
+  const companies = data as unknown as {
+    id: string;
+    name: string;
+    projects: { count: number }[];
+    profiles: { count: number }[];
+  }[] | null;
 
   return (
     <div className="space-y-6">
