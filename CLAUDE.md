@@ -75,7 +75,7 @@ The ingest pipeline that populates `ai_documents` from projects/tickets/invoices
 
 ## Styling
 
-[tailwind.config.ts](tailwind.config.ts) currently holds a **placeholder** color palette — replace the hex values with TDV's real brand colors when available. Every component reads color via these tokens, so a rebrand is a one-file change; don't hardcode colors in components.
+[tailwind.config.ts](tailwind.config.ts) holds TDV's real brand tokens, extracted from the live marketing site (thomasdevoldere.be): warm cream canvas (`#F4F0EE`), warm near-black ink, terracotta accent (`#AF4B2F`). Fonts mirror the same site's pairing: Inter for body copy, Epilogue for headings (see [app/layout.tsx](app/layout.tsx)). Every component reads color via these tokens, so a future refresh from an official brand guide is still a one-file change; don't hardcode colors in components.
 
 ## Extending a stub module
 

@@ -1,27 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from "@/lib/supabase/client";
+import { Input } from "@/components/ui/Input";
+import { PasswordInput } from "@/components/ui/PasswordInput";
+import { Button } from "@/components/ui/Button";
+import { loginSchema, type LoginFormValues } from "./schema";
+
+function describeAuthError(error: { message: string; status?: number }): string {
+  if (error.message.toLowerCase().includes("invalid login credentials")) {
+    return "Ongeldige combinatie van e-mail en wachtwoord.";
+  }
+  if (error.message.toLowerCase().includes("email not confirmed")) {
+    return "Bevestig eerst je e-mailadres via de link die je hebt ontvangen.";
+  }
+  if (!error.status) {
+    return "Kon geen verbinding maken. Controleer je internetverbinding en probeer opnieuw.";
+  }
+  return "Er ging iets mis bij het inloggen. Probeer het opnieuw.";
+}
 
 export default function LoginPage() {
   const router = useRouter();
   const supabase = createClient();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormValues>({ resolver: zodResolver(loginSchema) });
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+  async function onSubmit(values: LoginFormValues) {
+    const { error } = await supabase.auth.signInWithPassword(values);
 
     if (error) {
-      setError("Ongeldige combinatie van e-mail en wachtwoord.");
-      setLoading(false);
+      setError("root", { message: describeAuthError(error) });
       return;
     }
 
@@ -37,51 +53,34 @@ export default function LoginPage() {
           Log in op je TDV klantenportaal.
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-          <div>
-            <label htmlFor="email" className="mb-1 block text-sm font-medium">
-              E-mailadres
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm outline-none focus:border-accent dark:border-border-dark dark:bg-surface-dark"
-            />
-          </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4" noValidate>
+          <Input
+            label="E-mailadres"
+            type="email"
+            autoComplete="email"
+            error={errors.email?.message}
+            {...register("email")}
+          />
 
           <div>
             <div className="mb-1 flex items-center justify-between">
-              <label htmlFor="password" className="block text-sm font-medium">
-                Wachtwoord
-              </label>
-              <a href="/forgot-password" className="text-xs text-accent hover:underline">
+              <span className="block text-sm font-medium">Wachtwoord</span>
+              <Link href="/forgot-password" className="text-xs text-accent hover:underline dark:text-accent-dark">
                 Wachtwoord vergeten?
-              </a>
+              </Link>
             </div>
-            <input
-              id="password"
-              type="password"
-              required
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm outline-none focus:border-accent dark:border-border-dark dark:bg-surface-dark"
-            />
+            <PasswordInput autoComplete="current-password" error={errors.password?.message} {...register("password")} />
           </div>
 
-          {error && (
+          {errors.root && (
             <p role="alert" className="text-sm text-status-danger">
-              {error}
+              {errors.root.message}
             </p>
           )}
 
-          <button type="submit" disabled={loading} className="btn-primary w-full disabled:opacity-60">
-            {loading ? "Bezig met inloggen…" : "Inloggen"}
-          </button>
+          <Button type="submit" loading={isSubmitting} className="w-full">
+            Inloggen
+          </Button>
         </form>
       </div>
     </main>

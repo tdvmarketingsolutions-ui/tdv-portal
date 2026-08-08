@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google";
+import { Inter, Epilogue, JetBrains_Mono } from "next/font/google";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import "./globals.css";
 
-// Placeholder type pairing — swap for TDV's actual brand fonts if licensed
-// ones exist; these are solid free defaults in the same register.
+// Matches the type pairing used on TDV's own marketing site
+// (thomasdevoldere.be): Inter for body copy, Epilogue for headings.
 const sans = Inter({ subsets: ["latin"], variable: "--font-sans" });
-const display = Source_Serif_4({ subsets: ["latin"], variable: "--font-display", weight: ["500", "600", "700"] });
+const display = Epilogue({ subsets: ["latin"], variable: "--font-display", weight: ["500", "600", "700"] });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
 export const metadata: Metadata = {

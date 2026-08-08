@@ -1,9 +1,9 @@
 import type { Config } from "tailwindcss";
 
-// NOTE: These are placeholder brand tokens (premium, minimal, dark-accented —
-// matching the brief's Notion/Linear/Stripe reference). Swap the hex values
-// below for TDV's actual brand guide once available; every component in the
-// app reads color through these tokens, so it's a one-file change.
+// TDV Marketing Solutions' actual brand tokens, extracted from the live
+// marketing site (thomasdevoldere.be): warm cream canvas, near-black warm
+// ink, terracotta accent. Every component reads color through these tokens,
+// so a future refresh from an official brand guide is still a one-file change.
 const config: Config = {
   darkMode: "class",
   content: [
@@ -14,27 +14,27 @@ const config: Config = {
     extend: {
       colors: {
         canvas: {
-          DEFAULT: "#FAFAF9", // page background, light mode
-          dark: "#0B0C0E",    // page background, dark mode
+          DEFAULT: "#F4F0EE", // warm cream page background, light mode
+          dark: "#18130F",    // warm near-black page background, dark mode
         },
         surface: {
           DEFAULT: "#FFFFFF",
-          dark: "#141518",
+          dark: "#231C17",
         },
         border: {
-          DEFAULT: "#E7E5E4",
-          dark: "#26282C",
+          DEFAULT: "#E5DDD5",
+          dark: "#3A2F27",
         },
         ink: {
-          DEFAULT: "#16171A", // primary text
-          muted: "#6B6E73",   // secondary text
-          dark: "#F4F4F5",
-          "dark-muted": "#9A9DA3",
+          DEFAULT: "#282420", // primary text
+          muted: "#78706A",   // secondary text
+          dark: "#F5F1EE",
+          "dark-muted": "#AEA299",
         },
         accent: {
-          DEFAULT: "#1C4235", // deep forest — TDV primary accent (placeholder)
-          soft: "#E7EFEC",
-          dark: "#3E7A64",
+          DEFAULT: "#AF4B2F", // TDV terracotta — from live site link/CTA color
+          soft: "#F1E1D8",
+          dark: "#D9855F",
         },
         status: {
           new: "#2563EB",
@@ -45,7 +45,7 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["var(--font-display)", "ui-serif", "Georgia", "serif"],
+        display: ["var(--font-display)", "ui-sans-serif", "system-ui", "sans-serif"],
         sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
       },
