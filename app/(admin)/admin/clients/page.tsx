@@ -1,44 +1,44 @@
-import { createClient } from "@/lib/supabase/server";
+import Link from "next/link";
+import { Building2 } from "lucide-react";
+import { getCompaniesWithCounts } from "@/lib/data/admin/companies";
+import { Table } from "@/components/ui/Table";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { NewCompanyDialog } from "./NewCompanyDialog";
 
 export default async function AdminClientsPage() {
-  // Regular RLS-bound client is enough here: is_tdv_staff() in the policies
-  // already grants staff full read access, so the admin/service-role client
-  // is reserved for actions RLS genuinely can't express (e.g. creating an
-  // auth.users row for a new client contact via the Admin API).
-  const supabase = createClient();
-  const { data } = await supabase
-    .from("companies")
-    .select("*, projects(count), profiles(count)")
-    .order("name");
-
-  const companies = data as unknown as {
-    id: string;
-    name: string;
-    projects: { count: number }[];
-    profiles: { count: number }[];
-  }[] | null;
+  const companies = await getCompaniesWithCounts();
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-2xl font-semibold">Klanten</h1>
-      <table className="card w-full overflow-hidden text-sm">
-        <thead className="border-b border-border text-left text-ink-muted dark:border-border-dark dark:text-ink-dark-muted">
-          <tr>
-            <th className="px-5 py-3 font-medium">Bedrijf</th>
-            <th className="px-5 py-3 font-medium">Projecten</th>
-            <th className="px-5 py-3 font-medium">Gebruikers</th>
-          </tr>
-        </thead>
-        <tbody>
-          {companies?.map((c) => (
-            <tr key={c.id} className="border-b border-border last:border-0 dark:border-border-dark">
-              <td className="px-5 py-3">{c.name}</td>
-              <td className="px-5 py-3">{c.projects?.[0]?.count ?? 0}</td>
-              <td className="px-5 py-3">{c.profiles?.[0]?.count ?? 0}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <header className="flex items-center justify-between">
+        <h1 className="font-display text-2xl font-semibold">Klanten</h1>
+        <NewCompanyDialog />
+      </header>
+
+      {companies.length === 0 ? (
+        <EmptyState icon={Building2} title="Nog geen klanten" description="Maak je eerste klant aan om te starten." />
+      ) : (
+        <Table>
+          <Table.Head>
+            <Table.HeadCell>Bedrijf</Table.HeadCell>
+            <Table.HeadCell>Projecten</Table.HeadCell>
+            <Table.HeadCell>Gebruikers</Table.HeadCell>
+          </Table.Head>
+          <Table.Body>
+            {companies.map((c) => (
+              <Table.Row key={c.id}>
+                <Table.Cell>
+                  <Link href={`/admin/clients/${c.id}`} className="font-medium hover:underline">
+                    {c.name}
+                  </Link>
+                </Table.Cell>
+                <Table.Cell>{c.projects?.[0]?.count ?? 0}</Table.Cell>
+                <Table.Cell>{c.profiles?.[0]?.count ?? 0}</Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
+      )}
     </div>
   );
 }
