@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { embedText } from "@/lib/ai/embeddings";
 
 export const runtime = "nodejs";
 
@@ -150,35 +151,4 @@ ${context || "(geen relevante documenten gevonden)"}`;
   }
 
   return NextResponse.json({ reply, conversationId });
-}
-
-/**
- * Embedding provider — pluggable. Anthropic's API does not currently expose
- * an embeddings endpoint, so this calls an external provider (OpenAI shown
- * here; Voyage AI is Anthropic's suggested alternative). Swap the fetch
- * below for whichever the team settles on; the pgvector column is sized
- * for 1536-dim embeddings by default (see migration) — adjust both together.
- * Throws if the provider isn't configured or fails — callers must treat
- * retrieval as best-effort and catch this.
- */
-async function embedText(text: string): Promise<number[]> {
-  if (!process.env.EMBEDDINGS_API_KEY) {
-    throw new Error("EMBEDDINGS_API_KEY is not configured.");
-  }
-
-  const res = await fetch("https://api.openai.com/v1/embeddings", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.EMBEDDINGS_API_KEY}`,
-    },
-    body: JSON.stringify({ model: process.env.AI_EMBEDDINGS_MODEL ?? "text-embedding-3-large", input: text }),
-  });
-
-  if (!res.ok) {
-    throw new Error(`Embeddings provider returned ${res.status}: ${await res.text()}`);
-  }
-
-  const data = await res.json();
-  return data.data[0].embedding;
 }
