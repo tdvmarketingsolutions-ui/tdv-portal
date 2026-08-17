@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { format, isSameMonth, isSameDay } from "date-fns";
 import { ImageIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/ToastProvider";
-import { Badge } from "@/components/ui/Badge";
-import { CONTENT_STATUS_TONE, CONTENT_CHANNEL_LABEL } from "@/lib/content-status";
+import { Badge, TONE_CLASS } from "@/components/ui/Badge";
+import { CONTENT_STATUS_LABEL, CONTENT_STATUS_TONE, CONTENT_CHANNEL_LABEL } from "@/lib/content-status";
 import type { ContentItemWithCompany } from "@/lib/data/content";
+import type { ContentStatus } from "@/types/domain";
 import { EditContentItemDialog } from "./EditContentItemDialog";
 import { rescheduleContentItemAction } from "./actions";
 
@@ -16,6 +18,7 @@ const WEEKDAYS = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"];
 // Sentinel for the "unscheduled" drop zone, distinct from `null` (which
 // means "not currently hovering any drop zone") on the dragOverKey state.
 const UNSCHEDULED = "__unscheduled__";
+const STATUSES = Object.keys(CONTENT_STATUS_LABEL) as ContentStatus[];
 
 export function CalendarGrid({
   items,
@@ -33,14 +36,23 @@ export function CalendarGrid({
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [dragOverKey, setDragOverKey] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<ContentStatus | "all">("all");
+
+  const counts = useMemo(() => {
+    const byStatus = new Map<ContentStatus, number>();
+    for (const item of items) byStatus.set(item.status, (byStatus.get(item.status) ?? 0) + 1);
+    return byStatus;
+  }, [items]);
+
+  const visibleItems = statusFilter === "all" ? items : items.filter((i) => i.status === statusFilter);
 
   const itemsByDay = new Map<string, ContentItemWithCompany[]>();
-  for (const item of items) {
+  for (const item of visibleItems) {
     if (!item.scheduled_for) continue;
     const key = format(new Date(item.scheduled_for), "yyyy-MM-dd");
     itemsByDay.set(key, [...(itemsByDay.get(key) ?? []), item]);
   }
-  const unscheduled = items.filter((i) => !i.scheduled_for);
+  const unscheduled = visibleItems.filter((i) => !i.scheduled_for);
 
   async function handleDrop(zoneKey: string) {
     const id = draggedId;
@@ -88,10 +100,13 @@ export function CalendarGrid({
           setDraggedId(null);
           setDragOverKey(null);
         }}
-        title={item.companies?.name ?? undefined}
-        className={`flex items-center gap-1 truncate rounded-md bg-accent-soft px-1.5 py-0.5 text-[11px] text-accent hover:bg-accent/20 dark:bg-accent/15 dark:text-accent-dark ${
-          isStaff ? "cursor-grab active:cursor-grabbing" : ""
-        } ${draggedId === item.id ? "opacity-40" : ""}`}
+        title={`${CONTENT_STATUS_LABEL[item.status]}${item.companies?.name ? ` — ${item.companies.name}` : ""}`}
+        className={cn(
+          "flex items-center gap-1 truncate rounded-md px-1.5 py-0.5 text-[11px] hover:opacity-80",
+          TONE_CLASS[CONTENT_STATUS_TONE[item.status]],
+          isStaff ? "cursor-grab active:cursor-grabbing" : "",
+          draggedId === item.id ? "opacity-40" : ""
+        )}
       >
         {item.visual_file_id && <ImageIcon size={10} strokeWidth={2} className="shrink-0" />}
         <Link href={`/content-planning/${item.id}`} className="min-w-0 flex-1 truncate">
@@ -113,6 +128,37 @@ export function CalendarGrid({
 
   return (
     <>
+      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+        <button
+          type="button"
+          onClick={() => setStatusFilter("all")}
+          className={cn(
+            "shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+            statusFilter === "all"
+              ? "border-ink bg-ink text-white dark:border-ink-dark dark:bg-ink-dark dark:text-ink"
+              : "border-border text-ink-muted hover:border-ink/30 dark:border-border-dark dark:text-ink-dark-muted"
+          )}
+        >
+          Alles ({items.length})
+        </button>
+        {STATUSES.map((status) => (
+          <button
+            key={status}
+            type="button"
+            onClick={() => setStatusFilter((current) => (current === status ? "all" : status))}
+            className={cn(
+              "shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-opacity",
+              TONE_CLASS[CONTENT_STATUS_TONE[status]],
+              statusFilter === status
+                ? "ring-2 ring-current ring-offset-1 ring-offset-canvas dark:ring-offset-canvas-dark"
+                : "opacity-60 hover:opacity-100"
+            )}
+          >
+            {CONTENT_STATUS_LABEL[status]} ({counts.get(status) ?? 0})
+          </button>
+        ))}
+      </div>
+
       <div className="grid grid-cols-7 gap-px overflow-hidden rounded-2xl border border-border bg-border text-xs dark:border-border-dark dark:bg-border-dark">
         {WEEKDAYS.map((d) => (
           <div key={d} className="bg-surface p-2 text-center font-medium text-ink-muted dark:bg-surface-dark dark:text-ink-dark-muted">
@@ -181,7 +227,8 @@ export function CalendarGrid({
                     {item.title}
                   </Link>
                   <div className="flex shrink-0 items-center gap-2">
-                    <Badge tone={CONTENT_STATUS_TONE[item.status]}>{CONTENT_CHANNEL_LABEL[item.channel]}</Badge>
+                    <Badge tone="gray">{CONTENT_CHANNEL_LABEL[item.channel]}</Badge>
+                    <Badge tone={CONTENT_STATUS_TONE[item.status]}>{CONTENT_STATUS_LABEL[item.status]}</Badge>
                     {isStaff && (
                       <EditContentItemDialog
                         contentItemId={item.id}
