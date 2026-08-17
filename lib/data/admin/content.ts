@@ -2,6 +2,7 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import type { ContentChannel, ContentItem, ContentStatus } from "@/types/domain";
 import type { FileCategory } from "@/lib/file-category";
+import { assertTdvStaff } from "@/lib/auth/assert-staff";
 
 const STORAGE_BUCKET = "client-files";
 
@@ -31,6 +32,7 @@ export async function updateContentItemAdmin(
     status?: ContentStatus;
   }
 ): Promise<void> {
+  await assertTdvStaff();
   const supabase = createClient();
   const patch: Record<string, unknown> = {};
   if (input.title !== undefined) patch.title = input.title;
@@ -53,6 +55,7 @@ export async function updateContentItemAdmin(
  * "RLS can't do this" case here worth reaching for the service role over.
  */
 export async function uploadContentItemVisual(contentItemId: string, file: File): Promise<void> {
+  await assertTdvStaff();
   const supabase = createClient();
   const {
     data: { user },

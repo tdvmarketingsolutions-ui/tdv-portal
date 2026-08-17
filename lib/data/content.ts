@@ -1,5 +1,6 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
+import { assertTdvStaff } from "@/lib/auth/assert-staff";
 import type { ContentChannel, ContentItem, ContentStatus } from "@/types/domain";
 
 export interface ContentVisual {
@@ -7,6 +8,11 @@ export interface ContentVisual {
   storage_path: string;
   file_name: string;
   mime_type: string | null;
+}
+
+export interface ContentItemWithCompany extends ContentItem {
+  companies: { name: string } | null;
+  visual: { id: string; file_name: string } | null;
 }
 
 export interface ContentItemWithComments extends ContentItem {
@@ -21,15 +27,15 @@ export interface ContentItemWithComments extends ContentItem {
   }[];
 }
 
-export async function getContentItemsForCurrentUser(): Promise<ContentItem[]> {
+export async function getContentItemsForCurrentUser(): Promise<ContentItemWithCompany[]> {
   const supabase = createClient();
   const { data, error } = await supabase
     .from("content_items")
-    .select("*")
+    .select("*, companies ( name ), visual:files!content_items_visual_file_id_fkey ( id, file_name )")
     .order("scheduled_for", { ascending: true, nullsFirst: false });
 
   if (error) throw new Error(`Kon contentplanning niet laden: ${error.message}`);
-  return (data ?? []) as unknown as ContentItem[];
+  return (data ?? []) as unknown as ContentItemWithCompany[];
 }
 
 export async function getContentItemById(id: string): Promise<ContentItemWithComments | null> {
@@ -54,6 +60,7 @@ export async function createContentItem(input: {
   scheduledFor?: string;
   projectId?: string;
 }): Promise<ContentItem> {
+  await assertTdvStaff();
   const supabase = createClient();
   const {
     data: { user },

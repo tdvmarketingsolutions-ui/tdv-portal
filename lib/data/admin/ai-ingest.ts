@@ -2,6 +2,7 @@ import "server-only";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { embedTexts } from "@/lib/ai/embeddings";
 import { isServiceRoleConfigured } from "@/lib/data/admin/users";
+import { assertTdvStaff } from "@/lib/auth/assert-staff";
 
 /**
  * Knowledge-base ingest pipeline for the AI assistant's RAG retrieval.
@@ -44,19 +45,6 @@ interface Chunk {
 export interface IngestResult {
   chunksWritten: number;
   companiesTouched: number;
-}
-
-async function assertTdvStaff(): Promise<void> {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("NOT_AUTHORIZED");
-
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "tdv_admin" && profile?.role !== "tdv_staff") {
-    throw new Error("NOT_AUTHORIZED");
-  }
 }
 
 function truncate(text: string): string {
