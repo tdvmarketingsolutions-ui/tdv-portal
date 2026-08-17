@@ -10,7 +10,7 @@ export default async function AdminClientsPage() {
 
   return (
     <div className="space-y-6">
-      <header className="flex items-center justify-between">
+      <header className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-2xl font-semibold">Klanten</h1>
         <NewCompanyDialog />
       </header>

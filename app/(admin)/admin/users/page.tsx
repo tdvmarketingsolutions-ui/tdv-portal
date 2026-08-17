@@ -20,7 +20,7 @@ export default async function AdminUsersPage() {
 
   return (
     <div className="space-y-6">
-      <header className="flex items-center justify-between">
+      <header className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-2xl font-semibold">Gebruikers</h1>
         <InviteUserDialog companies={companies} serviceRoleConfigured={serviceRoleConfigured} />
       </header>

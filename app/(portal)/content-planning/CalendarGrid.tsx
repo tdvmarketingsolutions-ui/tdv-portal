@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { format, isSameMonth, isSameDay } from "date-fns";
+import { nl } from "date-fns/locale";
 import { ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/ToastProvider";
@@ -53,6 +54,17 @@ export function CalendarGrid({
     itemsByDay.set(key, [...(itemsByDay.get(key) ?? []), item]);
   }
   const unscheduled = visibleItems.filter((i) => !i.scheduled_for);
+
+  // A 7-column grid has no room left for real content on a phone (chip
+  // text was truncating to 3-4 characters) — below `sm` this renders an
+  // agenda list instead: one section per day-with-items, full titles.
+  const agendaDays = days
+    .filter((day) => isSameMonth(day, monthStart))
+    .map((day) => {
+      const key = format(day, "yyyy-MM-dd");
+      return { day, key, dayItems: itemsByDay.get(key) ?? [] };
+    })
+    .filter((d) => d.dayItems.length > 0);
 
   async function handleDrop(zoneKey: string) {
     const id = draggedId;
@@ -126,6 +138,34 @@ export function CalendarGrid({
     );
   }
 
+  function AgendaCard({ item }: { item: ContentItemWithCompany }) {
+    return (
+      <li className="card flex items-center gap-3 p-3">
+        <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full", TONE_CLASS[CONTENT_STATUS_TONE[item.status]])} />
+        {item.visual_file_id && (
+          <ImageIcon size={16} strokeWidth={1.75} className="shrink-0 text-ink-muted dark:text-ink-dark-muted" />
+        )}
+        <Link href={`/content-planning/${item.id}`} className="min-w-0 flex-1">
+          <p className="truncate text-sm font-medium">{item.title}</p>
+          <p className="mt-0.5 truncate text-xs text-ink-muted dark:text-ink-dark-muted">
+            {CONTENT_CHANNEL_LABEL[item.channel]} · {CONTENT_STATUS_LABEL[item.status]}
+            {item.companies?.name ? ` · ${item.companies.name}` : ""}
+          </p>
+        </Link>
+        {isStaff && (
+          <EditContentItemDialog
+            contentItemId={item.id}
+            title={item.title}
+            caption={item.caption}
+            channel={item.channel}
+            scheduledFor={item.scheduled_for}
+            visualFileName={item.visual?.file_name ?? null}
+          />
+        )}
+      </li>
+    );
+  }
+
   return (
     <>
       <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
@@ -159,7 +199,40 @@ export function CalendarGrid({
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-px overflow-hidden rounded-2xl border border-border bg-border text-xs dark:border-border-dark dark:bg-border-dark">
+      {/* Mobile: agenda list, one section per day that actually has something. */}
+      <div className="space-y-4 sm:hidden">
+        {agendaDays.length === 0 ? (
+          <p className="card p-4 text-center text-sm text-ink-muted dark:text-ink-dark-muted">
+            Niets gepland deze maand{statusFilter !== "all" ? " voor deze status" : ""}.
+          </p>
+        ) : (
+          agendaDays.map(({ day, key, dayItems }) => (
+            <div key={key}>
+              <p className="mb-2 flex items-center gap-2 text-sm font-medium">
+                <span
+                  className={cn(
+                    "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs",
+                    isSameDay(day, new Date())
+                      ? "bg-accent font-semibold text-white dark:bg-accent-dark"
+                      : "bg-canvas text-ink-muted dark:bg-canvas-dark dark:text-ink-dark-muted"
+                  )}
+                >
+                  {format(day, "d")}
+                </span>
+                <span className="capitalize">{format(day, "EEEE d MMMM", { locale: nl })}</span>
+              </p>
+              <ul className="space-y-2">
+                {dayItems.map((item) => (
+                  <AgendaCard key={item.id} item={item} />
+                ))}
+              </ul>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Tablet/desktop: full month grid. */}
+      <div className="hidden grid-cols-7 gap-px overflow-hidden rounded-2xl border border-border bg-border text-xs dark:border-border-dark dark:bg-border-dark sm:grid">
         {WEEKDAYS.map((d) => (
           <div key={d} className="bg-surface p-2 text-center font-medium text-ink-muted dark:bg-surface-dark dark:text-ink-dark-muted">
             {d}
@@ -202,9 +275,13 @@ export function CalendarGrid({
           {...dropZoneProps(UNSCHEDULED)}
           className={`card p-6 ${dragOverKey === UNSCHEDULED ? "bg-accent-soft dark:bg-accent/10" : ""}`}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="font-display text-base font-medium">Nog niet ingepland</h2>
-            {isStaff && <p className="text-xs text-ink-muted dark:text-ink-dark-muted">Sleep hierheen om te ontplannen</p>}
+            {isStaff && (
+              <p className="hidden text-xs text-ink-muted dark:text-ink-dark-muted sm:block">
+                Sleep hierheen om te ontplannen
+              </p>
+            )}
           </div>
           {unscheduled.length === 0 ? (
             <p className="mt-3 text-sm text-ink-muted dark:text-ink-dark-muted">Geen items.</p>
@@ -219,14 +296,14 @@ export function CalendarGrid({
                     setDraggedId(null);
                     setDragOverKey(null);
                   }}
-                  className={`flex items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm hover:bg-canvas dark:hover:bg-canvas-dark ${
+                  className={`flex flex-col gap-2 rounded-xl px-3 py-2 text-sm hover:bg-canvas dark:hover:bg-canvas-dark sm:flex-row sm:items-center sm:justify-between ${
                     isStaff ? "cursor-grab active:cursor-grabbing" : ""
                   } ${draggedId === item.id ? "opacity-40" : ""}`}
                 >
                   <Link href={`/content-planning/${item.id}`} className="min-w-0 flex-1 truncate">
                     {item.title}
                   </Link>
-                  <div className="flex shrink-0 items-center gap-2">
+                  <div className="flex shrink-0 flex-wrap items-center gap-2">
                     <Badge tone="gray">{CONTENT_CHANNEL_LABEL[item.channel]}</Badge>
                     <Badge tone={CONTENT_STATUS_TONE[item.status]}>{CONTENT_STATUS_LABEL[item.status]}</Badge>
                     {isStaff && (
