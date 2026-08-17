@@ -9,7 +9,7 @@ export default async function FilesPage() {
 
   return (
     <div className="space-y-6">
-      <header className="flex items-center justify-between">
+      <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-2xl font-semibold">Bestanden</h1>
           <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">

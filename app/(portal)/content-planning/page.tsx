@@ -46,12 +46,12 @@ export default async function ContentPlanningPage({ searchParams }: { searchPara
               : "Bekijk en keur geplande content goed, of stel zelf iets voor."}
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
+        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
+          <div className="flex items-center justify-between gap-2 sm:justify-start">
             <Link href={`/content-planning?month=${prevMonth}`} className="btn-secondary px-2.5" aria-label="Vorige maand">
               <ChevronLeft size={16} strokeWidth={1.75} />
             </Link>
-            <span className="w-32 text-center text-sm font-medium capitalize">
+            <span className="text-center text-sm font-medium capitalize sm:w-32">
               {format(monthStart, "MMMM yyyy", { locale: nl })}
             </span>
             <Link href={`/content-planning?month=${nextMonth}`} className="btn-secondary px-2.5" aria-label="Volgende maand">
