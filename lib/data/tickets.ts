@@ -1,5 +1,6 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
+import { createNotifications } from "@/lib/data/notifications";
 import type { Ticket, TicketPriority, TicketWithMessages } from "@/types/domain";
 
 export async function getTicketsForCurrentUser(): Promise<Ticket[]> {
@@ -52,6 +53,20 @@ export async function createTicket(input: {
 
   if (messageError) throw new Error(`Kon eerste bericht niet opslaan: ${messageError.message}`);
 
+  // New tickets have no assignee yet, so there's no single staff recipient
+  // to notify — tell everyone on TDV's side instead, same as an unassigned
+  // ticket showing up in /admin/tickets for anyone to pick up.
+  const { data: staff } = await supabase.from("profiles").select("id").in("role", ["tdv_admin", "tdv_staff"]);
+  await createNotifications(
+    ((staff ?? []) as { id: string }[]).map((s) => ({
+      recipientId: s.id,
+      type: "ticket",
+      title: `Nieuw ticket: ${input.subject}`,
+      body: input.firstMessage,
+      linkPath: `/tickets/${ticket.id}`,
+    }))
+  );
+
   return ticket as unknown as Ticket;
 }
 
@@ -79,4 +94,28 @@ export async function addTicketMessage(ticketId: string, body: string) {
     .insert({ ticket_id: ticketId, author_id: user.id, body });
 
   if (error) throw new Error(`Kon bericht niet plaatsen: ${error.message}`);
+
+  const { data: ticketData } = await supabase
+    .from("tickets")
+    .select("subject, created_by, assigned_to")
+    .eq("id", ticketId)
+    .single();
+  const ticket = ticketData as { subject: string; created_by: string; assigned_to: string | null } | null;
+  if (!ticket) return;
+
+  // Notify whichever side didn't just write this message — the client who
+  // opened the ticket, or the staff member it's assigned to. No assignee
+  // yet means nobody to notify, same as at creation time.
+  const recipientId = user.id === ticket.created_by ? ticket.assigned_to : ticket.created_by;
+  if (recipientId) {
+    await createNotifications([
+      {
+        recipientId,
+        type: "ticket" as const,
+        title: `Nieuw bericht in ticket "${ticket.subject}"`,
+        body,
+        linkPath: `/tickets/${ticketId}`,
+      },
+    ]);
+  }
 }

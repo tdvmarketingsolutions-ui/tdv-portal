@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { EditProfileForm } from "./EditProfileForm";
 import { ChangePasswordForm } from "./ChangePasswordForm";
+import { NotificationPreferenceForm } from "./NotificationPreferenceForm";
 
 export default async function SettingsPage() {
   const supabase = createClient();
@@ -10,12 +11,13 @@ export default async function SettingsPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, role, companies ( name )")
+    .select("full_name, role, email_notifications, companies ( name )")
     .eq("id", user!.id)
     .single();
 
   const company = (profile as { companies?: { name: string } | null } | null)?.companies;
   const fullName = (profile?.full_name as string | null) ?? null;
+  const emailNotifications = (profile?.email_notifications as boolean | null) ?? true;
 
   return (
     <div className="space-y-8">
@@ -55,11 +57,9 @@ export default async function SettingsPage() {
         <ChangePasswordForm />
       </section>
 
-      <section className="card p-6">
+      <section className="card space-y-3 p-6">
         <h2 className="font-display text-lg font-medium">Meldingsvoorkeuren</h2>
-        <p className="mt-2 text-sm text-ink-muted dark:text-ink-dark-muted">
-          Volgen zodra realtime en e-mailmeldingen zijn aangesloten.
-        </p>
+        <NotificationPreferenceForm emailNotifications={emailNotifications} />
       </section>
     </div>
   );

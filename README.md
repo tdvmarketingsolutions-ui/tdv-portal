@@ -56,8 +56,19 @@ van het systeem.
   `/admin/content` — `lib/data/content.ts` + `lib/data/admin/content.ts`.
 - **Bestanden**: overzicht + upload naar de `client-files` Storage-bucket —
   `lib/data/files.ts`.
-- **Meldingen**: lijst, ongelezen-badge in de sidebar, alles-gelezen-actie —
-  `lib/data/notifications.ts`. Nog géén realtime push of e-mail, zie hieronder.
+- **Meldingen**: lijst, ongelezen-badge in de sidebar, alles-gelezen-actie,
+  live updates via `supabase.channel(...)` (migratie 0013 zet `notifications`
+  in de `supabase_realtime`-publicatie) + e-mail via Resend
+  (`lib/email/send.ts`), met een opt-out per gebruiker in Instellingen
+  (`profiles.email_notifications`, migratie 0014). Triggers zitten in
+  `createTicket`/`addTicketMessage` (nieuw ticket / nieuw bericht) en
+  `updateContentItemAdmin` (content naar "wacht op goedkeuring") —
+  `lib/data/notifications.ts`.
+- **Dashboard**: "vraagt je aandacht" (openstaande goedkeuringen, tickets die
+  op je wachten) + recente activiteit, rolgebonden (klant vs. staff) —
+  `lib/data/dashboard.ts`.
+- **Instellingen**: naam en wachtwoord aanpasbaar, meldingsvoorkeur — niet
+  langer alleen-lezen.
 - **AI-assistent**: chat-UI + RAG API-route + pgvector search RPC +
   gespreksgeschiedenis, plus een kennisbank-ingestpipeline
   (`lib/data/admin/ai-ingest.ts`, te starten vanaf `/admin/ai`) die
@@ -69,12 +80,14 @@ van het systeem.
 
 ## Wat nog moet worden bijgebouwd
 
-- [ ] Meldingen: realtime updates via `supabase.channel(...)` (Postgres
-      changes) + e-mailnotificaties (kies een provider, zie `.env.example`)
-      — nu ververst de lijst alleen bij navigatie/refresh.
 - [ ] Kennisbank-ingest is nu een synchrone admin-actie die alles herembedt;
       bij meer data wordt dat een achtergrondtaak met incrementele sync
       (bv. op basis van `updated_at`) in plaats van volledige resync.
+- [ ] Notificatietriggers dekken nu tickets en content-goedkeuring. Feedback
+      (deliverables) en contentopmerkingen hebben nog geen trigger — die
+      module heeft ook nog geen "nieuwe versie uploaden"-flow in de app zelf
+      (deliverables/versions bestaan enkel als ze rechtstreeks in de
+      database aangemaakt worden).
 
 ## Setup
 

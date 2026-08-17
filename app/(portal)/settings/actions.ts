@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { updateOwnProfileName } from "@/lib/data/profile";
+import { updateOwnProfileName, updateOwnEmailNotificationPref } from "@/lib/data/profile";
 import { editProfileSchema, type EditProfileFormValues } from "./schema";
 
 export async function updateProfileAction(input: EditProfileFormValues): Promise<{ error?: string }> {
@@ -17,5 +17,17 @@ export async function updateProfileAction(input: EditProfileFormValues): Promise
   }
 
   revalidatePath("/settings");
+  return {};
+}
+
+export async function updateEmailNotificationPrefAction(enabled: boolean): Promise<{ error?: string }> {
+  try {
+    await updateOwnEmailNotificationPref(enabled);
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Kon voorkeur niet bijwerken." };
+  }
+
+  revalidatePath("/settings");
+  revalidatePath("/admin/settings");
   return {};
 }

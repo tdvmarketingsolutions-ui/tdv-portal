@@ -14,6 +14,7 @@ export interface Profile {
   role: UserRole;
   full_name: string | null;
   avatar_url: string | null;
+  email_notifications: boolean;
 }
 
 export type ProjectStatus = "planning" | "in_progress" | "in_review" | "on_hold" | "completed";

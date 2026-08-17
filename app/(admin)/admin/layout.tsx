@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { AccountMenu } from "@/components/layout/AccountMenu";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { NavLinks } from "@/components/layout/NavLinks";
+import { RealtimeNotifications } from "@/components/layout/RealtimeNotifications";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
@@ -19,6 +20,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
+      <RealtimeNotifications userId={user.id} />
       <MobileNav
         variant="admin"
         title="TDV"

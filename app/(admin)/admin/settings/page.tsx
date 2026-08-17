@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { EditProfileForm } from "@/app/(portal)/settings/EditProfileForm";
 import { ChangePasswordForm } from "@/app/(portal)/settings/ChangePasswordForm";
+import { NotificationPreferenceForm } from "@/app/(portal)/settings/NotificationPreferenceForm";
 
 const ROLE_LABEL: Record<string, string> = {
   tdv_admin: "TDV Admin",
@@ -15,11 +16,12 @@ export default async function AdminSettingsPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, role")
+    .select("full_name, role, email_notifications")
     .eq("id", user!.id)
     .single();
 
   const fullName = (profile?.full_name as string | null) ?? null;
+  const emailNotifications = (profile?.email_notifications as boolean | null) ?? true;
 
   return (
     <div className="space-y-8">
@@ -49,6 +51,11 @@ export default async function AdminSettingsPage() {
           <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">Kies een nieuw wachtwoord voor je account.</p>
         </div>
         <ChangePasswordForm />
+      </section>
+
+      <section className="card space-y-3 p-6">
+        <h2 className="font-display text-lg font-medium">Meldingsvoorkeuren</h2>
+        <NotificationPreferenceForm emailNotifications={emailNotifications} />
       </section>
     </div>
   );

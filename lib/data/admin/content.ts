@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { ContentChannel, ContentItem, ContentStatus } from "@/types/domain";
 import type { FileCategory } from "@/lib/file-category";
 import { assertTdvStaff } from "@/lib/auth/assert-staff";
+import { createNotifications } from "@/lib/data/notifications";
 
 const STORAGE_BUCKET = "client-files";
 
@@ -45,6 +46,27 @@ export async function updateContentItemAdmin(
 
   const { error } = await supabase.from("content_items").update(patch).eq("id", id);
   if (error) throw new Error(`Kon content-item niet bijwerken: ${error.message}`);
+
+  if (input.status === "pending_approval") {
+    const { data: itemData } = await supabase.from("content_items").select("title, company_id").eq("id", id).single();
+    const item = itemData as { title: string; company_id: string } | null;
+    if (item) {
+      const { data: clientProfiles } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("company_id", item.company_id)
+        .in("role", ["client_admin", "client_member"]);
+      await createNotifications(
+        ((clientProfiles ?? []) as { id: string }[]).map((p) => ({
+          recipientId: p.id,
+          type: "approval" as const,
+          title: "Nieuwe content wacht op je goedkeuring",
+          body: item.title,
+          linkPath: `/content-planning/${id}`,
+        }))
+      );
+    }
+  }
 }
 
 /**
