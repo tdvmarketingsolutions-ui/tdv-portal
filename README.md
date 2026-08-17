@@ -40,36 +40,54 @@ van het systeem.
 
 ## Wat er echt werkt (volg dit patroon voor de rest)
 
-- **Auth**: login, sessiebeheer via cookies, middleware die elke request
-  ververst en niet-ingelogde gebruikers naar `/login` stuurt.
-- **Projecten**: lijst + detail, volledig via Server Components + RLS —
-  `lib/data/projects.ts` → `app/(portal)/projects/*`.
-- **Tickets**: lijst + `createTicket()` server-actie-achtige helper.
-- **AI-assistent**: chat-UI + RAG API-route + pgvector search RPC.
-- **Admin**: layout met dubbele rolcheck (middleware + layout zelf), en één
-  voorbeeldpagina (`/admin/clients`).
+- **Auth**: login, wachtwoord vergeten/resetten, sessiebeheer via cookies,
+  middleware die elke request ververst en niet-ingelogde gebruikers naar
+  `/login` stuurt.
+- **Projecten**: lijst + detail + opmerkingen, volledig via Server Components
+  + RLS — `lib/data/projects.ts` → `app/(portal)/projects/*`.
+- **Tickets**: lijst, nieuw, detail + reageren.
+- **Feedback & goedkeuring**: lijst, detail met versiehistoriek, preview en
+  status-acties (goedkeuren/revisie vragen) — `lib/data/deliverables.ts`.
+- **Contentplanning**: maandkalender + lijst, detail met visual
+  (afbeelding/video), opmerkingen en de volledige statuslevenscyclus
+  (concept → wacht op goedkeuring → goedgekeurd/revisie → ingepland →
+  gepubliceerd) — klant keurt goed/vraagt revisie, staff beheert de rest
+  (aanmaken, bewerken, visual uploaden, status verzetten) vanaf
+  `/admin/content` — `lib/data/content.ts` + `lib/data/admin/content.ts`.
+- **Bestanden**: overzicht + upload naar de `client-files` Storage-bucket —
+  `lib/data/files.ts`.
+- **Meldingen**: lijst, ongelezen-badge in de sidebar, alles-gelezen-actie,
+  live updates via `supabase.channel(...)` (migratie 0013 zet `notifications`
+  in de `supabase_realtime`-publicatie) + e-mail via Resend
+  (`lib/email/send.ts`), met een opt-out per gebruiker in Instellingen
+  (`profiles.email_notifications`, migratie 0014). Triggers zitten in
+  `createTicket`/`addTicketMessage` (nieuw ticket / nieuw bericht) en
+  `updateContentItemAdmin` (content naar "wacht op goedkeuring") —
+  `lib/data/notifications.ts`.
+- **Dashboard**: "vraagt je aandacht" (openstaande goedkeuringen, tickets die
+  op je wachten) + recente activiteit, rolgebonden (klant vs. staff) —
+  `lib/data/dashboard.ts`.
+- **Instellingen**: naam en wachtwoord aanpasbaar, meldingsvoorkeur — niet
+  langer alleen-lezen.
+- **AI-assistent**: chat-UI + RAG API-route + pgvector search RPC +
+  gespreksgeschiedenis, plus een kennisbank-ingestpipeline
+  (`lib/data/admin/ai-ingest.ts`, te starten vanaf `/admin/ai`) die
+  projecten, tickets, feedback en contentplanning omzet naar doorzoekbare
+  chunks in `ai_documents`.
+- **Admin**: layout met dubbele rolcheck (middleware + layout zelf), en CRUD
+  voor klanten, projecten, tickets, content en gebruikers, plus AI-activiteit
+  en instellingen.
 
 ## Wat nog moet worden bijgebouwd
 
-Elke onderstaande module volgt exact hetzelfde patroon als **projecten**
-hierboven: een `lib/data/<module>.ts` bestand met RLS-vertrouwende queries,
-plus een route onder `app/(portal)/<module>/`.
-
-- [ ] Feedback & goedkeuring — schema (`deliverables`, `deliverable_versions`,
-      `deliverable_comments`) staat al in de migratie; UI met preview + pin-
-      comments + versiehistoriek ontbreekt nog.
-- [ ] Contentplanning — schema (`content_items`) staat er; kalenderweergave
-      (bv. met een lichte wrapper rond `date-fns`) moet nog gebouwd worden.
-- [ ] Bestanden — Storage-bucket + RLS-policies staan in de migratie; UI voor
-      upload (drag-and-drop) en zoekfunctie ontbreekt.
-- [ ] Meldingen — tabel + RLS staan klaar; realtime updates via
-      `supabase.channel(...)` (Postgres changes) + e-mailnotificaties (kies
-      een provider, zie `.env.example`) moeten nog aangesloten worden.
-- [ ] Wachtwoord vergeten / registratieflow voor nieuwe klantgebruikers.
-- [ ] Admin: projecten/tickets/content/gebruikers-beheer (alleen `/clients`
-      staat als voorbeeld).
-- [ ] Ingest-pipeline die projecten/tickets/facturen omzet naar chunks +
-      embeddings in `ai_documents` (nu staat alleen de retrieval-kant klaar).
+- [ ] Kennisbank-ingest is nu een synchrone admin-actie die alles herembedt;
+      bij meer data wordt dat een achtergrondtaak met incrementele sync
+      (bv. op basis van `updated_at`) in plaats van volledige resync.
+- [ ] Notificatietriggers dekken nu tickets en content-goedkeuring. Feedback
+      (deliverables) en contentopmerkingen hebben nog geen trigger — die
+      module heeft ook nog geen "nieuwe versie uploaden"-flow in de app zelf
+      (deliverables/versions bestaan enkel als ze rechtstreeks in de
+      database aangemaakt worden).
 
 ## Setup
 

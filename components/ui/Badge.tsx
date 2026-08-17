@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 export type BadgeTone = "blue" | "amber" | "violet" | "green" | "red" | "gray";
 
-const TONE_CLASS: Record<BadgeTone, string> = {
+export const TONE_CLASS: Record<BadgeTone, string> = {
   blue: "bg-blue-50 text-status-new dark:bg-blue-500/10",
   amber: "bg-amber-50 text-status-progress dark:bg-amber-500/10",
   violet: "bg-violet-50 text-status-waiting dark:bg-violet-500/10",

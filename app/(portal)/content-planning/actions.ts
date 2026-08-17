@@ -1,9 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createContentItem } from "@/lib/data/content";
+import { createContentItemForCurrentUser } from "@/lib/data/content";
 import { updateContentItemAdmin, uploadContentItemVisual } from "@/lib/data/admin/content";
-import type { ContentStatus } from "@/types/domain";
 import { newContentItemSchema, editContentItemSchema, type NewContentItemFormValues, type EditContentItemFormValues } from "./schema";
 
 export async function createContentItemAction(input: NewContentItemFormValues): Promise<{ error?: string }> {
@@ -13,22 +12,26 @@ export async function createContentItemAction(input: NewContentItemFormValues): 
   }
 
   try {
-    await createContentItem({
-      companyId: parsed.data.companyId,
+    await createContentItemForCurrentUser({
       title: parsed.data.title,
       caption: parsed.data.caption || undefined,
       channel: parsed.data.channel,
-      scheduledFor: parsed.data.scheduledFor
-        ? new Date(parsed.data.scheduledFor).toISOString()
-        : undefined,
+      scheduledFor: parsed.data.scheduledFor ? new Date(parsed.data.scheduledFor).toISOString() : undefined,
     });
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Kon content-item niet aanmaken." };
   }
 
-  revalidatePath("/admin/content");
+  revalidatePath("/content-planning");
   return {};
 }
+
+// The three actions below are staff-only — updateContentItemAdmin and
+// uploadContentItemVisual both self-verify via assertTdvStaff() (see
+// lib/auth/assert-staff.ts), since this route isn't gated the way
+// /admin/* is. The calendar UI only renders the controls that call these
+// when the page has already determined the caller is staff, but the check
+// has to live in the data layer too, not just "the button isn't there."
 
 export async function updateContentItemAction(
   id: string,
@@ -50,25 +53,9 @@ export async function updateContentItemAction(
     return { error: err instanceof Error ? err.message : "Kon content-item niet bijwerken." };
   }
 
-  revalidatePath("/admin/content");
-  revalidatePath(`/content-planning/${id}`);
   revalidatePath("/content-planning");
-  return {};
-}
-
-export async function updateContentItemStatusAction(
-  id: string,
-  status: ContentStatus
-): Promise<{ error?: string }> {
-  try {
-    await updateContentItemAdmin(id, { status });
-  } catch (err) {
-    return { error: err instanceof Error ? err.message : "Kon status niet bijwerken." };
-  }
-
-  revalidatePath("/admin/content");
   revalidatePath(`/content-planning/${id}`);
-  revalidatePath("/content-planning");
+  revalidatePath("/admin/content");
   return {};
 }
 
@@ -90,7 +77,29 @@ export async function uploadContentItemVisualAction(
     return { error: err instanceof Error ? err.message : "Kon visual niet uploaden." };
   }
 
-  revalidatePath("/admin/content");
+  revalidatePath("/content-planning");
   revalidatePath(`/content-planning/${contentItemId}`);
+  revalidatePath("/admin/content");
+  return {};
+}
+
+/**
+ * Drag-and-drop reschedule. dateKey is a "yyyy-MM-dd" string (the day the
+ * item was dropped on), or null to move it back to the unscheduled tray.
+ * Mirrors the existing date-only convention across the app (there's no
+ * time-of-day picker anywhere) — a drop always lands at UTC midnight of
+ * that day, same as typing a date into the create/edit forms.
+ */
+export async function rescheduleContentItemAction(id: string, dateKey: string | null): Promise<{ error?: string }> {
+  try {
+    await updateContentItemAdmin(id, {
+      scheduledFor: dateKey ? new Date(`${dateKey}T00:00:00.000Z`).toISOString() : null,
+    });
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Kon datum niet wijzigen." };
+  }
+
+  revalidatePath("/content-planning");
+  revalidatePath("/admin/content");
   return {};
 }

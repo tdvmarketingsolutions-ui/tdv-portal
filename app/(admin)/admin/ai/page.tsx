@@ -1,10 +1,11 @@
-import { getAiChatStats } from "@/lib/data/admin/ai";
+import { getAiChatStats, getKnowledgeBaseStats } from "@/lib/data/admin/ai";
 import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Bot } from "lucide-react";
+import { IngestButton } from "./IngestButton";
 
 export default async function AdminAiPage() {
-  const { totalMessages, recent } = await getAiChatStats();
+  const [{ totalMessages, recent }, kbStats] = await Promise.all([getAiChatStats(), getKnowledgeBaseStats()]);
 
   return (
     <div className="space-y-6">
@@ -20,12 +21,30 @@ export default async function AdminAiPage() {
         <p className="mt-1 font-display text-3xl font-semibold">{totalMessages}</p>
       </section>
 
-      <section className="card border-l-4 border-l-status-progress p-6">
-        <h2 className="font-display text-base font-medium">Kennisbank-ingest: nog niet gebouwd</h2>
-        <p className="mt-2 text-sm text-ink-muted dark:text-ink-dark-muted">
-          De AI-assistent haalt op dit moment enkel op wat er handmatig in <code className="rounded bg-canvas px-1 py-0.5 dark:bg-canvas-dark">ai_documents</code> staat.
-          Er bestaat nog geen pipeline die projecten, tickets of facturen automatisch omzet naar doorzoekbare content — dat is een apart, groter traject.
-        </p>
+      <section className="card space-y-3 p-6">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 className="font-display text-base font-medium">Kennisbank</h2>
+            <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
+              Projecten, tickets, feedback en contentplanning worden hier omgezet naar doorzoekbare fragmenten in{" "}
+              <code className="rounded bg-canvas px-1 py-0.5 dark:bg-canvas-dark">ai_documents</code>, zodat de
+              AI-assistent er per klant in kan zoeken.
+            </p>
+          </div>
+          <IngestButton />
+        </div>
+        <div className="flex flex-wrap gap-6 border-t border-border pt-3 text-sm dark:border-border-dark">
+          <div>
+            <p className="text-ink-muted dark:text-ink-dark-muted">Fragmenten</p>
+            <p className="font-medium">{kbStats.totalChunks}</p>
+          </div>
+          <div>
+            <p className="text-ink-muted dark:text-ink-dark-muted">Laatste ingest</p>
+            <p className="font-medium">
+              {kbStats.lastIngestedAt ? new Date(kbStats.lastIngestedAt).toLocaleString("nl-BE") : "Nog niet gedraaid"}
+            </p>
+          </div>
+        </div>
       </section>
 
       <section className="space-y-3">

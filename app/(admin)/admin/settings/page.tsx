@@ -1,4 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
+import { EditProfileForm } from "@/app/(portal)/settings/EditProfileForm";
+import { ChangePasswordForm } from "@/app/(portal)/settings/ChangePasswordForm";
+import { NotificationPreferenceForm } from "@/app/(portal)/settings/NotificationPreferenceForm";
 
 const ROLE_LABEL: Record<string, string> = {
   tdv_admin: "TDV Admin",
@@ -13,9 +16,12 @@ export default async function AdminSettingsPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, role")
+    .select("full_name, role, email_notifications")
     .eq("id", user!.id)
     .single();
+
+  const fullName = (profile?.full_name as string | null) ?? null;
+  const emailNotifications = (profile?.email_notifications as boolean | null) ?? true;
 
   return (
     <div className="space-y-8">
@@ -24,13 +30,10 @@ export default async function AdminSettingsPage() {
         <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">Jouw account binnen het adminportaal.</p>
       </header>
 
-      <section id="account" className="card scroll-mt-8 p-6">
+      <section id="account" className="card scroll-mt-8 space-y-5 p-6">
         <h2 className="font-display text-lg font-medium">Account</h2>
-        <dl className="mt-4 space-y-3 text-sm">
-          <div className="flex justify-between gap-4">
-            <dt className="text-ink-muted dark:text-ink-dark-muted">Naam</dt>
-            <dd>{(profile?.full_name as string | null) ?? "—"}</dd>
-          </div>
+        <EditProfileForm fullName={fullName} />
+        <dl className="space-y-3 border-t border-border pt-4 text-sm dark:border-border-dark">
           <div className="flex justify-between gap-4">
             <dt className="text-ink-muted dark:text-ink-dark-muted">E-mailadres</dt>
             <dd>{user!.email}</dd>
@@ -40,6 +43,19 @@ export default async function AdminSettingsPage() {
             <dd>{ROLE_LABEL[profile?.role as string] ?? (profile?.role as string)}</dd>
           </div>
         </dl>
+      </section>
+
+      <section id="instellingen" className="card scroll-mt-8 space-y-5 p-6">
+        <div>
+          <h2 className="font-display text-lg font-medium">Wachtwoord</h2>
+          <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">Kies een nieuw wachtwoord voor je account.</p>
+        </div>
+        <ChangePasswordForm />
+      </section>
+
+      <section className="card space-y-3 p-6">
+        <h2 className="font-display text-lg font-medium">Meldingsvoorkeuren</h2>
+        <NotificationPreferenceForm emailNotifications={emailNotifications} />
       </section>
     </div>
   );

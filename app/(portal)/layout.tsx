@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { RealtimeNotifications } from "@/components/layout/RealtimeNotifications";
 import { getUnreadNotificationCount } from "@/lib/data/notifications";
 
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
@@ -22,6 +23,7 @@ export default async function PortalLayout({ children }: { children: React.React
 
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
+      <RealtimeNotifications userId={user.id} />
       <MobileNav
         variant="portal"
         title="TDV"

@@ -1,12 +1,13 @@
 import Link from "next/link";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, ImageIcon } from "lucide-react";
 import { getAllContentItemsForAdmin } from "@/lib/data/admin/content";
 import { getAllCompaniesForSelect } from "@/lib/data/admin/projects";
 import { Table } from "@/components/ui/Table";
-import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { CONTENT_STATUS_LABEL, CONTENT_STATUS_TONE, CONTENT_CHANNEL_LABEL } from "@/lib/content-status";
+import { CONTENT_CHANNEL_LABEL } from "@/lib/content-status";
 import { NewContentItemDialog } from "./NewContentItemDialog";
+import { ContentStatusSelect } from "./ContentStatusSelect";
+import { EditContentItemDialog } from "./EditContentItemDialog";
 
 export default async function AdminContentPage() {
   const [items, companies] = await Promise.all([getAllContentItemsForAdmin(), getAllCompaniesForSelect()]);
@@ -26,8 +27,10 @@ export default async function AdminContentPage() {
             <Table.HeadCell>Titel</Table.HeadCell>
             <Table.HeadCell>Klant</Table.HeadCell>
             <Table.HeadCell>Kanaal</Table.HeadCell>
+            <Table.HeadCell>Visual</Table.HeadCell>
             <Table.HeadCell>Gepland</Table.HeadCell>
             <Table.HeadCell>Status</Table.HeadCell>
+            <Table.HeadCell />
           </Table.Head>
           <Table.Body>
             {items.map((item) => (
@@ -39,9 +42,28 @@ export default async function AdminContentPage() {
                 </Table.Cell>
                 <Table.Cell>{item.companies?.name ?? "—"}</Table.Cell>
                 <Table.Cell>{CONTENT_CHANNEL_LABEL[item.channel]}</Table.Cell>
+                <Table.Cell>
+                  {item.visual ? (
+                    <span className="flex items-center gap-1 text-ink-muted dark:text-ink-dark-muted">
+                      <ImageIcon size={14} strokeWidth={1.75} />
+                    </span>
+                  ) : (
+                    "—"
+                  )}
+                </Table.Cell>
                 <Table.Cell>{item.scheduled_for ? new Date(item.scheduled_for).toLocaleDateString("nl-BE") : "—"}</Table.Cell>
                 <Table.Cell>
-                  <Badge tone={CONTENT_STATUS_TONE[item.status]}>{CONTENT_STATUS_LABEL[item.status]}</Badge>
+                  <ContentStatusSelect contentItemId={item.id} status={item.status} />
+                </Table.Cell>
+                <Table.Cell>
+                  <EditContentItemDialog
+                    contentItemId={item.id}
+                    title={item.title}
+                    caption={item.caption}
+                    channel={item.channel}
+                    scheduledFor={item.scheduled_for}
+                    visualFileName={item.visual?.file_name ?? null}
+                  />
                 </Table.Cell>
               </Table.Row>
             ))}

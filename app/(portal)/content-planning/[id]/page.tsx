@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, FileText } from "lucide-react";
 import { getContentItemById } from "@/lib/data/content";
+import { getFileDownloadUrl } from "@/lib/data/files";
 import { Badge } from "@/components/ui/Badge";
 import { CONTENT_STATUS_LABEL, CONTENT_STATUS_TONE, CONTENT_CHANNEL_LABEL } from "@/lib/content-status";
 import { CommentForm } from "./CommentForm";
@@ -10,6 +11,10 @@ import { StatusActions } from "./StatusActions";
 export default async function ContentItemDetailPage({ params }: { params: { id: string } }) {
   const item = await getContentItemById(params.id);
   if (!item) notFound();
+
+  const visualUrl = item.visual ? await getFileDownloadUrl(item.visual.storage_path) : null;
+  const isImage = item.visual?.mime_type?.startsWith("image/") ?? false;
+  const isVideo = item.visual?.mime_type?.startsWith("video/") ?? false;
 
   const comments = [...(item.content_item_comments ?? [])].sort(
     (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
@@ -37,6 +42,29 @@ export default async function ContentItemDetailPage({ params }: { params: { id: 
           </p>
         )}
       </header>
+
+      {item.visual && visualUrl && (
+        <section className="card overflow-hidden p-0">
+          {isImage ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={visualUrl} alt={item.visual.file_name} className="block max-h-[480px] w-full object-contain" />
+          ) : isVideo ? (
+            <video src={visualUrl} controls className="block max-h-[480px] w-full">
+              <track kind="captions" />
+            </video>
+          ) : (
+            <a
+              href={visualUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-3 p-4 text-sm hover:bg-canvas dark:hover:bg-canvas-dark"
+            >
+              <FileText size={18} strokeWidth={1.75} className="shrink-0 text-ink-muted dark:text-ink-dark-muted" />
+              {item.visual.file_name}
+            </a>
+          )}
+        </section>
+      )}
 
       {item.caption && (
         <section className="card p-6">
