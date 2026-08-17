@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CONTENT_STATUS_TONE, CONTENT_CHANNEL_LABEL } from "@/lib/content-status";
 import type { ContentItem } from "@/types/domain";
+import { NewContentItemDialog } from "./NewContentItemDialog";
 
 const WEEKDAYS = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"];
 
@@ -37,19 +38,22 @@ export default async function ContentPlanningPage({ searchParams }: { searchPara
         <div>
           <h1 className="font-display text-2xl font-semibold">Contentplanning</h1>
           <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
-            Bekijk en keur geplande content goed.
+            Bekijk en keur geplande content goed, of stel zelf iets voor.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Link href={`/content-planning?month=${prevMonth}`} className="btn-secondary px-2.5" aria-label="Vorige maand">
-            <ChevronLeft size={16} strokeWidth={1.75} />
-          </Link>
-          <span className="w-32 text-center text-sm font-medium capitalize">
-            {format(monthStart, "MMMM yyyy", { locale: nl })}
-          </span>
-          <Link href={`/content-planning?month=${nextMonth}`} className="btn-secondary px-2.5" aria-label="Volgende maand">
-            <ChevronRight size={16} strokeWidth={1.75} />
-          </Link>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Link href={`/content-planning?month=${prevMonth}`} className="btn-secondary px-2.5" aria-label="Vorige maand">
+              <ChevronLeft size={16} strokeWidth={1.75} />
+            </Link>
+            <span className="w-32 text-center text-sm font-medium capitalize">
+              {format(monthStart, "MMMM yyyy", { locale: nl })}
+            </span>
+            <Link href={`/content-planning?month=${nextMonth}`} className="btn-secondary px-2.5" aria-label="Volgende maand">
+              <ChevronRight size={16} strokeWidth={1.75} />
+            </Link>
+          </div>
+          <NewContentItemDialog />
         </div>
       </header>
 
@@ -75,13 +79,17 @@ export default async function ContentPlanningPage({ searchParams }: { searchPara
                   key={key}
                   className={`min-h-[92px] bg-surface p-1.5 dark:bg-surface-dark ${!isSameMonth(day, monthStart) ? "opacity-40" : ""}`}
                 >
-                  <p
-                    className={`mb-1 text-right text-[11px] ${
-                      isSameDay(day, new Date()) ? "font-semibold text-accent dark:text-accent-dark" : "text-ink-muted dark:text-ink-dark-muted"
-                    }`}
-                  >
-                    {format(day, "d")}
-                  </p>
+                  <div className="mb-1 flex justify-end">
+                    <span
+                      className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] ${
+                        isSameDay(day, new Date())
+                          ? "bg-accent font-semibold text-white dark:bg-accent-dark"
+                          : "text-ink-muted dark:text-ink-dark-muted"
+                      }`}
+                    >
+                      {format(day, "d")}
+                    </span>
+                  </div>
                   <div className="space-y-1">
                     {dayItems.map((item) => (
                       <Link

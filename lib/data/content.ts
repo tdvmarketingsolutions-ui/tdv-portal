@@ -78,6 +78,50 @@ export async function createContentItem(input: {
   return data as unknown as ContentItem;
 }
 
+/**
+ * Client-facing create: no companyId parameter, unlike createContentItem
+ * above (which admin uses to create for a client it explicitly picked).
+ * Resolves company_id from the caller's own profile, same pattern as
+ * createTicket in lib/data/tickets.ts — matches migration 0012's
+ * content_items_insert_client policy, which only allows a client to insert
+ * a row for their own company_id.
+ */
+export async function createContentItemForCurrentUser(input: {
+  title: string;
+  caption?: string;
+  channel: ContentChannel;
+  scheduledFor?: string;
+}): Promise<ContentItem> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Niet ingelogd.");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("company_id")
+    .eq("id", user.id)
+    .single();
+  if (!profile?.company_id) throw new Error("Geen bedrijf gekoppeld aan dit account.");
+
+  const { data, error } = await supabase
+    .from("content_items")
+    .insert({
+      company_id: profile.company_id,
+      title: input.title,
+      caption: input.caption ?? null,
+      channel: input.channel,
+      scheduled_for: input.scheduledFor ?? null,
+      created_by: user.id,
+    })
+    .select()
+    .single();
+
+  if (error) throw new Error(`Kon content-item niet aanmaken: ${error.message}`);
+  return data as unknown as ContentItem;
+}
+
 export async function updateContentItemStatus(id: string, status: ContentStatus): Promise<void> {
   const supabase = createClient();
   const { error } = await supabase.from("content_items").update({ status }).eq("id", id);
