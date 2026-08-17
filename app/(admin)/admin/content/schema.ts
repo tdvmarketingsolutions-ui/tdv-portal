@@ -11,3 +11,12 @@ export const newContentItemSchema = z.object({
 });
 
 export type NewContentItemFormValues = z.infer<typeof newContentItemSchema>;
+
+export const editContentItemSchema = z.object({
+  title: z.string().trim().min(1, "Titel is verplicht.").max(200),
+  caption: z.string().trim().max(2000).optional(),
+  channel: z.enum(CHANNELS),
+  scheduledFor: z.string().optional(),
+});
+
+export type EditContentItemFormValues = z.infer<typeof editContentItemSchema>;

@@ -48,8 +48,12 @@ van het systeem.
 - **Tickets**: lijst, nieuw, detail + reageren.
 - **Feedback & goedkeuring**: lijst, detail met versiehistoriek, preview en
   status-acties (goedkeuren/revisie vragen) — `lib/data/deliverables.ts`.
-- **Contentplanning**: lijst, detail, opmerkingen en status-acties —
-  `lib/data/content.ts`.
+- **Contentplanning**: maandkalender + lijst, detail met visual
+  (afbeelding/video), opmerkingen en de volledige statuslevenscyclus
+  (concept → wacht op goedkeuring → goedgekeurd/revisie → ingepland →
+  gepubliceerd) — klant keurt goed/vraagt revisie, staff beheert de rest
+  (aanmaken, bewerken, visual uploaden, status verzetten) vanaf
+  `/admin/content` — `lib/data/content.ts` + `lib/data/admin/content.ts`.
 - **Bestanden**: overzicht + upload naar de `client-files` Storage-bucket —
   `lib/data/files.ts`.
 - **Meldingen**: lijst, ongelezen-badge in de sidebar, alles-gelezen-actie —

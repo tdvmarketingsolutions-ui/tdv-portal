@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, format, isSameMonth, isSameDay, addMonths } from "date-fns";
 import { nl } from "date-fns/locale";
-import { ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
+import { ChevronLeft, ChevronRight, CalendarDays, ImageIcon } from "lucide-react";
 import { getContentItemsForCurrentUser } from "@/lib/data/content";
 import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -87,9 +87,10 @@ export default async function ContentPlanningPage({ searchParams }: { searchPara
                       <Link
                         key={item.id}
                         href={`/content-planning/${item.id}`}
-                        className="block truncate rounded-md bg-accent-soft px-1.5 py-0.5 text-[11px] text-accent hover:bg-accent/20 dark:bg-accent/15 dark:text-accent-dark"
+                        className="flex items-center gap-1 truncate rounded-md bg-accent-soft px-1.5 py-0.5 text-[11px] text-accent hover:bg-accent/20 dark:bg-accent/15 dark:text-accent-dark"
                       >
-                        {item.title}
+                        {item.visual_file_id && <ImageIcon size={10} strokeWidth={2} className="shrink-0" />}
+                        <span className="truncate">{item.title}</span>
                       </Link>
                     ))}
                   </div>

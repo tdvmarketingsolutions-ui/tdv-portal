@@ -2,7 +2,15 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import type { ContentChannel, ContentItem, ContentStatus } from "@/types/domain";
 
+export interface ContentVisual {
+  id: string;
+  storage_path: string;
+  file_name: string;
+  mime_type: string | null;
+}
+
 export interface ContentItemWithComments extends ContentItem {
+  visual: ContentVisual | null;
   content_item_comments: {
     id: string;
     content_item_id: string;
@@ -28,7 +36,9 @@ export async function getContentItemById(id: string): Promise<ContentItemWithCom
   const supabase = createClient();
   const { data, error } = await supabase
     .from("content_items")
-    .select(`*, content_item_comments (*, profiles ( full_name, avatar_url ))`)
+    .select(
+      `*, visual:files!content_items_visual_file_id_fkey ( id, storage_path, file_name, mime_type ), content_item_comments (*, profiles ( full_name, avatar_url ))`
+    )
     .eq("id", id)
     .maybeSingle();
 
