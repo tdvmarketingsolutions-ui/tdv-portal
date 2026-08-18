@@ -1,5 +1,6 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
+import { resolveListFilterCompanyId, resolveWriteCompanyId } from "@/lib/staff-view";
 import type { FileRecord } from "@/types/domain";
 import type { FileCategory } from "@/lib/file-category";
 
@@ -7,11 +8,18 @@ const STORAGE_BUCKET = "client-files";
 
 export async function getFilesForCurrentUser(): Promise<FileRecord[]> {
   const supabase = createClient();
-  const { data, error } = await supabase
-    .from("files")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { data: profile } = user
+    ? await supabase.from("profiles").select("role, company_id").eq("id", user.id).single()
+    : { data: null };
+  const viewCompanyId = resolveListFilterCompanyId(profile);
 
+  let query = supabase.from("files").select("*").order("created_at", { ascending: false });
+  if (viewCompanyId) query = query.eq("company_id", viewCompanyId);
+
+  const { data, error } = await query;
   if (error) throw new Error(`Kon bestanden niet laden: ${error.message}`);
   return (data ?? []) as unknown as FileRecord[];
 }
@@ -29,13 +37,14 @@ export async function uploadFile(input: {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("company_id")
+    .select("role, company_id")
     .eq("id", user.id)
     .single();
-  if (!profile?.company_id) throw new Error("Geen bedrijf gekoppeld aan dit account.");
+  const companyId = resolveWriteCompanyId(profile);
+  if (!companyId) throw new Error("Geen bedrijf gekoppeld aan dit account.");
 
   const safeName = input.file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
-  const storagePath = `${profile.company_id}/${input.category}/${Date.now()}-${safeName}`;
+  const storagePath = `${companyId}/${input.category}/${Date.now()}-${safeName}`;
 
   const { error: uploadError } = await supabase.storage
     .from(STORAGE_BUCKET)
@@ -45,7 +54,7 @@ export async function uploadFile(input: {
   const { data: record, error: insertError } = await supabase
     .from("files")
     .insert({
-      company_id: profile.company_id,
+      company_id: companyId,
       project_id: input.projectId ?? null,
       storage_path: storagePath,
       file_name: input.file.name,

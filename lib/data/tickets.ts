@@ -1,15 +1,23 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { createNotifications } from "@/lib/data/notifications";
+import { resolveListFilterCompanyId, resolveWriteCompanyId } from "@/lib/staff-view";
 import type { Ticket, TicketPriority, TicketWithMessages } from "@/types/domain";
 
 export async function getTicketsForCurrentUser(): Promise<Ticket[]> {
   const supabase = createClient();
-  const { data, error } = await supabase
-    .from("tickets")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { data: profile } = user
+    ? await supabase.from("profiles").select("role, company_id").eq("id", user.id).single()
+    : { data: null };
+  const viewCompanyId = resolveListFilterCompanyId(profile);
 
+  let query = supabase.from("tickets").select("*").order("created_at", { ascending: false });
+  if (viewCompanyId) query = query.eq("company_id", viewCompanyId);
+
+  const { data, error } = await query;
   if (error) throw new Error(`Kon aanvragen niet laden: ${error.message}`);
   return (data ?? []) as unknown as Ticket[];
 }
@@ -28,15 +36,16 @@ export async function createTicket(input: {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("company_id")
+    .select("role, company_id")
     .eq("id", user.id)
     .single();
-  if (!profile?.company_id) throw new Error("Geen bedrijf gekoppeld aan dit account.");
+  const companyId = resolveWriteCompanyId(profile);
+  if (!companyId) throw new Error("Geen bedrijf gekoppeld aan dit account.");
 
   const { data: ticket, error: ticketError } = await supabase
     .from("tickets")
     .insert({
-      company_id: profile.company_id,
+      company_id: companyId,
       project_id: input.projectId ?? null,
       subject: input.subject,
       priority: input.priority,

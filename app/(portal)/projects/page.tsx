@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PROJECT_STATUS_LABEL, PROJECT_STATUS_TONE } from "@/lib/project-status";
 import { PROJECT_REQUEST_STATUS_LABEL, PROJECT_REQUEST_STATUS_TONE } from "@/lib/project-request-status";
+import { isStaffRole, getStaffViewCompanyId } from "@/lib/staff-view";
 import { NewProjectRequestDialog } from "./NewProjectRequestDialog";
 import { ProjectRequestPriceCard } from "./ProjectRequestPriceCard";
 
@@ -18,16 +19,15 @@ export default async function ProjectsPage() {
   const { data: profile } = user
     ? await supabase.from("profiles").select("role").eq("id", user.id).single()
     : { data: null };
-  const isStaff = profile?.role === "tdv_admin" || profile?.role === "tdv_staff";
+  const isStaff = isStaffRole(profile?.role as string | null | undefined);
+  // "Project aanvragen" is a client-only action — staff can only use it once
+  // they've picked a company via the "Bekijk als klant" sidebar switcher
+  // (lib/staff-view.ts), which createProjectRequest then writes against.
+  const canActAsClient = !isStaff || getStaffViewCompanyId() !== null;
 
   const [projects, projectRequests] = await Promise.all([
     getProjectsForCurrentUser(),
-    // "Project aanvragen" is a client-only action (createProjectRequest resolves
-    // company_id from the caller's profile, which staff don't have) — staff
-    // manage project requests from /admin/projects instead, so skip loading them
-    // here (they'd see every company's requests via RLS, which isn't what this
-    // "Jouw aanvragen" section is for).
-    isStaff ? Promise.resolve([]) : getProjectRequestsForCurrentUser(),
+    canActAsClient ? getProjectRequestsForCurrentUser() : Promise.resolve([]),
   ]);
 
   return (
@@ -37,11 +37,11 @@ export default async function ProjectsPage() {
           <h1 className="font-display text-2xl font-semibold">Projecten</h1>
           <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
             {isStaff
-              ? "Alle projecten, per klant. Nieuwe projectaanvragen beheer je vanaf /admin/projects."
+              ? "Alle projecten, per klant. Kies links \"Bekijk als klant\" om een aanvraag te testen, of beheer aanvragen vanaf /admin/projects."
               : "Alle projecten die TDV voor jouw bedrijf uitvoert."}
           </p>
         </div>
-        {!isStaff && <NewProjectRequestDialog />}
+        {canActAsClient && <NewProjectRequestDialog />}
       </header>
 
       {projectRequests.length > 0 && (

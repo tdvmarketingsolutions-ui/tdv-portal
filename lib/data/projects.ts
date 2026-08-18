@@ -1,5 +1,6 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
+import { resolveListFilterCompanyId } from "@/lib/staff-view";
 import type { Project, ProjectWithRelations } from "@/types/domain";
 
 /**
@@ -7,15 +8,25 @@ import type { Project, ProjectWithRelations } from "@/types/domain";
  * parameter from the caller. RLS policies (see supabase/migrations/0001_init.sql)
  * already scope every query to the signed-in user's company, so there is no
  * "which tenant" decision to get wrong in application code.
+ *
+ * The one exception is the optional "Bekijk als klant" narrowing below
+ * (lib/staff-view.ts) — staff-only, never widens access, see that file.
  */
 
 export async function getProjectsForCurrentUser(): Promise<Project[]> {
   const supabase = createClient();
-  const { data, error } = await supabase
-    .from("projects")
-    .select("*")
-    .order("deadline", { ascending: true, nullsFirst: false });
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { data: profile } = user
+    ? await supabase.from("profiles").select("role, company_id").eq("id", user.id).single()
+    : { data: null };
+  const viewCompanyId = resolveListFilterCompanyId(profile);
 
+  let query = supabase.from("projects").select("*").order("deadline", { ascending: true, nullsFirst: false });
+  if (viewCompanyId) query = query.eq("company_id", viewCompanyId);
+
+  const { data, error } = await query;
   if (error) throw new Error(`Kon projecten niet laden: ${error.message}`);
   return (data ?? []) as unknown as Project[];
 }

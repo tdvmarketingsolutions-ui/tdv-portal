@@ -1,6 +1,7 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { assertTdvStaff } from "@/lib/auth/assert-staff";
+import { resolveListFilterCompanyId, resolveWriteCompanyId } from "@/lib/staff-view";
 import type { ContentChannel, ContentItem, ContentStatus } from "@/types/domain";
 
 export interface ContentVisual {
@@ -29,11 +30,21 @@ export interface ContentItemWithComments extends ContentItem {
 
 export async function getContentItemsForCurrentUser(): Promise<ContentItemWithCompany[]> {
   const supabase = createClient();
-  const { data, error } = await supabase
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { data: profile } = user
+    ? await supabase.from("profiles").select("role, company_id").eq("id", user.id).single()
+    : { data: null };
+  const viewCompanyId = resolveListFilterCompanyId(profile);
+
+  let query = supabase
     .from("content_items")
     .select("*, companies ( name ), visual:files!content_items_visual_file_id_fkey ( id, file_name )")
     .order("scheduled_for", { ascending: true, nullsFirst: false });
+  if (viewCompanyId) query = query.eq("company_id", viewCompanyId);
 
+  const { data, error } = await query;
   if (error) throw new Error(`Kon contentplanning niet laden: ${error.message}`);
   return (data ?? []) as unknown as ContentItemWithCompany[];
 }
@@ -107,15 +118,16 @@ export async function createContentItemForCurrentUser(input: {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("company_id")
+    .select("role, company_id")
     .eq("id", user.id)
     .single();
-  if (!profile?.company_id) throw new Error("Geen bedrijf gekoppeld aan dit account.");
+  const companyId = resolveWriteCompanyId(profile);
+  if (!companyId) throw new Error("Geen bedrijf gekoppeld aan dit account.");
 
   const { data, error } = await supabase
     .from("content_items")
     .insert({
-      company_id: profile.company_id,
+      company_id: companyId,
       title: input.title,
       caption: input.caption ?? null,
       channel: input.channel,

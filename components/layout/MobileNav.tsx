@@ -6,6 +6,7 @@ import { Menu, X } from "lucide-react";
 import { AccountMenu } from "@/components/layout/AccountMenu";
 import { NavLinks } from "@/components/layout/NavLinks";
 import { NotificationBell } from "@/components/layout/NotificationBell";
+import { StaffViewSwitcher } from "@/components/layout/StaffViewSwitcher";
 
 export function MobileNav({
   variant,
@@ -17,6 +18,7 @@ export function MobileNav({
   unreadCount,
   accountHref,
   settingsHref,
+  staffView,
 }: {
   variant: "portal" | "admin";
   title: string;
@@ -27,6 +29,7 @@ export function MobileNav({
   unreadCount?: number;
   accountHref?: string;
   settingsHref?: string;
+  staffView?: { companies: { id: string; name: string }[]; currentCompanyId: string | null } | null;
 }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -104,6 +107,12 @@ export function MobileNav({
             </div>
 
             <NavLinks variant={variant} onNavigate={() => setOpen(false)} />
+
+            {staffView && (
+              <div className="mt-4 border-t border-border pt-4 dark:border-border-dark">
+                <StaffViewSwitcher companies={staffView.companies} currentCompanyId={staffView.currentCompanyId} />
+              </div>
+            )}
 
             <div className="mt-4 border-t border-border pt-4 dark:border-border-dark">
               <AccountMenu email={userEmail} fullName={fullName} accountHref={accountHref} settingsHref={settingsHref} />
