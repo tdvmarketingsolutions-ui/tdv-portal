@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FolderKanban } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 import { getProjectsForCurrentUser } from "@/lib/data/projects";
 import { getProjectRequestsForCurrentUser } from "@/lib/data/project-requests";
 import { Badge } from "@/components/ui/Badge";
@@ -10,9 +11,23 @@ import { NewProjectRequestDialog } from "./NewProjectRequestDialog";
 import { ProjectRequestPriceCard } from "./ProjectRequestPriceCard";
 
 export default async function ProjectsPage() {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { data: profile } = user
+    ? await supabase.from("profiles").select("role").eq("id", user.id).single()
+    : { data: null };
+  const isStaff = profile?.role === "tdv_admin" || profile?.role === "tdv_staff";
+
   const [projects, projectRequests] = await Promise.all([
     getProjectsForCurrentUser(),
-    getProjectRequestsForCurrentUser(),
+    // "Project aanvragen" is a client-only action (createProjectRequest resolves
+    // company_id from the caller's profile, which staff don't have) — staff
+    // manage project requests from /admin/projects instead, so skip loading them
+    // here (they'd see every company's requests via RLS, which isn't what this
+    // "Jouw aanvragen" section is for).
+    isStaff ? Promise.resolve([]) : getProjectRequestsForCurrentUser(),
   ]);
 
   return (
@@ -21,10 +36,12 @@ export default async function ProjectsPage() {
         <div>
           <h1 className="font-display text-2xl font-semibold">Projecten</h1>
           <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
-            Alle projecten die TDV voor jouw bedrijf uitvoert.
+            {isStaff
+              ? "Alle projecten, per klant. Nieuwe projectaanvragen beheer je vanaf /admin/projects."
+              : "Alle projecten die TDV voor jouw bedrijf uitvoert."}
           </p>
         </div>
-        <NewProjectRequestDialog />
+        {!isStaff && <NewProjectRequestDialog />}
       </header>
 
       {projectRequests.length > 0 && (
