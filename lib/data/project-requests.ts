@@ -30,10 +30,10 @@ export async function getProjectRequestsForCurrentUser(): Promise<ProjectRequest
  * client to insert a row for their own company_id. Staff with no company of
  * their own fall back to their "Bekijk als klant" pick (lib/staff-view.ts).
  *
- * The AI indicative price (migration 0016) is generated right after the
+ * The AI price proposal (migration 0016) is generated right after the
  * insert and is best-effort: if it fails, the row is simply left with
- * price_response 'pending' and no range — the client sees a plain "wacht op
- * offerte" status instead of a price prompt, and staff proceeds manually.
+ * price_response 'pending' and no range — the client sees a plain status
+ * instead of a price prompt, and staff proceeds manually.
  */
 export async function createProjectRequest(input: { title: string; description?: string }): Promise<void> {
   const supabase = createClient();
@@ -86,13 +86,13 @@ export async function createProjectRequest(input: { title: string; description?:
  * Writes through the respond_to_project_request_price RPC (migration 0016)
  * rather than a direct .update() — see that migration for why a plain client
  * UPDATE policy isn't safe here. Notifies staff either way: accepted means
- * "go prepare the real quote", declined means the request is dead and staff
- * shouldn't keep working on it.
+ * "start preparing this project", declined means the request is dead and
+ * staff shouldn't keep working on it.
  */
 export async function respondToProjectRequestPrice(requestId: string, accepted: boolean): Promise<void> {
   const supabase = createClient();
   const { error } = await supabase.rpc("respond_to_project_request_price", { request_id: requestId, accepted });
-  if (error) throw new Error(`Kon niet reageren op de richtprijs: ${error.message}`);
+  if (error) throw new Error(`Kon niet reageren op het prijsvoorstel: ${error.message}`);
 
   const { data: requestData } = await supabase.from("project_requests").select("title").eq("id", requestId).single();
   const title = (requestData as { title: string } | null)?.title ?? "een projectaanvraag";
@@ -102,10 +102,10 @@ export async function respondToProjectRequestPrice(requestId: string, accepted: 
     ((staff ?? []) as { id: string }[]).map((s) => ({
       recipientId: s.id,
       type: "approval",
-      title: `Richtprijs ${accepted ? "geaccepteerd" : "geweigerd"}: ${title}`,
+      title: `Prijsvoorstel ${accepted ? "aanvaard" : "geweigerd"}: ${title}`,
       body: accepted
-        ? "De klant ging akkoord met de richtprijs — bereid de offerte voor."
-        : "De klant ging niet akkoord met de richtprijs. De aanvraag is geweigerd.",
+        ? "De klant aanvaardde het prijsvoorstel — start de voorbereiding."
+        : "De klant weigerde het prijsvoorstel. De aanvraag is geweigerd.",
       linkPath: "/admin/projects",
     }))
   );

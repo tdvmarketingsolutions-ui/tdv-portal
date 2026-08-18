@@ -6,13 +6,14 @@ export interface IndicativePrice {
 }
 
 /**
- * Best-effort AI price estimate shown to the client right after they submit
- * a project request — always paired with a disclaimer that it's not the real
- * offerte (that still follows by e-mail from staff). Calls the Anthropic
- * Messages API directly, same as app/api/ai/chat/route.ts, so no extra SDK
- * dependency. Never throws: a missing API key, a malformed response, or a
- * failed call all just mean no indicative price is shown, and
- * createProjectRequest carries on without one.
+ * AI-generated price proposal shown to the client right after they submit a
+ * project request — this IS the price TDV gives them in the app (the client
+ * accepts or declines it directly, no separate human-prepared quote by
+ * e-mail follows). Calls the Anthropic Messages API directly, same as
+ * app/api/ai/chat/route.ts, so no extra SDK dependency. Never throws: a
+ * missing API key, a malformed response, or a failed call all just mean no
+ * price is shown, and createProjectRequest carries on without one — staff
+ * then follows up manually.
  */
 export async function generateIndicativePrice(
   title: string,
@@ -32,13 +33,13 @@ export async function generateIndicativePrice(
         model: "claude-sonnet-4-6",
         max_tokens: 200,
         system:
-          'Je bent een prijsinschatter voor TDV, een marketingbureau in België. Op basis van een korte ' +
-          'projectomschrijving geef je een ruwe richtprijs in euro voor de Belgische markt. ' +
-          'TDV positioneert zich als premium bureau: reken aan het hogere, realistische uiteinde van wat ' +
-          'gelijkaardig werk in België kost, nooit aan het laagste/budget-uiteinde — deze richtprijs is een ' +
-          'ondergrens voor de daadwerkelijke offerte, dus onderschat de omvang en waarde van het werk niet. ' +
-          'Antwoord UITSLUITEND met geldige JSON, exact in dit formaat, geen andere tekst: ' +
-          '{"range": "€1.500 – €3.000", "note": "één korte Nederlandstalige zin die duidelijk maakt dat dit een automatische inschatting is, geen offerte"}',
+          'Je bent de prijsbepaler voor TDV, een marketingbureau in België. Op basis van een korte ' +
+          'projectomschrijving bepaal je de prijs die TDV de klant voorstelt voor dit project, in euro. ' +
+          'Dit is geen vrijblijvende schatting maar het effectieve prijsvoorstel dat de klant meteen te zien ' +
+          'krijgt en kan aanvaarden — reken daarom niet te krap. TDV positioneert zich als premium bureau: ' +
+          'reken aan het hogere, realistische uiteinde van wat gelijkaardig werk in België kost, nooit aan het ' +
+          'laagste/budget-uiteinde. Antwoord UITSLUITEND met geldige JSON, exact in dit formaat, geen andere ' +
+          'tekst: {"range": "€1.500 – €3.000", "note": "één korte Nederlandstalige zin die kort toelicht waarop dit prijsvoorstel gebaseerd is"}',
         messages: [
           {
             role: "user",

@@ -30,7 +30,7 @@ export async function respondToProjectRequestPriceAction(
   try {
     await respondToProjectRequestPrice(requestId, accepted);
   } catch (err) {
-    return { error: err instanceof Error ? err.message : "Kon niet reageren op de richtprijs." };
+    return { error: err instanceof Error ? err.message : "Kon niet reageren op het prijsvoorstel." };
   }
 
   revalidatePath("/projects");
