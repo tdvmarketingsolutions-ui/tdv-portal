@@ -20,8 +20,8 @@ export default async function AdminProjectsPage() {
       <section className="space-y-3">
         <h1 className="font-display text-2xl font-semibold">Projectaanvragen</h1>
         <p className="text-sm text-ink-muted dark:text-ink-dark-muted">
-          Klanten vragen hier nieuwe projecten aan. Zet de status door zodra de offerte per e-mail verstuurd is en
-          maak hieronder het echte project aan wanneer de klant akkoord gaat.
+          Klanten vragen hier nieuwe projecten aan; de AI stelt meteen een prijs voor die de klant aanvaardt of
+          weigert. Maak hieronder het echte project aan wanneer de klant akkoord gaat.
         </p>
         {projectRequests.length === 0 ? (
           <EmptyState icon={Inbox} title="Nog geen projectaanvragen" description="Zodra een klant een project aanvraagt, verschijnt het hier." />
@@ -30,7 +30,7 @@ export default async function AdminProjectsPage() {
             <Table.Head>
               <Table.HeadCell>Titel</Table.HeadCell>
               <Table.HeadCell>Klant</Table.HeadCell>
-              <Table.HeadCell>Richtprijs (AI)</Table.HeadCell>
+              <Table.HeadCell>Prijsvoorstel (AI)</Table.HeadCell>
               <Table.HeadCell>Aangevraagd</Table.HeadCell>
               <Table.HeadCell>Status</Table.HeadCell>
             </Table.Head>

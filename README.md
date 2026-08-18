@@ -50,14 +50,15 @@ van het systeem.
   `lib/data/tickets.ts` ook): lijst, nieuw, detail + reageren.
 - **Projectaanvragen**: lichte statustracker naast de gewone aanvragen — een
   klant vraagt een nieuw project aan (`/projects` → "Project aanvragen").
-  Meteen daarna genereert de AI-assistent een richtprijs (`lib/ai/indicative-price.ts`,
-  Anthropic Messages API, best-effort — geen richtprijs = gewoon geen prompt),
-  die de klant expliciet moet accepteren of weigeren; accepteren zet de
-  aanvraag automatisch op "wacht op offerte" (staff bereidt de échte offerte
-  per e-mail voor), weigeren op "geweigerd". Staff kan de status ook altijd
-  handmatig doorzetten. Geen bedragen, items of PDF's in de app: dit is en
-  blijft een indicatie, geen offerte — `lib/data/project-requests.ts` +
-  `lib/data/admin/project-requests.ts`. De accepteer/weiger-write loopt via
+  Meteen daarna bepaalt de AI-assistent een prijsvoorstel
+  (`lib/ai/indicative-price.ts`, Anthropic Messages API, best-effort — geen
+  API-key of mislukte call = gewoon geen prijsvoorstel) dat effectief als
+  prijs aan de klant getoond wordt, niet enkel als vrijblijvende schatting.
+  De klant moet dat expliciet aanvaarden of weigeren; aanvaarden zet de
+  aanvraag automatisch op "wordt opgestart" (staff bereidt het project
+  voor), weigeren op "geweigerd". Staff kan de status ook altijd handmatig
+  doorzetten. Nog geen line-items of PDF's in de app — `lib/data/project-requests.ts`
+  + `lib/data/admin/project-requests.ts`. De aanvaard/weiger-write loopt via
   de `respond_to_project_request_price` Postgres-functie (migratie 0016) in
   plaats van een client-UPDATE-policy, zodat een klant nooit iets anders dan
   die ene beslissing kan wijzigen.

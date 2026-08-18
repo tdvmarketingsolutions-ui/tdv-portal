@@ -40,7 +40,7 @@ export async function updateProjectRequestStatusAdmin(id: string, status: Projec
 
   const STATUS_MESSAGE: Record<ProjectRequestStatus, string> = {
     requested: "is opnieuw geopend",
-    awaiting_quote: "wordt voorbereid — je ontvangt een offerte per e-mail",
+    awaiting_quote: "is aanvaard — TDV start de voorbereiding op",
     project_active: "is goedgekeurd, het project is actief",
     declined: "wordt niet uitgevoerd",
   };

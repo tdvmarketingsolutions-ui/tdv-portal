@@ -22,7 +22,7 @@ export function ProjectRequestPriceCard({ request }: { request: ProjectRequest }
       push(result.error, "error");
       return;
     }
-    push(accepted ? "Bedankt! TDV bereidt de offerte voor." : "Aanvraag geweigerd.");
+    push(accepted ? "Bedankt! TDV start de voorbereiding van je project." : "Aanvraag geweigerd.");
     router.refresh();
   }
 
@@ -37,12 +37,12 @@ export function ProjectRequestPriceCard({ request }: { request: ProjectRequest }
       <div className="flex items-start gap-2 rounded-lg bg-canvas p-3 text-sm dark:bg-canvas-dark">
         <Sparkles size={16} strokeWidth={1.75} className="mt-0.5 shrink-0 text-accent" />
         <div>
-          <p className="font-medium">Richtprijs: {request.indicative_price_range}</p>
+          <p className="font-medium">Prijsvoorstel: {request.indicative_price_range}</p>
           <p className="mt-0.5 text-ink-muted dark:text-ink-dark-muted">{request.indicative_price_note}</p>
         </div>
       </div>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-ink-muted dark:text-ink-dark-muted">Wenst u door te gaan met deze richtprijs?</p>
+        <p className="text-sm text-ink-muted dark:text-ink-dark-muted">Wenst u door te gaan met dit prijsvoorstel?</p>
         <div className="flex gap-2">
           <Button type="button" variant="secondary" onClick={() => respond(false)} loading={loading === "decline"} disabled={loading !== null}>
             Niet akkoord

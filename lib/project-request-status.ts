@@ -3,7 +3,7 @@ import type { BadgeTone } from "@/components/ui/Badge";
 
 export const PROJECT_REQUEST_STATUS_LABEL: Record<ProjectRequestStatus, string> = {
   requested: "Aangevraagd",
-  awaiting_quote: "Wacht op offerte",
+  awaiting_quote: "Wordt opgestart",
   project_active: "Project actief",
   declined: "Geweigerd",
 };

@@ -30,7 +30,7 @@ export function NewProjectRequestDialog() {
       push(result.error, "error");
       return;
     }
-    push("Projectaanvraag verstuurd — je ontvangt een offerte per e-mail.");
+    push("Projectaanvraag verstuurd — je krijgt meteen een prijsvoorstel te zien.");
     reset();
     setOpen(false);
     router.refresh();
@@ -46,7 +46,7 @@ export function NewProjectRequestDialog() {
       <Dialog open={open} onClose={() => setOpen(false)} title="Project aanvragen">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
           <p className="text-sm text-ink-muted dark:text-ink-dark-muted">
-            Beschrijf kort wat je nodig hebt. TDV neemt contact op en stuurt een offerte per e-mail.
+            Beschrijf kort wat je nodig hebt. Je krijgt meteen een prijsvoorstel van TDV te zien.
           </p>
           <Input label="Titel" placeholder="Bv. Nieuwe website" error={errors.title?.message} {...register("title")} />
           <Textarea label="Beschrijving (optioneel)" rows={4} error={errors.description?.message} {...register("description")} />
