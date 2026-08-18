@@ -17,7 +17,7 @@ export function Sidebar({
   staffView?: { companies: { id: string; name: string }[]; currentCompanyId: string | null } | null;
 }) {
   return (
-    <aside className="hidden w-60 shrink-0 flex-col border-r border-border bg-surface px-3 py-6 dark:border-border-dark dark:bg-surface-dark md:flex">
+    <aside className="hidden w-60 shrink-0 flex-col overflow-y-auto border-r border-border bg-surface px-3 py-6 dark:border-border-dark dark:bg-surface-dark md:sticky md:top-0 md:flex md:h-screen">
       <div className="mb-8 flex items-center justify-between px-3">
         <div>
           <span className="font-display text-lg font-semibold">TDV</span>
