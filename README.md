@@ -92,6 +92,13 @@ van het systeem.
 - **Admin**: layout met dubbele rolcheck (middleware + layout zelf), en CRUD
   voor klanten, projecten, aanvragen, content en gebruikers, plus
   AI-activiteit en instellingen.
+- **"Bekijk als klant"**: staff heeft geen eigen `company_id`, dus klant-only
+  acties (project aanvragen, aanvraag/content aanmaken, bestand uploaden)
+  kunnen normaal niet vanaf een staff-account. Via de sidebar kiest staff
+  een klant en de portal-pagina's tonen en gedragen zich dan als die klant —
+  zonder uit- en opnieuw inloggen. Puur een UI-cookie (`lib/staff-view.ts`);
+  RLS geeft staff sowieso al volledige toegang tot elke klant, dus dit
+  vergroot niets, het schakelt enkel een bestaand write-pad in de UI in.
 
 ## Wat nog moet worden bijgebouwd
 

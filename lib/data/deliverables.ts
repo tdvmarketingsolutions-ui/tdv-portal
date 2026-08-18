@@ -1,5 +1,6 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
+import { resolveListFilterCompanyId } from "@/lib/staff-view";
 import type { Deliverable, DeliverableVersion, DeliverableComment, FeedbackStatus } from "@/types/domain";
 
 export interface DeliverableSummary extends Deliverable {
@@ -19,11 +20,24 @@ export interface DeliverableWithVersions extends Deliverable {
 
 export async function getDeliverablesForCurrentUser(): Promise<DeliverableSummary[]> {
   const supabase = createClient();
-  const { data, error } = await supabase
-    .from("deliverables")
-    .select(`*, projects ( name ), deliverable_versions ( id, version_number, status )`)
-    .order("created_at", { ascending: false });
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { data: profile } = user
+    ? await supabase.from("profiles").select("role, company_id").eq("id", user.id).single()
+    : { data: null };
+  const viewCompanyId = resolveListFilterCompanyId(profile);
 
+  // `!inner` so a "Bekijk als klant" filter on the joined project's
+  // company_id is possible — harmless when no filter is applied below, since
+  // every deliverable has a project (project_id is a required FK).
+  let query = supabase
+    .from("deliverables")
+    .select(`*, projects!inner ( name, company_id ), deliverable_versions ( id, version_number, status )`)
+    .order("created_at", { ascending: false });
+  if (viewCompanyId) query = query.eq("projects.company_id", viewCompanyId);
+
+  const { data, error } = await query;
   if (error) throw new Error(`Kon feedback niet laden: ${error.message}`);
   return (data ?? []) as unknown as DeliverableSummary[];
 }

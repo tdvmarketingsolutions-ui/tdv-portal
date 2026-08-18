@@ -2,15 +2,23 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { createNotifications } from "@/lib/data/notifications";
 import { generateIndicativePrice } from "@/lib/ai/indicative-price";
+import { resolveListFilterCompanyId, resolveWriteCompanyId } from "@/lib/staff-view";
 import type { ProjectRequest } from "@/types/domain";
 
 export async function getProjectRequestsForCurrentUser(): Promise<ProjectRequest[]> {
   const supabase = createClient();
-  const { data, error } = await supabase
-    .from("project_requests")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { data: profile } = user
+    ? await supabase.from("profiles").select("role, company_id").eq("id", user.id).single()
+    : { data: null };
+  const viewCompanyId = resolveListFilterCompanyId(profile);
 
+  let query = supabase.from("project_requests").select("*").order("created_at", { ascending: false });
+  if (viewCompanyId) query = query.eq("company_id", viewCompanyId);
+
+  const { data, error } = await query;
   if (error) throw new Error(`Kon projectaanvragen niet laden: ${error.message}`);
   return (data ?? []) as unknown as ProjectRequest[];
 }
@@ -19,7 +27,8 @@ export async function getProjectRequestsForCurrentUser(): Promise<ProjectRequest
  * No companyId parameter — resolves it from the caller's own profile, same
  * pattern as createTicket/createContentItemForCurrentUser. Matches the
  * project_requests_insert policy (migration 0015), which only allows a
- * client to insert a row for their own company_id.
+ * client to insert a row for their own company_id. Staff with no company of
+ * their own fall back to their "Bekijk als klant" pick (lib/staff-view.ts).
  *
  * The AI indicative price (migration 0016) is generated right after the
  * insert and is best-effort: if it fails, the row is simply left with
@@ -35,15 +44,16 @@ export async function createProjectRequest(input: { title: string; description?:
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("company_id")
+    .select("role, company_id")
     .eq("id", user.id)
     .single();
-  if (!profile?.company_id) throw new Error("Geen bedrijf gekoppeld aan dit account.");
+  const companyId = resolveWriteCompanyId(profile);
+  if (!companyId) throw new Error("Geen bedrijf gekoppeld aan dit account.");
 
   const { data: inserted, error } = await supabase
     .from("project_requests")
     .insert({
-      company_id: profile.company_id,
+      company_id: companyId,
       title: input.title,
       description: input.description ?? null,
       requested_by: user.id,
