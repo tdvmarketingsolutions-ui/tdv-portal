@@ -57,6 +57,7 @@ export interface ProjectWithRelations extends Project {
 }
 
 export type ProjectRequestStatus = "requested" | "awaiting_quote" | "project_active" | "declined";
+export type ProjectRequestPriceResponse = "pending" | "accepted" | "declined";
 
 export interface ProjectRequest {
   id: string;
@@ -65,6 +66,9 @@ export interface ProjectRequest {
   description: string | null;
   status: ProjectRequestStatus;
   requested_by: string;
+  indicative_price_range: string | null;
+  indicative_price_note: string | null;
+  price_response: ProjectRequestPriceResponse;
   created_at: string;
   updated_at: string;
 }

@@ -30,6 +30,7 @@ export default async function AdminProjectsPage() {
             <Table.Head>
               <Table.HeadCell>Titel</Table.HeadCell>
               <Table.HeadCell>Klant</Table.HeadCell>
+              <Table.HeadCell>Richtprijs (AI)</Table.HeadCell>
               <Table.HeadCell>Aangevraagd</Table.HeadCell>
               <Table.HeadCell>Status</Table.HeadCell>
             </Table.Head>
@@ -43,6 +44,22 @@ export default async function AdminProjectsPage() {
                     )}
                   </Table.Cell>
                   <Table.Cell>{r.companies?.name ?? "—"}</Table.Cell>
+                  <Table.Cell>
+                    {r.indicative_price_range ? (
+                      <>
+                        <p>{r.indicative_price_range}</p>
+                        <p className="mt-0.5 text-xs text-ink-muted dark:text-ink-dark-muted">
+                          {r.price_response === "pending"
+                            ? "Wacht op klant"
+                            : r.price_response === "accepted"
+                              ? "Klant akkoord"
+                              : "Klant niet akkoord"}
+                        </p>
+                      </>
+                    ) : (
+                      "—"
+                    )}
+                  </Table.Cell>
                   <Table.Cell>{new Date(r.created_at).toLocaleDateString("nl-BE")}</Table.Cell>
                   <Table.Cell>
                     <ProjectRequestStatusSelect requestId={r.id} status={r.status} />
