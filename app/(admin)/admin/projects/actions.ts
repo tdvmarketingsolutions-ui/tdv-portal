@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { createProjectAdmin, updateProjectStatusAdmin } from "@/lib/data/admin/projects";
-import type { ProjectStatus } from "@/types/domain";
+import { updateProjectRequestStatusAdmin } from "@/lib/data/admin/project-requests";
+import type { ProjectStatus, ProjectRequestStatus } from "@/types/domain";
 import { newProjectSchema, type NewProjectFormValues } from "./schema";
 
 export async function createProjectAction(input: NewProjectFormValues): Promise<{ error?: string }> {
@@ -32,6 +33,20 @@ export async function updateProjectStatusAction(
 ): Promise<{ error?: string }> {
   try {
     await updateProjectStatusAdmin(projectId, status);
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Kon status niet bijwerken." };
+  }
+
+  revalidatePath("/admin/projects");
+  return {};
+}
+
+export async function updateProjectRequestStatusAction(
+  requestId: string,
+  status: ProjectRequestStatus
+): Promise<{ error?: string }> {
+  try {
+    await updateProjectRequestStatusAdmin(requestId, status);
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Kon status niet bijwerken." };
   }

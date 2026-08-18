@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Ticket as TicketIcon } from "lucide-react";
+import { Inbox } from "lucide-react";
 import { getAllTicketsForAdmin } from "@/lib/data/admin/tickets";
 import { Table } from "@/components/ui/Table";
 import { Badge } from "@/components/ui/Badge";
@@ -13,12 +13,12 @@ export default async function AdminTicketsPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="font-display text-2xl font-semibold">Tickets</h1>
-        <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">Alle tickets, over alle klanten heen.</p>
+        <h1 className="font-display text-2xl font-semibold">Aanvragen</h1>
+        <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">Alle aanvragen, over alle klanten heen.</p>
       </header>
 
       {tickets.length === 0 ? (
-        <EmptyState icon={TicketIcon} title="Geen tickets" description="Er zijn nog geen tickets binnengekomen." />
+        <EmptyState icon={Inbox} title="Geen aanvragen" description="Er zijn nog geen aanvragen binnengekomen." />
       ) : (
         <Table>
           <Table.Head>
@@ -31,7 +31,7 @@ export default async function AdminTicketsPage() {
             {tickets.map((t) => (
               <Table.Row key={t.id}>
                 <Table.Cell>
-                  <Link href={`/tickets/${t.id}`} className="font-medium hover:underline">
+                  <Link href={`/aanvragen/${t.id}`} className="font-medium hover:underline">
                     {t.subject}
                   </Link>
                 </Table.Cell>

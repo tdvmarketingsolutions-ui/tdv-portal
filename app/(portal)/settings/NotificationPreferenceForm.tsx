@@ -35,7 +35,7 @@ export function NotificationPreferenceForm({ emailNotifications }: { emailNotifi
         disabled={loading}
         className="h-4 w-4 rounded border-border text-accent focus:ring-accent disabled:opacity-60 dark:border-border-dark"
       />
-      E-mail me bij nieuwe meldingen (nieuwe ticketberichten, content die goedkeuring nodig heeft)
+      E-mail me bij nieuwe meldingen (nieuwe berichten bij aanvragen, content die goedkeuring nodig heeft)
     </label>
   );
 }

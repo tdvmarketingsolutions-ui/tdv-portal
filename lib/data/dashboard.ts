@@ -53,6 +53,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     waitingTicketsRes,
     staffOpenTicketsRes,
     staffApprovedContentRes,
+    staffNewProjectRequestsRes,
     projectCommentsRes,
     ticketMessagesRes,
     deliverableCommentsRes,
@@ -80,6 +81,9 @@ export async function getDashboardData(): Promise<DashboardData> {
       : Promise.resolve({ data: [], error: null }),
     isStaff
       ? supabase.from("content_items").select("id, title, companies ( name )").eq("status", "approved")
+      : Promise.resolve({ data: [], error: null }),
+    isStaff
+      ? supabase.from("project_requests").select("id, title, companies ( name )").eq("status", "requested")
       : Promise.resolve({ data: [], error: null }),
     // Recent activity feed — same four sources for everyone, RLS already
     // scopes each to what the caller may see.
@@ -139,7 +143,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       id: `ticket-${t.id}`,
       label: t.subject,
       meta: "Wacht op jouw antwoord",
-      href: `/tickets/${t.id}`,
+      href: `/aanvragen/${t.id}`,
     });
   }
   for (const t of (staffOpenTicketsRes.data ?? []) as unknown as {
@@ -151,8 +155,8 @@ export async function getDashboardData(): Promise<DashboardData> {
     attentionItems.push({
       id: `staff-ticket-${t.id}`,
       label: t.subject,
-      meta: `${t.status === "new" ? "Nieuw ticket" : "In behandeling"}${t.companies?.name ? ` — ${t.companies.name}` : ""}`,
-      href: `/tickets/${t.id}`,
+      meta: `${t.status === "new" ? "Nieuwe aanvraag" : "In behandeling"}${t.companies?.name ? ` — ${t.companies.name}` : ""}`,
+      href: `/aanvragen/${t.id}`,
     });
   }
   for (const c of (staffApprovedContentRes.data ?? []) as unknown as {
@@ -165,6 +169,18 @@ export async function getDashboardData(): Promise<DashboardData> {
       label: c.title,
       meta: `Klaar om in te plannen${c.companies?.name ? ` — ${c.companies.name}` : ""}`,
       href: `/content-planning/${c.id}`,
+    });
+  }
+  for (const r of (staffNewProjectRequestsRes.data ?? []) as unknown as {
+    id: string;
+    title: string;
+    companies: { name: string } | null;
+  }[]) {
+    attentionItems.push({
+      id: `staff-project-request-${r.id}`,
+      label: r.title,
+      meta: `Nieuwe projectaanvraag${r.companies?.name ? ` — ${r.companies.name}` : ""}`,
+      href: "/admin/projects",
     });
   }
 
@@ -200,8 +216,8 @@ export async function getDashboardData(): Promise<DashboardData> {
       body: m.body,
       authorName: m.profiles?.full_name ?? "Onbekend",
       createdAt: m.created_at,
-      contextLabel: `Ticket — ${m.tickets?.subject ?? "onbekend"}`,
-      href: `/tickets/${m.ticket_id}`,
+      contextLabel: `Aanvraag — ${m.tickets?.subject ?? "onbekend"}`,
+      href: `/aanvragen/${m.ticket_id}`,
     });
   }
   for (const c of (deliverableCommentsRes.data ?? []) as unknown as {

@@ -14,6 +14,6 @@ export async function updateTicketStatusAction(
     return { error: err instanceof Error ? err.message : "Kon status niet bijwerken." };
   }
 
-  revalidatePath("/admin/tickets");
+  revalidatePath("/admin/aanvragen");
   return {};
 }

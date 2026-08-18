@@ -10,7 +10,7 @@ export async function getTicketsForCurrentUser(): Promise<Ticket[]> {
     .select("*")
     .order("created_at", { ascending: false });
 
-  if (error) throw new Error(`Kon tickets niet laden: ${error.message}`);
+  if (error) throw new Error(`Kon aanvragen niet laden: ${error.message}`);
   return (data ?? []) as unknown as Ticket[];
 }
 
@@ -45,7 +45,7 @@ export async function createTicket(input: {
     .select()
     .single();
 
-  if (ticketError) throw new Error(`Kon ticket niet aanmaken: ${ticketError.message}`);
+  if (ticketError) throw new Error(`Kon aanvraag niet aanmaken: ${ticketError.message}`);
 
   const { error: messageError } = await supabase
     .from("ticket_messages")
@@ -53,17 +53,17 @@ export async function createTicket(input: {
 
   if (messageError) throw new Error(`Kon eerste bericht niet opslaan: ${messageError.message}`);
 
-  // New tickets have no assignee yet, so there's no single staff recipient
+  // New requests have no assignee yet, so there's no single staff recipient
   // to notify — tell everyone on TDV's side instead, same as an unassigned
-  // ticket showing up in /admin/tickets for anyone to pick up.
+  // request showing up in /admin/aanvragen for anyone to pick up.
   const { data: staff } = await supabase.from("profiles").select("id").in("role", ["tdv_admin", "tdv_staff"]);
   await createNotifications(
     ((staff ?? []) as { id: string }[]).map((s) => ({
       recipientId: s.id,
       type: "ticket",
-      title: `Nieuw ticket: ${input.subject}`,
+      title: `Nieuwe aanvraag: ${input.subject}`,
       body: input.firstMessage,
-      linkPath: `/tickets/${ticket.id}`,
+      linkPath: `/aanvragen/${ticket.id}`,
     }))
   );
 
@@ -78,7 +78,7 @@ export async function getTicketById(ticketId: string): Promise<TicketWithMessage
     .eq("id", ticketId)
     .maybeSingle();
 
-  if (error) throw new Error(`Kon ticket niet laden: ${error.message}`);
+  if (error) throw new Error(`Kon aanvraag niet laden: ${error.message}`);
   return data as unknown as TicketWithMessages | null;
 }
 
@@ -104,7 +104,7 @@ export async function addTicketMessage(ticketId: string, body: string) {
   if (!ticket) return;
 
   // Notify whichever side didn't just write this message — the client who
-  // opened the ticket, or the staff member it's assigned to. No assignee
+  // opened the request, or the staff member it's assigned to. No assignee
   // yet means nobody to notify, same as at creation time.
   const recipientId = user.id === ticket.created_by ? ticket.assigned_to : ticket.created_by;
   if (recipientId) {
@@ -112,9 +112,9 @@ export async function addTicketMessage(ticketId: string, body: string) {
       {
         recipientId,
         type: "ticket" as const,
-        title: `Nieuw bericht in ticket "${ticket.subject}"`,
+        title: `Nieuw bericht bij aanvraag "${ticket.subject}"`,
         body,
-        linkPath: `/tickets/${ticketId}`,
+        linkPath: `/aanvragen/${ticketId}`,
       },
     ]);
   }

@@ -19,6 +19,6 @@ export async function addTicketMessageAction(
     return { error: err instanceof Error ? err.message : "Kon bericht niet plaatsen." };
   }
 
-  revalidatePath(`/tickets/${ticketId}`);
+  revalidatePath(`/aanvragen/${ticketId}`);
   return {};
 }

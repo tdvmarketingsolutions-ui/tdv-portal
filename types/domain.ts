@@ -56,6 +56,19 @@ export interface ProjectWithRelations extends Project {
   files: Pick<FileRecord, "id" | "file_name" | "category" | "created_at">[];
 }
 
+export type ProjectRequestStatus = "requested" | "awaiting_quote" | "project_active" | "declined";
+
+export interface ProjectRequest {
+  id: string;
+  company_id: string;
+  title: string;
+  description: string | null;
+  status: ProjectRequestStatus;
+  requested_by: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export type TicketStatus = "new" | "in_progress" | "waiting_on_client" | "resolved";
 export type TicketPriority = "low" | "normal" | "high" | "urgent";
 
