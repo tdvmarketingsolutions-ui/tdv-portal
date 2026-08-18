@@ -26,7 +26,7 @@ export default async function AdminAiPage() {
           <div>
             <h2 className="font-display text-base font-medium">Kennisbank</h2>
             <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
-              Projecten, tickets, feedback en contentplanning worden hier omgezet naar doorzoekbare fragmenten in{" "}
+              Projecten, aanvragen, feedback en contentplanning worden hier omgezet naar doorzoekbare fragmenten in{" "}
               <code className="rounded bg-canvas px-1 py-0.5 dark:bg-canvas-dark">ai_documents</code>, zodat de
               AI-assistent er per klant in kan zoeken.
             </p>

@@ -14,7 +14,7 @@ export default async function NotificationsPage() {
         <div>
           <h1 className="font-display text-2xl font-semibold">Meldingen</h1>
           <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
-            Updates over tickets, opmerkingen, goedkeuringen en meer.
+            Updates over aanvragen, opmerkingen, goedkeuringen en meer.
           </p>
         </div>
         {hasUnread && <MarkAllReadButton />}

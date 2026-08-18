@@ -143,10 +143,10 @@ function buildChunks(data: {
       ticket.company_id,
       "ticket",
       ticket.id,
-      `Ticket "${ticket.subject}" (klant: ${companyName}) — status: ${ticket.status}, prioriteit: ${ticket.priority}.`
+      `Aanvraag "${ticket.subject}" (klant: ${companyName}) — status: ${ticket.status}, prioriteit: ${ticket.priority}.`
     );
     for (const message of ticket.ticket_messages) {
-      push(chunks, ticket.company_id, "ticket", ticket.id, `Bericht in ticket "${ticket.subject}": ${message.body}`);
+      push(chunks, ticket.company_id, "ticket", ticket.id, `Bericht bij aanvraag "${ticket.subject}": ${message.body}`);
     }
   }
 

@@ -75,17 +75,17 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
 
         <aside className="space-y-6">
           <section className="card p-6">
-            <h2 className="font-display text-base font-medium">Gekoppelde tickets</h2>
+            <h2 className="font-display text-base font-medium">Gekoppelde aanvragen</h2>
             <ul className="mt-3 space-y-2 text-sm">
               {project.tickets?.length
                 ? project.tickets.map((t) => (
                     <li key={t.id}>
-                      <Link href={`/tickets/${t.id}`} className="text-accent hover:underline dark:text-accent-dark">
+                      <Link href={`/aanvragen/${t.id}`} className="text-accent hover:underline dark:text-accent-dark">
                         {t.subject}
                       </Link>
                     </li>
                   ))
-                : <li className="text-ink-muted dark:text-ink-dark-muted">Geen tickets gekoppeld.</li>}
+                : <li className="text-ink-muted dark:text-ink-dark-muted">Geen aanvragen gekoppeld.</li>}
             </ul>
           </section>
 

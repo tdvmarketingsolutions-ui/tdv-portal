@@ -22,8 +22,8 @@ export async function createTicketAction(
     });
     ticketId = ticket.id;
   } catch (err) {
-    return { error: err instanceof Error ? err.message : "Kon ticket niet aanmaken." };
+    return { error: err instanceof Error ? err.message : "Kon aanvraag niet aanmaken." };
   }
 
-  redirect(`/tickets/${ticketId}`);
+  redirect(`/aanvragen/${ticketId}`);
 }

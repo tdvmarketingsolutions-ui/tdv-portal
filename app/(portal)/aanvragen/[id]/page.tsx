@@ -16,9 +16,9 @@ export default async function TicketDetailPage({ params }: { params: { id: strin
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <Link href="/tickets" className="flex items-center gap-1 text-sm text-ink-muted hover:text-ink dark:text-ink-dark-muted dark:hover:text-ink-dark">
+      <Link href="/aanvragen" className="flex items-center gap-1 text-sm text-ink-muted hover:text-ink dark:text-ink-dark-muted dark:hover:text-ink-dark">
         <ChevronLeft size={16} strokeWidth={1.75} />
-        Terug naar tickets
+        Terug naar aanvragen
       </Link>
 
       <header className="space-y-2">

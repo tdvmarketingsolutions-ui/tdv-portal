@@ -159,7 +159,7 @@ export function AiAssistantClient({ initialConversations }: { initialConversatio
             <div className="card w-fit px-4 py-3 text-sm text-ink-muted dark:text-ink-dark-muted">Gesprek laden…</div>
           ) : messages.length === 0 ? (
             <div className="card p-5 text-sm text-ink-muted dark:text-ink-dark-muted">
-              Stel een vraag over je projecten, tickets, content of facturen — de assistent
+              Stel een vraag over je projecten, aanvragen, content of facturen — de assistent
               antwoordt op basis van jouw gegevens bij TDV, niet die van andere klanten.
             </div>
           ) : (

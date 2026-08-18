@@ -15,13 +15,13 @@ export default async function DashboardPage() {
       <header>
         <h1 className="font-display text-2xl font-semibold">Dashboard</h1>
         <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
-          Een overzicht van je lopende projecten, tickets en wat je aandacht vraagt.
+          Een overzicht van je lopende projecten, aanvragen en wat je aandacht vraagt.
         </p>
       </header>
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <SummaryCard label="Lopende projecten" value={data.projectCount} href="/projects" />
-        <SummaryCard label="Open tickets" value={data.openTicketCount} href="/tickets" />
+        <SummaryCard label="Open aanvragen" value={data.openTicketCount} href="/aanvragen" />
         <SummaryCard label="Vraagt aandacht" value={data.attentionItems.length} href="#aandacht" />
         <SummaryCard label="Ongelezen meldingen" value={data.unreadNotificationCount} href="/notifications" />
       </section>
@@ -94,8 +94,8 @@ export default async function DashboardPage() {
             </>
           ) : (
             <>
-              <Link href="/tickets/new" className="btn-primary">
-                Nieuw ticket
+              <Link href="/aanvragen/new" className="btn-primary">
+                Nieuwe aanvraag
               </Link>
               <Link href="/content-planning" className="btn-secondary">
                 Content goedkeuren

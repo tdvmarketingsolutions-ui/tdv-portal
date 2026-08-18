@@ -18,7 +18,7 @@ een consistent patroon aangelegd zodat ze snel bij te bouwen zijn.
 
 ## Waarom dit datamodel
 
-**Eén regel, geen twee.** In plaats van elke module (projecten, tickets,
+**Eén regel, geen twee.** In plaats van elke module (projecten, aanvragen,
 content, bestanden) los te beveiligen, hangt letterlijk elke tabel met
 klantgegevens aan `companies.id`, en één stel RLS-policies (`is_tdv_staff()` /
 `current_company_id()`) bepaalt overal wie wat mag zien. Dat betekent: een bug
@@ -45,7 +45,15 @@ van het systeem.
   `/login` stuurt.
 - **Projecten**: lijst + detail + opmerkingen, volledig via Server Components
   + RLS — `lib/data/projects.ts` → `app/(portal)/projects/*`.
-- **Tickets**: lijst, nieuw, detail + reageren.
+- **Aanvragen** (route `/aanvragen`, ex-"tickets" — enkel de UI/routes zijn
+  hernoemd, de tabel heet in de database nog steeds `tickets` en
+  `lib/data/tickets.ts` ook): lijst, nieuw, detail + reageren.
+- **Projectaanvragen**: lichte statustracker naast de gewone aanvragen — een
+  klant vraagt een nieuw project aan (`/projects` → "Project aanvragen"),
+  staff zet de status handmatig door (aangevraagd → wacht op offerte →
+  project actief/geweigerd). Geen bedragen of PDF's in de app: de offerte
+  zelf verloopt via e-mail, dit is puur een statusbord —
+  `lib/data/project-requests.ts` + `lib/data/admin/project-requests.ts`.
 - **Feedback & goedkeuring**: lijst, detail met versiehistoriek, preview en
   status-acties (goedkeuren/revisie vragen) — `lib/data/deliverables.ts`.
 - **Contentplanning**: maandkalender + lijst, detail met visual
@@ -64,26 +72,26 @@ van het systeem.
   `createTicket`/`addTicketMessage` (nieuw ticket / nieuw bericht) en
   `updateContentItemAdmin` (content naar "wacht op goedkeuring") —
   `lib/data/notifications.ts`.
-- **Dashboard**: "vraagt je aandacht" (openstaande goedkeuringen, tickets die
-  op je wachten) + recente activiteit, rolgebonden (klant vs. staff) —
+- **Dashboard**: "vraagt je aandacht" (openstaande goedkeuringen, aanvragen
+  die op je wachten) + recente activiteit, rolgebonden (klant vs. staff) —
   `lib/data/dashboard.ts`.
 - **Instellingen**: naam en wachtwoord aanpasbaar, meldingsvoorkeur — niet
   langer alleen-lezen.
 - **AI-assistent**: chat-UI + RAG API-route + pgvector search RPC +
   gespreksgeschiedenis, plus een kennisbank-ingestpipeline
   (`lib/data/admin/ai-ingest.ts`, te starten vanaf `/admin/ai`) die
-  projecten, tickets, feedback en contentplanning omzet naar doorzoekbare
+  projecten, aanvragen, feedback en contentplanning omzet naar doorzoekbare
   chunks in `ai_documents`.
 - **Admin**: layout met dubbele rolcheck (middleware + layout zelf), en CRUD
-  voor klanten, projecten, tickets, content en gebruikers, plus AI-activiteit
-  en instellingen.
+  voor klanten, projecten, aanvragen, content en gebruikers, plus
+  AI-activiteit en instellingen.
 
 ## Wat nog moet worden bijgebouwd
 
 - [ ] Kennisbank-ingest is nu een synchrone admin-actie die alles herembedt;
       bij meer data wordt dat een achtergrondtaak met incrementele sync
       (bv. op basis van `updated_at`) in plaats van volledige resync.
-- [ ] Notificatietriggers dekken nu tickets en content-goedkeuring. Feedback
+- [ ] Notificatietriggers dekken nu aanvragen en content-goedkeuring. Feedback
       (deliverables) en contentopmerkingen hebben nog geen trigger — die
       module heeft ook nog geen "nieuwe versie uploaden"-flow in de app zelf
       (deliverables/versions bestaan enkel als ze rechtstreeks in de
@@ -109,7 +117,7 @@ npm run dev
 app/
   (auth)/login/            → publieke auth-routes
   (portal)/                → alles achter login, gedeelde sidebar-layout
-    dashboard/ projects/ tickets/ content-planning/
+    dashboard/ projects/ aanvragen/ content-planning/
     files/ ai-assistant/ notifications/ settings/
   (admin)/admin/           → TDV-staff-only, eigen layout + rolcheck
   api/ai/chat/             → RAG endpoint
@@ -119,7 +127,7 @@ lib/
   data/                    → server-only data access per module
 components/
   layout/                  → Sidebar, (nog toe te voegen: Topbar)
-  ui/ dashboard/ projects/ tickets/ → per-module presentatie­componenten
+  ui/ dashboard/ projects/ aanvragen/ → per-module presentatie­componenten
 supabase/
   migrations/0001_init.sql     → volledig schema + RLS voor elke module
   migrations/0002_ai_search.sql → pgvector RPC voor de AI-assistent

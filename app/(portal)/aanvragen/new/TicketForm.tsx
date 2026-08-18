@@ -41,7 +41,7 @@ export function TicketForm({ projects }: { projects: Pick<Project, "id" | "name"
       </Select>
 
       {projects.length > 0 && (
-        <Select label="Project (optioneel)" hint="Koppel dit ticket aan een lopend project." {...register("projectId")}>
+        <Select label="Project (optioneel)" hint="Koppel deze aanvraag aan een lopend project." {...register("projectId")}>
           <option value="">Geen project</option>
           {projects.map((p) => (
             <option key={p.id} value={p.id}>
@@ -61,7 +61,7 @@ export function TicketForm({ projects }: { projects: Pick<Project, "id" | "name"
 
       <div className="flex justify-end">
         <Button type="submit" loading={isSubmitting}>
-          Ticket aanmaken
+          Aanvraag versturen
         </Button>
       </div>
     </form>
