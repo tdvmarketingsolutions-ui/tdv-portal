@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { PROJECT_STATUS_LABEL, PROJECT_STATUS_TONE } from "@/lib/project-status";
 import { PROJECT_REQUEST_STATUS_LABEL, PROJECT_REQUEST_STATUS_TONE } from "@/lib/project-request-status";
 import { NewProjectRequestDialog } from "./NewProjectRequestDialog";
+import { ProjectRequestPriceCard } from "./ProjectRequestPriceCard";
 
 export default async function ProjectsPage() {
   const [projects, projectRequests] = await Promise.all([
@@ -30,17 +31,21 @@ export default async function ProjectsPage() {
         <section className="space-y-3">
           <h2 className="font-display text-base font-medium">Jouw aanvragen</h2>
           <ul className="space-y-3">
-            {projectRequests.map((r) => (
-              <li key={r.id} className="card flex items-center justify-between p-5">
-                <div>
-                  <p className="font-medium">{r.title}</p>
-                  {r.description && (
-                    <p className="mt-0.5 text-sm text-ink-muted dark:text-ink-dark-muted">{r.description}</p>
-                  )}
-                </div>
-                <Badge tone={PROJECT_REQUEST_STATUS_TONE[r.status]}>{PROJECT_REQUEST_STATUS_LABEL[r.status]}</Badge>
-              </li>
-            ))}
+            {projectRequests.map((r) =>
+              r.price_response === "pending" && r.indicative_price_range ? (
+                <ProjectRequestPriceCard key={r.id} request={r} />
+              ) : (
+                <li key={r.id} className="card flex items-center justify-between p-5">
+                  <div>
+                    <p className="font-medium">{r.title}</p>
+                    {r.description && (
+                      <p className="mt-0.5 text-sm text-ink-muted dark:text-ink-dark-muted">{r.description}</p>
+                    )}
+                  </div>
+                  <Badge tone={PROJECT_REQUEST_STATUS_TONE[r.status]}>{PROJECT_REQUEST_STATUS_LABEL[r.status]}</Badge>
+                </li>
+              )
+            )}
           </ul>
         </section>
       )}
