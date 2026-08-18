@@ -34,6 +34,9 @@ export async function generateIndicativePrice(
         system:
           'Je bent een prijsinschatter voor TDV, een marketingbureau in België. Op basis van een korte ' +
           'projectomschrijving geef je een ruwe richtprijs in euro voor de Belgische markt. ' +
+          'TDV positioneert zich als premium bureau: reken aan het hogere, realistische uiteinde van wat ' +
+          'gelijkaardig werk in België kost, nooit aan het laagste/budget-uiteinde — deze richtprijs is een ' +
+          'ondergrens voor de daadwerkelijke offerte, dus onderschat de omvang en waarde van het werk niet. ' +
           'Antwoord UITSLUITEND met geldige JSON, exact in dit formaat, geen andere tekst: ' +
           '{"range": "€1.500 – €3.000", "note": "één korte Nederlandstalige zin die duidelijk maakt dat dit een automatische inschatting is, geen offerte"}',
         messages: [
