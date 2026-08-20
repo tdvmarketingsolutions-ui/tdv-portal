@@ -15,7 +15,7 @@ export async function createContentItemAction(input: NewContentItemFormValues): 
     await createContentItemForCurrentUser({
       title: parsed.data.title,
       caption: parsed.data.caption || undefined,
-      channel: parsed.data.channel,
+      channels: parsed.data.channels,
       scheduledFor: parsed.data.scheduledFor ? new Date(parsed.data.scheduledFor).toISOString() : undefined,
     });
   } catch (err) {
@@ -46,7 +46,7 @@ export async function updateContentItemAction(
     await updateContentItemAdmin(id, {
       title: parsed.data.title,
       caption: parsed.data.caption || null,
-      channel: parsed.data.channel,
+      channels: parsed.data.channels,
       scheduledFor: parsed.data.scheduledFor ? new Date(parsed.data.scheduledFor).toISOString() : null,
     });
   } catch (err) {

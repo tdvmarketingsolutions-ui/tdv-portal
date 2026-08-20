@@ -28,7 +28,7 @@ export async function updateContentItemAdmin(
   input: {
     title?: string;
     caption?: string | null;
-    channel?: ContentChannel;
+    channels?: ContentChannel[];
     scheduledFor?: string | null;
     status?: ContentStatus;
   }
@@ -38,7 +38,7 @@ export async function updateContentItemAdmin(
   const patch: Record<string, unknown> = {};
   if (input.title !== undefined) patch.title = input.title;
   if (input.caption !== undefined) patch.caption = input.caption;
-  if (input.channel !== undefined) patch.channel = input.channel;
+  if (input.channels !== undefined) patch.channels = input.channels;
   if (input.scheduledFor !== undefined) patch.scheduled_for = input.scheduledFor;
   if (input.status !== undefined) patch.status = input.status;
 

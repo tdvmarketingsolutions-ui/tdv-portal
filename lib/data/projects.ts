@@ -13,7 +13,11 @@ import type { Project, ProjectWithRelations } from "@/types/domain";
  * (lib/staff-view.ts) — staff-only, never widens access, see that file.
  */
 
-export async function getProjectsForCurrentUser(): Promise<Project[]> {
+export interface ProjectWithCompany extends Project {
+  companies: { name: string } | null;
+}
+
+export async function getProjectsForCurrentUser(): Promise<ProjectWithCompany[]> {
   const supabase = createClient();
   const {
     data: { user },
@@ -23,12 +27,15 @@ export async function getProjectsForCurrentUser(): Promise<Project[]> {
     : { data: null };
   const viewCompanyId = resolveListFilterCompanyId(profile);
 
-  let query = supabase.from("projects").select("*").order("deadline", { ascending: true, nullsFirst: false });
+  let query = supabase
+    .from("projects")
+    .select("*, companies ( name )")
+    .order("deadline", { ascending: true, nullsFirst: false });
   if (viewCompanyId) query = query.eq("company_id", viewCompanyId);
 
   const { data, error } = await query;
   if (error) throw new Error(`Kon projecten niet laden: ${error.message}`);
-  return (data ?? []) as unknown as Project[];
+  return (data ?? []) as unknown as ProjectWithCompany[];
 }
 
 export async function getProjectById(projectId: string): Promise<ProjectWithRelations | null> {

@@ -65,7 +65,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     // Client-relevant: things waiting on the client to act.
     isStaff
       ? Promise.resolve({ data: [], error: null })
-      : supabase.from("content_items").select("id, title, channel").eq("status", "pending_approval"),
+      : supabase.from("content_items").select("id, title, channels").eq("status", "pending_approval"),
     isStaff
       ? Promise.resolve({ data: [], error: null })
       : supabase
@@ -117,11 +117,11 @@ export async function getDashboardData(): Promise<DashboardData> {
 
   const attentionItems: AttentionItem[] = [];
 
-  for (const item of (pendingContentRes.data ?? []) as unknown as { id: string; title: string; channel: string }[]) {
+  for (const item of (pendingContentRes.data ?? []) as unknown as { id: string; title: string; channels: string[] }[]) {
     attentionItems.push({
       id: `content-${item.id}`,
       label: item.title,
-      meta: `Goedkeuring nodig — ${item.channel}`,
+      meta: `Goedkeuring nodig — ${item.channels.join(", ")}`,
       href: `/content-planning/${item.id}`,
     });
   }

@@ -129,7 +129,7 @@ export function CalendarGrid({
             contentItemId={item.id}
             title={item.title}
             caption={item.caption}
-            channel={item.channel}
+            channels={item.channels}
             scheduledFor={item.scheduled_for}
             visualFileName={item.visual?.file_name ?? null}
           />
@@ -148,7 +148,7 @@ export function CalendarGrid({
         <Link href={`/content-planning/${item.id}`} className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium">{item.title}</p>
           <p className="mt-0.5 truncate text-xs text-ink-muted dark:text-ink-dark-muted">
-            {CONTENT_CHANNEL_LABEL[item.channel]} · {CONTENT_STATUS_LABEL[item.status]}
+            {item.channels.map((c) => CONTENT_CHANNEL_LABEL[c]).join(", ")} · {CONTENT_STATUS_LABEL[item.status]}
             {item.companies?.name ? ` · ${item.companies.name}` : ""}
           </p>
         </Link>
@@ -157,7 +157,7 @@ export function CalendarGrid({
             contentItemId={item.id}
             title={item.title}
             caption={item.caption}
-            channel={item.channel}
+            channels={item.channels}
             scheduledFor={item.scheduled_for}
             visualFileName={item.visual?.file_name ?? null}
           />
@@ -304,14 +304,18 @@ export function CalendarGrid({
                     {item.title}
                   </Link>
                   <div className="flex shrink-0 flex-wrap items-center gap-2">
-                    <Badge tone="gray">{CONTENT_CHANNEL_LABEL[item.channel]}</Badge>
+                    {item.channels.map((c) => (
+                      <Badge key={c} tone="gray">
+                        {CONTENT_CHANNEL_LABEL[c]}
+                      </Badge>
+                    ))}
                     <Badge tone={CONTENT_STATUS_TONE[item.status]}>{CONTENT_STATUS_LABEL[item.status]}</Badge>
                     {isStaff && (
                       <EditContentItemDialog
                         contentItemId={item.id}
                         title={item.title}
                         caption={item.caption}
-                        channel={item.channel}
+                        channels={item.channels}
                         scheduledFor={item.scheduled_for}
                         visualFileName={item.visual?.file_name ?? null}
                       />

@@ -26,7 +26,7 @@ export function NewContentItemDialog({ companies }: { companies: { id: string; n
     formState: { errors, isSubmitting },
   } = useForm<NewContentItemFormValues>({
     resolver: zodResolver(newContentItemSchema),
-    defaultValues: { channel: "instagram" },
+    defaultValues: { channels: ["instagram"] },
   });
 
   async function onSubmit(values: NewContentItemFormValues) {
@@ -59,13 +59,23 @@ export function NewContentItemDialog({ companies }: { companies: { id: string; n
             ))}
           </Select>
           <Input label="Titel" placeholder="Lancering nieuwe collectie" error={errors.title?.message} {...register("title")} />
-          <Select label="Kanaal" {...register("channel")}>
-            {Object.entries(CONTENT_CHANNEL_LABEL).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </Select>
+          <fieldset>
+            <legend className="mb-1 block text-sm font-medium">Kanalen</legend>
+            <div className="flex flex-wrap gap-3">
+              {Object.entries(CONTENT_CHANNEL_LABEL).map(([value, label]) => (
+                <label key={value} className="flex items-center gap-1.5 text-sm">
+                  <input
+                    type="checkbox"
+                    value={value}
+                    {...register("channels")}
+                    className="h-4 w-4 rounded border-border text-accent focus:ring-accent dark:border-border-dark"
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
+            {errors.channels && <p className="mt-1 text-xs text-status-danger">{errors.channels.message}</p>}
+          </fieldset>
           <Textarea label="Tekst (optioneel)" rows={3} error={errors.caption?.message} {...register("caption")} />
           <Input label="Gepland voor (optioneel)" type="date" error={errors.scheduledFor?.message} {...register("scheduledFor")} />
           <div className="flex justify-end gap-2">

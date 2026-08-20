@@ -67,7 +67,7 @@ export async function createContentItem(input: {
   companyId: string;
   title: string;
   caption?: string;
-  channel: ContentChannel;
+  channels: ContentChannel[];
   scheduledFor?: string;
   projectId?: string;
 }): Promise<ContentItem> {
@@ -85,7 +85,7 @@ export async function createContentItem(input: {
       project_id: input.projectId ?? null,
       title: input.title,
       caption: input.caption ?? null,
-      channel: input.channel,
+      channels: input.channels,
       scheduled_for: input.scheduledFor ?? null,
       created_by: user.id,
     })
@@ -107,7 +107,7 @@ export async function createContentItem(input: {
 export async function createContentItemForCurrentUser(input: {
   title: string;
   caption?: string;
-  channel: ContentChannel;
+  channels: ContentChannel[];
   scheduledFor?: string;
 }): Promise<ContentItem> {
   const supabase = createClient();
@@ -130,7 +130,7 @@ export async function createContentItemForCurrentUser(input: {
       company_id: companyId,
       title: input.title,
       caption: input.caption ?? null,
-      channel: input.channel,
+      channels: input.channels,
       scheduled_for: input.scheduledFor ?? null,
       created_by: user.id,
     })

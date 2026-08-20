@@ -8,7 +8,6 @@ import { Pencil, Upload } from "lucide-react";
 import { Dialog } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
-import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/ToastProvider";
 import { CONTENT_CHANNEL_LABEL } from "@/lib/content-status";
@@ -20,14 +19,14 @@ export function EditContentItemDialog({
   contentItemId,
   title,
   caption,
-  channel,
+  channels,
   scheduledFor,
   visualFileName,
 }: {
   contentItemId: string;
   title: string;
   caption: string | null;
-  channel: ContentChannel;
+  channels: ContentChannel[];
   scheduledFor: string | null;
   visualFileName: string | null;
 }) {
@@ -46,7 +45,7 @@ export function EditContentItemDialog({
     defaultValues: {
       title,
       caption: caption ?? "",
-      channel,
+      channels,
       scheduledFor: scheduledFor ? scheduledFor.slice(0, 10) : "",
     },
   });
@@ -95,13 +94,23 @@ export function EditContentItemDialog({
         <div className="space-y-5">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
             <Input label="Titel" error={errors.title?.message} {...register("title")} />
-            <Select label="Kanaal" {...register("channel")}>
-              {Object.entries(CONTENT_CHANNEL_LABEL).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </Select>
+            <fieldset>
+              <legend className="mb-1 block text-sm font-medium">Kanalen</legend>
+              <div className="flex flex-wrap gap-3">
+                {Object.entries(CONTENT_CHANNEL_LABEL).map(([value, label]) => (
+                  <label key={value} className="flex items-center gap-1.5 text-sm">
+                    <input
+                      type="checkbox"
+                      value={value}
+                      {...register("channels")}
+                      className="h-4 w-4 rounded border-border text-accent focus:ring-accent dark:border-border-dark"
+                    />
+                    {label}
+                  </label>
+                ))}
+              </div>
+              {errors.channels && <p className="mt-1 text-xs text-status-danger">{errors.channels.message}</p>}
+            </fieldset>
             <Textarea label="Tekst (optioneel)" rows={3} error={errors.caption?.message} {...register("caption")} />
             <Input label="Gepland voor (optioneel)" type="date" error={errors.scheduledFor?.message} {...register("scheduledFor")} />
             <div className="flex justify-end gap-2">
