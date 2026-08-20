@@ -43,7 +43,7 @@ export function Dialog({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:items-center">
       <div
         className="fixed inset-0 bg-ink/40 backdrop-blur-[2px] dark:bg-black/60"
         onClick={onClose}
@@ -55,7 +55,7 @@ export function Dialog({
         aria-modal="true"
         aria-labelledby="dialog-title"
         tabIndex={-1}
-        className="card toast-enter relative w-full max-w-md p-6 outline-none"
+        className="card toast-enter relative my-8 w-full max-w-md p-6 outline-none sm:my-0"
       >
         <div className="mb-4 flex items-start justify-between gap-4">
           <div>

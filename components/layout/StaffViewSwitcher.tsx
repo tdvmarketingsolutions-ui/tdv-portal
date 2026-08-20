@@ -41,7 +41,7 @@ export function StaffViewSwitcher({
           value={currentCompanyId ?? ""}
           onChange={handleChange}
           disabled={loading}
-          className="w-full rounded-lg border border-border bg-surface px-2 py-1.5 text-xs outline-none focus:border-accent disabled:opacity-60 dark:border-border-dark dark:bg-surface-dark"
+          className="w-full rounded-lg border border-border bg-surface px-2 py-1.5 text-base outline-none focus:border-accent disabled:opacity-60 dark:border-border-dark dark:bg-surface-dark md:text-xs"
         >
           <option value="">Eigen weergave (alles)</option>
           {companies.map((c) => (
