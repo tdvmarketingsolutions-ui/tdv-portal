@@ -163,7 +163,7 @@ export interface ContentItem {
   project_id: string | null;
   title: string;
   caption: string | null;
-  channel: ContentChannel;
+  channels: ContentChannel[];
   status: ContentStatus;
   scheduled_for: string | null;
   visual_file_id: string | null;

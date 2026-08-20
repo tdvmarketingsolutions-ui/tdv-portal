@@ -96,7 +96,7 @@ interface ContentItemRow {
   company_id: string;
   title: string;
   caption: string | null;
-  channel: string;
+  channels: string[];
   status: string;
   scheduled_for: string | null;
   companies: { name: string } | null;
@@ -187,7 +187,7 @@ function buildChunks(data: {
       item.company_id,
       "content_item",
       item.id,
-      `Contentitem "${item.title}" (klant: ${companyName}, kanaal: ${item.channel}) — status: ${item.status}, gepland: ${
+      `Contentitem "${item.title}" (klant: ${companyName}, kanalen: ${item.channels.join(", ")}) — status: ${item.status}, gepland: ${
         item.scheduled_for ?? "niet gepland"
       }.\n${item.caption ?? ""}`
     );
@@ -226,7 +226,7 @@ export async function ingestKnowledgeBase(): Promise<IngestResult> {
     supabase
       .from("content_items")
       .select(
-        "id, company_id, title, caption, channel, status, scheduled_for, companies ( name ), content_item_comments ( body )"
+        "id, company_id, title, caption, channels, status, scheduled_for, companies ( name ), content_item_comments ( body )"
       ),
   ]);
 

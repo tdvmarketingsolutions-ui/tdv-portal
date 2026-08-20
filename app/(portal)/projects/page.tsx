@@ -81,11 +81,11 @@ export default async function ProjectsPage() {
                 <Link href={`/projects/${project.id}`} className="card flex items-center justify-between p-5 hover:shadow-md">
                   <div>
                     <p className="font-medium">{project.name}</p>
-                    {project.deadline && (
-                      <p className="mt-0.5 text-sm text-ink-muted dark:text-ink-dark-muted">
-                        Deadline: {new Date(project.deadline).toLocaleDateString("nl-BE")}
-                      </p>
-                    )}
+                    <p className="mt-0.5 text-sm text-ink-muted dark:text-ink-dark-muted">
+                      {isStaff && project.companies?.name ? `${project.companies.name}` : ""}
+                      {isStaff && project.companies?.name && project.deadline ? " · " : ""}
+                      {project.deadline ? `Deadline: ${new Date(project.deadline).toLocaleDateString("nl-BE")}` : ""}
+                    </p>
                   </div>
                   <Badge tone={PROJECT_STATUS_TONE[project.status]}>{PROJECT_STATUS_LABEL[project.status]}</Badge>
                 </Link>

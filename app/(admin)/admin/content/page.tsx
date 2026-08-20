@@ -41,7 +41,7 @@ export default async function AdminContentPage() {
                   </Link>
                 </Table.Cell>
                 <Table.Cell>{item.companies?.name ?? "—"}</Table.Cell>
-                <Table.Cell>{CONTENT_CHANNEL_LABEL[item.channel]}</Table.Cell>
+                <Table.Cell>{item.channels.map((c) => CONTENT_CHANNEL_LABEL[c]).join(", ")}</Table.Cell>
                 <Table.Cell>
                   {item.visual ? (
                     <span className="flex items-center gap-1 text-ink-muted dark:text-ink-dark-muted">
@@ -60,7 +60,7 @@ export default async function AdminContentPage() {
                     contentItemId={item.id}
                     title={item.title}
                     caption={item.caption}
-                    channel={item.channel}
+                    channels={item.channels}
                     scheduledFor={item.scheduled_for}
                     visualFileName={item.visual?.file_name ?? null}
                   />

@@ -34,7 +34,11 @@ export default async function ContentItemDetailPage({ params }: { params: { id: 
         <h1 className="font-display text-2xl font-semibold">{item.title}</h1>
         <div className="flex flex-wrap gap-2">
           <Badge tone={CONTENT_STATUS_TONE[item.status]}>{CONTENT_STATUS_LABEL[item.status]}</Badge>
-          <Badge tone="gray">{CONTENT_CHANNEL_LABEL[item.channel]}</Badge>
+          {item.channels.map((c) => (
+            <Badge key={c} tone="gray">
+              {CONTENT_CHANNEL_LABEL[c]}
+            </Badge>
+          ))}
         </div>
         {item.scheduled_for && (
           <p className="text-sm text-ink-muted dark:text-ink-dark-muted">
