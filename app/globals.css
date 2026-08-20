@@ -37,7 +37,12 @@
     @apply inline-flex items-center justify-center rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-canvas dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark;
   }
   .input {
-    @apply w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm text-ink outline-none transition-colors placeholder:text-ink-muted focus:border-accent disabled:cursor-not-allowed disabled:opacity-60 dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark dark:placeholder:text-ink-dark-muted;
+    /* text-base (16px) below sm: iOS Safari auto-zooms on focus for any
+       input under 16px, which yanks the whole page in on every form field —
+       jarring enough to read as "the app doesn't feel finished" even though
+       nothing is actually broken. text-sm from sm: up keeps the tighter
+       desktop density. */
+    @apply w-full rounded-xl border border-border bg-surface px-3 py-2 text-base text-ink outline-none transition-colors placeholder:text-ink-muted focus:border-accent disabled:cursor-not-allowed disabled:opacity-60 dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark dark:placeholder:text-ink-dark-muted sm:text-sm;
   }
   .input-error {
     @apply border-status-danger focus:border-status-danger;
