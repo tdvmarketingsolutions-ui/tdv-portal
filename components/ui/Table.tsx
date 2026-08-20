@@ -4,7 +4,12 @@ import { cn } from "@/lib/utils";
 export function Table({ children }: { children: ReactNode }) {
   return (
     <div className="card overflow-x-auto">
-      <table className="w-full text-left text-sm">{children}</table>
+      {/* min-w-max + nowrap cells (below) keep every column at its natural
+          width instead of the browser shrinking/wrapping everything to fit
+          a narrow viewport — that's what made mobile tables unreadable
+          (multi-line titles, tiny squeezed columns). Now a narrow screen
+          scrolls the table horizontally instead, same as any data table. */}
+      <table className="w-full min-w-max text-left text-sm">{children}</table>
     </div>
   );
 }
@@ -19,7 +24,7 @@ function Head({ children }: { children: ReactNode }) {
 
 function HeadCell({ children, className, ...props }: ThHTMLAttributes<HTMLTableCellElement>) {
   return (
-    <th className={cn("px-5 py-3 font-medium", className)} {...props}>
+    <th className={cn("whitespace-nowrap px-5 py-3 font-medium", className)} {...props}>
       {children}
     </th>
   );
@@ -39,7 +44,7 @@ function Row({ children, className, ...props }: React.HTMLAttributes<HTMLTableRo
 
 function Cell({ children, className, ...props }: TdHTMLAttributes<HTMLTableCellElement>) {
   return (
-    <td className={cn("px-5 py-3", className)} {...props}>
+    <td className={cn("whitespace-nowrap px-5 py-3", className)} {...props}>
       {children}
     </td>
   );
