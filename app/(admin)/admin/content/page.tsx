@@ -8,6 +8,7 @@ import { CONTENT_CHANNEL_LABEL } from "@/lib/content-status";
 import { NewContentItemDialog } from "./NewContentItemDialog";
 import { ContentStatusSelect } from "./ContentStatusSelect";
 import { EditContentItemDialog } from "./EditContentItemDialog";
+import { DeleteContentItemButton } from "./DeleteContentItemButton";
 
 export default async function AdminContentPage() {
   const [items, companies] = await Promise.all([getAllContentItemsForAdmin(), getAllCompaniesForSelect()]);
@@ -56,14 +57,17 @@ export default async function AdminContentPage() {
                   <ContentStatusSelect contentItemId={item.id} status={item.status} />
                 </Table.Cell>
                 <Table.Cell>
-                  <EditContentItemDialog
-                    contentItemId={item.id}
-                    title={item.title}
-                    caption={item.caption}
-                    channels={item.channels}
-                    scheduledFor={item.scheduled_for}
-                    visualFileName={item.visual?.file_name ?? null}
-                  />
+                  <div className="flex items-center gap-1">
+                    <EditContentItemDialog
+                      contentItemId={item.id}
+                      title={item.title}
+                      caption={item.caption}
+                      channels={item.channels}
+                      scheduledFor={item.scheduled_for}
+                      visualFileName={item.visual?.file_name ?? null}
+                    />
+                    <DeleteContentItemButton contentItemId={item.id} title={item.title} />
+                  </div>
                 </Table.Cell>
               </Table.Row>
             ))}

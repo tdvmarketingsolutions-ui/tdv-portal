@@ -30,7 +30,7 @@ export function TicketStatusSelect({ ticketId, status }: { ticketId: string; sta
       value={status}
       onChange={handleChange}
       disabled={loading}
-      className="rounded-lg border border-border bg-surface px-2 py-1 text-xs outline-none focus:border-accent disabled:opacity-60 dark:border-border-dark dark:bg-surface-dark"
+      className="rounded-lg border border-border bg-surface px-2 py-1 text-base outline-none focus:border-accent disabled:opacity-60 dark:border-border-dark dark:bg-surface-dark md:text-xs"
     >
       {(Object.keys(TICKET_STATUS_LABEL) as TicketStatus[]).map((s) => (
         <option key={s} value={s}>

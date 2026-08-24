@@ -69,6 +69,13 @@ export async function updateContentItemAdmin(
   }
 }
 
+export async function deleteContentItemAdmin(id: string): Promise<void> {
+  await assertTdvStaff();
+  const supabase = createClient();
+  const { error } = await supabase.from("content_items").delete().eq("id", id);
+  if (error) throw new Error(`Kon content-item niet verwijderen: ${error.message}`);
+}
+
 /**
  * Uploads a visual (image/video) for a content item and links it via
  * `visual_file_id`. Uses the RLS-bound client, not the admin client — the

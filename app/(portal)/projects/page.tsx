@@ -78,10 +78,10 @@ export default async function ProjectsPage() {
           <ul className="space-y-3">
             {projects.map((project) => (
               <li key={project.id}>
-                <Link href={`/projects/${project.id}`} className="card flex items-center justify-between p-5 hover:shadow-md">
-                  <div>
-                    <p className="font-medium">{project.name}</p>
-                    <p className="mt-0.5 text-sm text-ink-muted dark:text-ink-dark-muted">
+                <Link href={`/projects/${project.id}`} className="card flex items-center justify-between gap-4 p-5 hover:shadow-md">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium">{project.name}</p>
+                    <p className="mt-0.5 truncate text-sm text-ink-muted dark:text-ink-dark-muted">
                       {isStaff && project.companies?.name ? `${project.companies.name}` : ""}
                       {isStaff && project.companies?.name && project.deadline ? " · " : ""}
                       {project.deadline ? `Deadline: ${new Date(project.deadline).toLocaleDateString("nl-BE")}` : ""}

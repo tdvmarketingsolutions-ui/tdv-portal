@@ -38,9 +38,9 @@ export default async function FeedbackPage() {
                 const latest = [...d.deliverable_versions].sort((a, b) => b.version_number - a.version_number)[0];
                 return (
                   <li key={d.id}>
-                    <Link href={`/feedback/${d.id}`} className="card flex items-center justify-between p-5 hover:shadow-md">
-                      <div>
-                        <p className="font-medium">{d.title}</p>
+                    <Link href={`/feedback/${d.id}`} className="card flex items-center justify-between gap-4 p-5 hover:shadow-md">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-medium">{d.title}</p>
                         <p className="mt-0.5 text-sm text-ink-muted dark:text-ink-dark-muted">
                           {d.deliverable_versions.length} {d.deliverable_versions.length === 1 ? "versie" : "versies"}
                         </p>

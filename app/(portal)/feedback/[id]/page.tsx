@@ -86,8 +86,8 @@ export default async function DeliverableDetailPage({
             rel="noreferrer"
             className="card flex items-center gap-3 p-5 hover:shadow-md"
           >
-            <FileText size={20} strokeWidth={1.75} className="text-ink-muted dark:text-ink-dark-muted" />
-            <span className="text-sm font-medium">{version.files?.file_name ?? "Bestand bekijken"}</span>
+            <FileText size={20} strokeWidth={1.75} className="shrink-0 text-ink-muted dark:text-ink-dark-muted" />
+            <span className="min-w-0 flex-1 truncate text-sm font-medium">{version.files?.file_name ?? "Bestand bekijken"}</span>
           </a>
         ) : (
           <p className="card p-5 text-sm text-ink-muted dark:text-ink-dark-muted">Geen bestand gekoppeld aan deze versie.</p>
