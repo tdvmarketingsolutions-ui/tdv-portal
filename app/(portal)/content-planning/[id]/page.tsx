@@ -64,7 +64,7 @@ export default async function ContentItemDetailPage({ params }: { params: { id: 
               className="flex items-center gap-3 p-4 text-sm hover:bg-canvas dark:hover:bg-canvas-dark"
             >
               <FileText size={18} strokeWidth={1.75} className="shrink-0 text-ink-muted dark:text-ink-dark-muted" />
-              {item.visual.file_name}
+              <span className="min-w-0 flex-1 truncate">{item.visual.file_name}</span>
             </a>
           )}
         </section>

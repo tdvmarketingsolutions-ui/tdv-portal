@@ -33,8 +33,8 @@ export default async function SettingsPage() {
         <EditProfileForm fullName={fullName} />
         <dl className="space-y-3 border-t border-border pt-4 text-sm dark:border-border-dark">
           <div className="flex justify-between gap-4">
-            <dt className="text-ink-muted dark:text-ink-dark-muted">E-mailadres</dt>
-            <dd>{user!.email}</dd>
+            <dt className="shrink-0 text-ink-muted dark:text-ink-dark-muted">E-mailadres</dt>
+            <dd className="min-w-0 truncate">{user!.email}</dd>
           </div>
           <div className="flex justify-between gap-4">
             <dt className="text-ink-muted dark:text-ink-dark-muted">Rol</dt>

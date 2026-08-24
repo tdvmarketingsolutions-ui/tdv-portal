@@ -30,7 +30,7 @@ export function ProjectRequestStatusSelect({ requestId, status }: { requestId: s
       value={status}
       onChange={handleChange}
       disabled={loading}
-      className="rounded-lg border border-border bg-surface px-2 py-1 text-xs outline-none focus:border-accent disabled:opacity-60 dark:border-border-dark dark:bg-surface-dark"
+      className="rounded-lg border border-border bg-surface px-2 py-1 text-base outline-none focus:border-accent disabled:opacity-60 dark:border-border-dark dark:bg-surface-dark md:text-xs"
     >
       {(Object.keys(PROJECT_REQUEST_STATUS_LABEL) as ProjectRequestStatus[]).map((s) => (
         <option key={s} value={s}>
