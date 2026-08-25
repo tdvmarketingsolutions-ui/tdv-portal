@@ -3,7 +3,7 @@ import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, fo
 import { nl } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { getContentItemsForCurrentUser } from "@/lib/data/content";
+import { getContentItemsForCurrentUser, withVisualThumbnails } from "@/lib/data/content";
 import { getAllCompaniesForSelect } from "@/lib/data/admin/projects";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CalendarGrid } from "./CalendarGrid";
@@ -20,10 +20,11 @@ export default async function ContentPlanningPage({ searchParams }: { searchPara
     : { data: null };
   const isStaff = profile?.role === "tdv_admin" || profile?.role === "tdv_staff";
 
-  const [items, companies] = await Promise.all([
+  const [rawItems, companies] = await Promise.all([
     getContentItemsForCurrentUser(),
     isStaff ? getAllCompaniesForSelect() : Promise.resolve([]),
   ]);
+  const items = await withVisualThumbnails(rawItems);
 
   const referenceDate = searchParams.month ? new Date(`${searchParams.month}-01T00:00:00`) : new Date();
   const monthStart = startOfMonth(referenceDate);

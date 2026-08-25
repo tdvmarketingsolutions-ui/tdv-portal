@@ -9,18 +9,37 @@ const STORAGE_BUCKET = "client-files";
 
 export interface AdminContentItem extends ContentItem {
   companies: { name: string } | null;
-  visual: { id: string; file_name: string } | null;
+  visual: { id: string; file_name: string; storage_path: string; mime_type: string | null } | null;
 }
 
 export async function getAllContentItemsForAdmin(): Promise<AdminContentItem[]> {
   const supabase = createClient();
   const { data, error } = await supabase
     .from("content_items")
-    .select("*, companies ( name ), visual:files!content_items_visual_file_id_fkey ( id, file_name )")
+    .select(
+      "*, companies ( name ), visual:files!content_items_visual_file_id_fkey ( id, file_name, storage_path, mime_type )"
+    )
     .order("scheduled_for", { ascending: true, nullsFirst: false });
 
   if (error) throw new Error(`Kon contentplanning niet laden: ${error.message}`);
   return (data ?? []) as unknown as AdminContentItem[];
+}
+
+export interface AdminContentItemWithThumbnail extends AdminContentItem {
+  visualThumbnailUrl: string | null;
+}
+
+export async function withVisualThumbnailsAdmin(items: AdminContentItem[]): Promise<AdminContentItemWithThumbnail[]> {
+  const supabase = createClient();
+  return Promise.all(
+    items.map(async (item) => {
+      if (!item.visual || !item.visual.mime_type?.startsWith("image/")) {
+        return { ...item, visualThumbnailUrl: null };
+      }
+      const { data } = await supabase.storage.from(STORAGE_BUCKET).createSignedUrl(item.visual.storage_path, 60 * 5);
+      return { ...item, visualThumbnailUrl: data?.signedUrl ?? null };
+    })
+  );
 }
 
 export async function updateContentItemAdmin(

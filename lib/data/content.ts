@@ -2,6 +2,7 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { assertTdvStaff } from "@/lib/auth/assert-staff";
 import { resolveListFilterCompanyId, resolveWriteCompanyId } from "@/lib/staff-view";
+import { getFileDownloadUrl } from "@/lib/data/files";
 import type { ContentChannel, ContentItem, ContentStatus } from "@/types/domain";
 
 export interface ContentVisual {
@@ -13,7 +14,7 @@ export interface ContentVisual {
 
 export interface ContentItemWithCompany extends ContentItem {
   companies: { name: string } | null;
-  visual: { id: string; file_name: string } | null;
+  visual: ContentVisual | null;
 }
 
 export interface ContentItemWithComments extends ContentItem {
@@ -40,13 +41,32 @@ export async function getContentItemsForCurrentUser(): Promise<ContentItemWithCo
 
   let query = supabase
     .from("content_items")
-    .select("*, companies ( name ), visual:files!content_items_visual_file_id_fkey ( id, file_name )")
+    .select(
+      "*, companies ( name ), visual:files!content_items_visual_file_id_fkey ( id, file_name, storage_path, mime_type )"
+    )
     .order("scheduled_for", { ascending: true, nullsFirst: false });
   if (viewCompanyId) query = query.eq("company_id", viewCompanyId);
 
   const { data, error } = await query;
   if (error) throw new Error(`Kon contentplanning niet laden: ${error.message}`);
   return (data ?? []) as unknown as ContentItemWithCompany[];
+}
+
+export interface ContentItemWithThumbnail extends ContentItemWithCompany {
+  /** Signed URL, image visuals only — a video's thumbnail needs a poster frame we don't generate, so those keep showing a plain icon instead. */
+  visualThumbnailUrl: string | null;
+}
+
+export async function withVisualThumbnails(items: ContentItemWithCompany[]): Promise<ContentItemWithThumbnail[]> {
+  return Promise.all(
+    items.map(async (item) => ({
+      ...item,
+      visualThumbnailUrl:
+        item.visual && item.visual.mime_type?.startsWith("image/")
+          ? await getFileDownloadUrl(item.visual.storage_path)
+          : null,
+    }))
+  );
 }
 
 export async function getContentItemById(id: string): Promise<ContentItemWithComments | null> {
