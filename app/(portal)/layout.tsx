@@ -44,7 +44,7 @@ export default async function PortalLayout({ children }: { children: React.React
         staffView={staffView}
       />
       <Sidebar userId={user.id} userEmail={user.email!} fullName={fullName} unreadCount={unreadCount} staffView={staffView} />
-      <div className="flex-1">
+      <div className="min-w-0 flex-1">
         <main className="mx-auto max-w-6xl px-4 py-8 md:px-8">{children}</main>
       </div>
     </div>
