@@ -42,7 +42,8 @@ export default async function ContentItemDetailPage({ params }: { params: { id: 
         </div>
         {item.scheduled_for && (
           <p className="text-sm text-ink-muted dark:text-ink-dark-muted">
-            Gepland voor {new Date(item.scheduled_for).toLocaleDateString("nl-BE")}
+            Gepland voor{" "}
+            {new Date(item.scheduled_for).toLocaleString("nl-BE", { dateStyle: "medium", timeStyle: "short" })}
           </p>
         )}
       </header>

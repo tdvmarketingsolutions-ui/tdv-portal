@@ -46,7 +46,7 @@ export function EditContentItemDialog({
       title,
       caption: caption ?? "",
       channels,
-      scheduledFor: scheduledFor ? scheduledFor.slice(0, 10) : "",
+      scheduledFor: scheduledFor ? scheduledFor.slice(0, 16) : "",
     },
   });
 
@@ -112,7 +112,12 @@ export function EditContentItemDialog({
               {errors.channels && <p className="mt-1 text-xs text-status-danger">{errors.channels.message}</p>}
             </fieldset>
             <Textarea label="Tekst (optioneel)" rows={3} error={errors.caption?.message} {...register("caption")} />
-            <Input label="Gepland voor (optioneel)" type="date" error={errors.scheduledFor?.message} {...register("scheduledFor")} />
+            <Input
+              label="Postmoment (datum + tijd, optioneel)"
+              type="datetime-local"
+              error={errors.scheduledFor?.message}
+              {...register("scheduledFor")}
+            />
             <div className="flex justify-end gap-2">
               <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
                 Sluiten

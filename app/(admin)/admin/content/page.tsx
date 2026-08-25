@@ -53,7 +53,11 @@ export default async function AdminContentPage() {
                     "—"
                   )}
                 </Table.Cell>
-                <Table.Cell>{item.scheduled_for ? new Date(item.scheduled_for).toLocaleDateString("nl-BE") : "—"}</Table.Cell>
+                <Table.Cell>
+                  {item.scheduled_for
+                    ? new Date(item.scheduled_for).toLocaleString("nl-BE", { dateStyle: "medium", timeStyle: "short" })
+                    : "—"}
+                </Table.Cell>
                 <Table.Cell>
                   <ContentStatusSelect contentItemId={item.id} status={item.status} />
                 </Table.Cell>

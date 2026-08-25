@@ -300,7 +300,7 @@ export function CalendarGrid({
             >
               <div className="mb-1 flex items-center justify-between">
                 {isStaff ? (
-                  <NewContentItemDialog companies={companies} defaultScheduledFor={key} compact />
+                  <NewContentItemDialog companies={companies} defaultScheduledFor={`${key}T09:00`} compact />
                 ) : (
                   <span />
                 )}
