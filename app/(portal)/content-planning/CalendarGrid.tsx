@@ -130,7 +130,7 @@ export function CalendarGrid({
         }}
         title={`${CONTENT_STATUS_LABEL[item.status]}${item.companies?.name ? ` — ${item.companies.name}` : ""}`}
         className={cn(
-          "flex items-center gap-1 truncate rounded-md px-1.5 py-0.5 text-[11px] hover:opacity-80",
+          "flex items-center gap-1.5 truncate rounded-md px-1.5 py-1 text-[11px] hover:opacity-80",
           TONE_CLASS[CONTENT_STATUS_TONE[item.status]],
           isStaff ? "cursor-grab active:cursor-grabbing" : "",
           draggedId === item.id ? "opacity-40" : ""
@@ -138,7 +138,7 @@ export function CalendarGrid({
       >
         {item.visualThumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={item.visualThumbnailUrl} alt="" className="h-4 w-4 shrink-0 rounded-sm object-cover" />
+          <img src={item.visualThumbnailUrl} alt="" className="h-7 w-7 shrink-0 rounded object-cover" />
         ) : (
           item.visual_file_id && <ImageIcon size={10} strokeWidth={2} className="shrink-0" />
         )}
@@ -304,7 +304,7 @@ export function CalendarGrid({
             <div
               key={key}
               {...dropZoneProps(key)}
-              className={`min-h-[92px] bg-surface p-1.5 dark:bg-surface-dark ${!isSameMonth(day, monthStart) ? "opacity-40" : ""} ${
+              className={`min-h-[104px] bg-surface p-1.5 dark:bg-surface-dark ${!isSameMonth(day, monthStart) ? "opacity-40" : ""} ${
                 dragOverKey === key ? "bg-accent-soft dark:bg-accent/10" : ""
               }`}
             >
