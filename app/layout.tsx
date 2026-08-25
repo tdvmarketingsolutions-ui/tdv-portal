@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="nl" className={`${sans.variable} ${display.variable} ${mono.variable}`}>
-      <body className="bg-canvas text-ink dark:bg-canvas-dark dark:text-ink-dark font-sans antialiased">
+      <body className="overflow-x-hidden bg-canvas text-ink dark:bg-canvas-dark dark:text-ink-dark font-sans antialiased">
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>

@@ -38,7 +38,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <AccountMenu email={user.email!} fullName={fullName} settingsHref="/admin/settings" />
         </div>
       </aside>
-      <main className="mx-auto max-w-6xl flex-1 px-4 py-8 md:px-8">{children}</main>
+      <main className="mx-auto min-w-0 max-w-6xl flex-1 px-4 py-8 md:px-8">{children}</main>
     </div>
   );
 }
