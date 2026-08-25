@@ -49,19 +49,22 @@ van het systeem.
   hernoemd, de tabel heet in de database nog steeds `tickets` en
   `lib/data/tickets.ts` ook): lijst, nieuw, detail + reageren.
 - **Projectaanvragen**: lichte statustracker naast de gewone aanvragen — een
-  klant vraagt een nieuw project aan (`/projects` → "Project aanvragen").
-  Meteen daarna bepaalt de AI-assistent een prijsvoorstel
+  klant vraagt een nieuw project aan (`/projects` → "Project aanvragen") via
+  een korte intake: titel, type project en budget-indicatie (selects, geen
+  vrije tekst — migratie 0020), optioneel een omschrijving en gewenste
+  deadline. Meteen daarna bepaalt de AI-assistent een prijsvoorstel
   (`lib/ai/indicative-price.ts`, Anthropic Messages API, best-effort — geen
-  API-key of mislukte call = gewoon geen prijsvoorstel) dat effectief als
-  prijs aan de klant getoond wordt, niet enkel als vrijblijvende schatting.
-  De klant moet dat expliciet aanvaarden of weigeren; aanvaarden zet de
-  aanvraag automatisch op "wordt opgestart" (staff bereidt het project
-  voor), weigeren op "geweigerd". Staff kan de status ook altijd handmatig
-  doorzetten. Nog geen line-items of PDF's in de app — `lib/data/project-requests.ts`
-  + `lib/data/admin/project-requests.ts`. De aanvaard/weiger-write loopt via
-  de `respond_to_project_request_price` Postgres-functie (migratie 0016) in
-  plaats van een client-UPDATE-policy, zodat een klant nooit iets anders dan
-  die ene beslissing kan wijzigen.
+  API-key of mislukte call = gewoon geen prijsvoorstel) op basis van al die
+  intake-velden, dat effectief als prijs aan de klant getoond wordt, niet
+  enkel als vrijblijvende schatting. De klant moet dat expliciet aanvaarden
+  of weigeren; aanvaarden zet de aanvraag automatisch op "wordt opgestart"
+  (staff bereidt het project voor), weigeren op "geweigerd". Staff kan de
+  status ook altijd handmatig doorzetten, en ziet type/budget/deadline in de
+  aanvragentabel op `/admin/projects`. Nog geen line-items of PDF's in de
+  app — `lib/data/project-requests.ts` + `lib/data/admin/project-requests.ts`.
+  De aanvaard/weiger-write loopt via de `respond_to_project_request_price`
+  Postgres-functie (migratie 0016) in plaats van een client-UPDATE-policy,
+  zodat een klant nooit iets anders dan die ene beslissing kan wijzigen.
 - **Feedback & goedkeuring**: lijst, detail met versiehistoriek, preview en
   status-acties (goedkeuren/revisie vragen) — `lib/data/deliverables.ts`.
 - **Contentplanning**: maandkalender (drag-and-drop herplannen, sleep vanuit

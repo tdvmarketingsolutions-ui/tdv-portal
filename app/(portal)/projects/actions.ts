@@ -13,7 +13,10 @@ export async function createProjectRequestAction(input: NewProjectRequestFormVal
   try {
     await createProjectRequest({
       title: parsed.data.title,
+      projectType: parsed.data.projectType,
+      budgetIndication: parsed.data.budgetIndication,
       description: parsed.data.description || undefined,
+      desiredDeadline: parsed.data.desiredDeadline || undefined,
     });
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Kon projectaanvraag niet versturen." };

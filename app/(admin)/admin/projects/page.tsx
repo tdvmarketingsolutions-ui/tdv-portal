@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { NewProjectDialog } from "./NewProjectDialog";
 import { ProjectStatusSelect } from "./ProjectStatusSelect";
 import { ProjectRequestStatusSelect } from "./ProjectRequestStatusSelect";
+import { PROJECT_REQUEST_TYPE_LABEL, BUDGET_INDICATION_LABEL } from "@/lib/project-request-status";
 
 export default async function AdminProjectsPage() {
   const [projects, companies, projectRequests] = await Promise.all([
@@ -30,6 +31,9 @@ export default async function AdminProjectsPage() {
             <Table.Head>
               <Table.HeadCell>Titel</Table.HeadCell>
               <Table.HeadCell>Klant</Table.HeadCell>
+              <Table.HeadCell>Type</Table.HeadCell>
+              <Table.HeadCell>Budget (klant)</Table.HeadCell>
+              <Table.HeadCell>Gewenste deadline</Table.HeadCell>
               <Table.HeadCell>Prijsvoorstel (AI)</Table.HeadCell>
               <Table.HeadCell>Aangevraagd</Table.HeadCell>
               <Table.HeadCell>Status</Table.HeadCell>
@@ -44,6 +48,11 @@ export default async function AdminProjectsPage() {
                     )}
                   </Table.Cell>
                   <Table.Cell>{r.companies?.name ?? "—"}</Table.Cell>
+                  <Table.Cell>{r.project_type ? PROJECT_REQUEST_TYPE_LABEL[r.project_type] : "—"}</Table.Cell>
+                  <Table.Cell>{r.budget_indication ? BUDGET_INDICATION_LABEL[r.budget_indication] : "—"}</Table.Cell>
+                  <Table.Cell>
+                    {r.desired_deadline ? new Date(r.desired_deadline).toLocaleDateString("nl-BE") : "—"}
+                  </Table.Cell>
                   <Table.Cell>
                     {r.indicative_price_range ? (
                       <>

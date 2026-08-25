@@ -58,6 +58,8 @@ export interface ProjectWithRelations extends Project {
 
 export type ProjectRequestStatus = "requested" | "awaiting_quote" | "project_active" | "declined";
 export type ProjectRequestPriceResponse = "pending" | "accepted" | "declined";
+export type ProjectRequestType = "website" | "branding" | "social_media" | "seo_sea" | "video" | "other";
+export type BudgetIndication = "under_1000" | "from_1000_to_3000" | "from_3000_to_7000" | "over_7000" | "unknown";
 
 export interface ProjectRequest {
   id: string;
@@ -69,6 +71,9 @@ export interface ProjectRequest {
   indicative_price_range: string | null;
   indicative_price_note: string | null;
   price_response: ProjectRequestPriceResponse;
+  project_type: ProjectRequestType | null;
+  budget_indication: BudgetIndication | null;
+  desired_deadline: string | null;
   created_at: string;
   updated_at: string;
 }

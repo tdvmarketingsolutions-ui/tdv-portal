@@ -17,7 +17,8 @@ export interface IndicativePrice {
  */
 export async function generateIndicativePrice(
   title: string,
-  description: string | undefined
+  description: string | undefined,
+  intake?: { projectType: string; budgetIndication: string; desiredDeadline?: string }
 ): Promise<IndicativePrice | null> {
   if (!process.env.ANTHROPIC_API_KEY) return null;
 
@@ -33,17 +34,25 @@ export async function generateIndicativePrice(
         model: "claude-sonnet-4-6",
         max_tokens: 200,
         system:
-          'Je bent de prijsbepaler voor TDV, een marketingbureau in België. Op basis van een korte ' +
-          'projectomschrijving bepaal je de prijs die TDV de klant voorstelt voor dit project, in euro. ' +
-          'Dit is geen vrijblijvende schatting maar het effectieve prijsvoorstel dat de klant meteen te zien ' +
-          'krijgt en kan aanvaarden — reken daarom niet te krap. TDV positioneert zich als premium bureau: ' +
-          'reken aan het hogere, realistische uiteinde van wat gelijkaardig werk in België kost, nooit aan het ' +
-          'laagste/budget-uiteinde. Antwoord UITSLUITEND met geldige JSON, exact in dit formaat, geen andere ' +
-          'tekst: {"range": "€1.500 – €3.000", "note": "één korte Nederlandstalige zin die kort toelicht waarop dit prijsvoorstel gebaseerd is"}',
+          'Je bent de prijsbepaler voor TDV, een marketingbureau in België. Op basis van het type project, een ' +
+          'budget-indicatie die de klant zelf aangaf, een optionele gewenste deadline en een korte omschrijving ' +
+          'bepaal je de prijs die TDV de klant voorstelt voor dit project, in euro. Dit is geen vrijblijvende ' +
+          'schatting maar het effectieve prijsvoorstel dat de klant meteen te zien krijgt en kan aanvaarden — ' +
+          'reken daarom niet te krap. TDV positioneert zich als premium bureau: reken aan het hogere, ' +
+          'realistische uiteinde van wat gelijkaardig werk in België kost, nooit aan het laagste/budget-uiteinde. ' +
+          'De budget-indicatie van de klant is een signaal van wat ze verwachten, geen harde grens — wijk er ' +
+          'gerust van af als het type project en de omschrijving een ander bedrag rechtvaardigen, maar leg dat ' +
+          'dan kort uit in de toelichting. Een krappe deadline mag de prijs verhogen (spoedwerk). Antwoord ' +
+          'UITSLUITEND met geldige JSON, exact in dit formaat, geen andere tekst: {"range": "€1.500 – €3.000", ' +
+          '"note": "één korte Nederlandstalige zin die kort toelicht waarop dit prijsvoorstel gebaseerd is"}',
         messages: [
           {
             role: "user",
-            content: `Titel: ${title}\nBeschrijving: ${description ?? "(geen beschrijving)"}`,
+            content:
+              `Titel: ${title}\n` +
+              (intake ? `Type project: ${intake.projectType}\nBudget-indicatie van de klant: ${intake.budgetIndication}\n` : "") +
+              (intake?.desiredDeadline ? `Gewenste deadline: ${intake.desiredDeadline}\n` : "") +
+              `Beschrijving: ${description ?? "(geen beschrijving)"}`,
           },
         ],
       }),
