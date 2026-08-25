@@ -3,7 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createNotifications } from "@/lib/data/notifications";
 import { generateIndicativePrice } from "@/lib/ai/indicative-price";
 import { resolveListFilterCompanyId, resolveWriteCompanyId } from "@/lib/staff-view";
-import type { ProjectRequest } from "@/types/domain";
+import { PROJECT_REQUEST_TYPE_LABEL, BUDGET_INDICATION_LABEL } from "@/lib/project-request-status";
+import type { ProjectRequest, ProjectRequestType, BudgetIndication } from "@/types/domain";
 
 export async function getProjectRequestsForCurrentUser(): Promise<ProjectRequest[]> {
   const supabase = createClient();
@@ -35,7 +36,13 @@ export async function getProjectRequestsForCurrentUser(): Promise<ProjectRequest
  * price_response 'pending' and no range — the client sees a plain status
  * instead of a price prompt, and staff proceeds manually.
  */
-export async function createProjectRequest(input: { title: string; description?: string }): Promise<void> {
+export async function createProjectRequest(input: {
+  title: string;
+  projectType: ProjectRequestType;
+  budgetIndication: BudgetIndication;
+  description?: string;
+  desiredDeadline?: string;
+}): Promise<void> {
   const supabase = createClient();
   const {
     data: { user },
@@ -55,7 +62,10 @@ export async function createProjectRequest(input: { title: string; description?:
     .insert({
       company_id: companyId,
       title: input.title,
+      project_type: input.projectType,
+      budget_indication: input.budgetIndication,
       description: input.description ?? null,
+      desired_deadline: input.desiredDeadline ?? null,
       requested_by: user.id,
     })
     .select("id")
@@ -73,7 +83,11 @@ export async function createProjectRequest(input: { title: string; description?:
     }))
   );
 
-  const indicativePrice = await generateIndicativePrice(input.title, input.description);
+  const indicativePrice = await generateIndicativePrice(input.title, input.description, {
+    projectType: PROJECT_REQUEST_TYPE_LABEL[input.projectType],
+    budgetIndication: BUDGET_INDICATION_LABEL[input.budgetIndication],
+    desiredDeadline: input.desiredDeadline,
+  });
   if (indicativePrice) {
     await supabase
       .from("project_requests")

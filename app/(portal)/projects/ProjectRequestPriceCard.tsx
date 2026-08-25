@@ -4,7 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
 import { useToast } from "@/components/ui/ToastProvider";
+import { PROJECT_REQUEST_TYPE_LABEL } from "@/lib/project-request-status";
 import type { ProjectRequest } from "@/types/domain";
 import { respondToProjectRequestPriceAction } from "./actions";
 
@@ -30,8 +32,14 @@ export function ProjectRequestPriceCard({ request }: { request: ProjectRequest }
     <li className="card space-y-3 border-accent/40 p-5">
       <div>
         <p className="font-medium">{request.title}</p>
+        <div className="mt-1 flex flex-wrap gap-1.5">
+          {request.project_type && <Badge tone="gray">{PROJECT_REQUEST_TYPE_LABEL[request.project_type]}</Badge>}
+          {request.desired_deadline && (
+            <Badge tone="gray">Gewenst tegen {new Date(request.desired_deadline).toLocaleDateString("nl-BE")}</Badge>
+          )}
+        </div>
         {request.description && (
-          <p className="mt-0.5 text-sm text-ink-muted dark:text-ink-dark-muted">{request.description}</p>
+          <p className="mt-1.5 text-sm text-ink-muted dark:text-ink-dark-muted">{request.description}</p>
         )}
       </div>
       <div className="flex items-start gap-2 rounded-lg bg-canvas p-3 text-sm dark:bg-canvas-dark">
