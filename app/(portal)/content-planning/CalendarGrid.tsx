@@ -119,16 +119,66 @@ export function CalendarGrid({
     };
   }
 
+  // Image-forward card, matching how visual content calendars (Later,
+  // HubSpot's social tool, Odoo) do a month grid: the thumbnail IS the
+  // card, full cell width, with the title as a caption underneath — not a
+  // small icon squeezed next to a text line. Items without a visual fall
+  // back to the old compact text chip, since an image-shaped card with no
+  // image would just be dead space.
   function Chip({ item }: { item: ContentItemWithThumbnail }) {
+    const dragProps = {
+      draggable: canManage,
+      onDragStart: () => setDraggedId(item.id),
+      onDragEnd: () => {
+        setDraggedId(null);
+        setDragOverKey(null);
+      },
+    };
+    const tooltip = `${CONTENT_STATUS_LABEL[item.status]}${item.companies?.name ? ` — ${item.companies.name}` : ""}`;
+
+    if (item.visualThumbnailUrl) {
+      return (
+        <div
+          {...dragProps}
+          title={tooltip}
+          className={cn(
+            "group relative overflow-hidden rounded-md hover:opacity-90",
+            canManage ? "cursor-grab active:cursor-grabbing" : "",
+            draggedId === item.id ? "opacity-40" : ""
+          )}
+        >
+          <Link href={`/content-planning/${item.id}`}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={item.visualThumbnailUrl} alt="" draggable={false} className="h-20 w-full object-cover" />
+            <p
+              className={cn(
+                "truncate px-1.5 py-1 text-[11px] font-medium",
+                TONE_CLASS[CONTENT_STATUS_TONE[item.status]]
+              )}
+            >
+              {item.title}
+            </p>
+          </Link>
+          {canManage && (
+            <div className="absolute right-1 top-1 rounded-md bg-ink/70 text-white opacity-0 transition-opacity group-hover:opacity-100">
+              <EditContentItemDialog
+                contentItemId={item.id}
+                title={item.title}
+                caption={item.caption}
+                channels={item.channels}
+                scheduledFor={item.scheduled_for}
+                visualFileName={item.visual?.file_name ?? null}
+              />
+            </div>
+          )}
+        </div>
+      );
+    }
+
     return (
       <div
-        draggable={canManage}
-        onDragStart={() => setDraggedId(item.id)}
-        onDragEnd={() => {
-          setDraggedId(null);
-          setDragOverKey(null);
-        }}
-        title={`${CONTENT_STATUS_LABEL[item.status]}${item.companies?.name ? ` — ${item.companies.name}` : ""}`}
+        {...dragProps}
+        title={tooltip}
         className={cn(
           "flex items-center gap-1.5 truncate rounded-md px-1.5 py-1 text-[11px] hover:opacity-80",
           TONE_CLASS[CONTENT_STATUS_TONE[item.status]],
@@ -136,17 +186,7 @@ export function CalendarGrid({
           draggedId === item.id ? "opacity-40" : ""
         )}
       >
-        {item.visualThumbnailUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={item.visualThumbnailUrl}
-            alt=""
-            draggable={false}
-            className="h-9 w-9 shrink-0 rounded object-cover"
-          />
-        ) : (
-          item.visual_file_id && <ImageIcon size={10} strokeWidth={2} className="shrink-0" />
-        )}
+        {item.visual_file_id && <ImageIcon size={10} strokeWidth={2} className="shrink-0" />}
         <Link href={`/content-planning/${item.id}`} className="min-w-0 flex-1 truncate">
           {item.title}
         </Link>
@@ -314,7 +354,7 @@ export function CalendarGrid({
             <div
               key={key}
               {...dropZoneProps(key)}
-              className={`min-h-[116px] bg-surface p-1.5 dark:bg-surface-dark ${!isSameMonth(day, monthStart) ? "opacity-40" : ""} ${
+              className={`min-h-[150px] bg-surface p-1.5 dark:bg-surface-dark ${!isSameMonth(day, monthStart) ? "opacity-40" : ""} ${
                 dragOverKey === key ? "bg-accent-soft dark:bg-accent/10" : ""
               }`}
             >
