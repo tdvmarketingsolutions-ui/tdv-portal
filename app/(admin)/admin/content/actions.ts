@@ -2,7 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { createContentItem } from "@/lib/data/content";
-import { updateContentItemAdmin, uploadContentItemVisual, deleteContentItemAdmin } from "@/lib/data/admin/content";
+import {
+  updateContentItemAdmin,
+  uploadContentItemVisual,
+  deleteContentItemAdmin,
+  duplicateContentItemAdmin,
+} from "@/lib/data/admin/content";
 import type { ContentStatus } from "@/types/domain";
 import { newContentItemSchema, editContentItemSchema, type NewContentItemFormValues, type EditContentItemFormValues } from "./schema";
 
@@ -77,6 +82,18 @@ export async function deleteContentItemAction(id: string): Promise<{ error?: str
     await deleteContentItemAdmin(id);
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Kon content-item niet verwijderen." };
+  }
+
+  revalidatePath("/admin/content");
+  revalidatePath("/content-planning");
+  return {};
+}
+
+export async function duplicateContentItemAction(id: string): Promise<{ error?: string }> {
+  try {
+    await duplicateContentItemAdmin(id);
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Kon content-item niet dupliceren." };
   }
 
   revalidatePath("/admin/content");

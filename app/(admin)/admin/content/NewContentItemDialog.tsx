@@ -15,7 +15,17 @@ import { CONTENT_CHANNEL_LABEL } from "@/lib/content-status";
 import { newContentItemSchema, type NewContentItemFormValues } from "./schema";
 import { createContentItemAction } from "./actions";
 
-export function NewContentItemDialog({ companies }: { companies: { id: string; name: string }[] }) {
+export function NewContentItemDialog({
+  companies,
+  defaultScheduledFor,
+  compact,
+}: {
+  companies: { id: string; name: string }[];
+  /** Pre-fills "Gepland voor" (yyyy-MM-dd) — used by the calendar's per-day quick-add. */
+  defaultScheduledFor?: string;
+  /** Renders a small "+" icon button instead of the full "Nieuw content-item" button, for use inside a calendar day cell. */
+  compact?: boolean;
+}) {
   const router = useRouter();
   const { push } = useToast();
   const [open, setOpen] = useState(false);
@@ -26,7 +36,7 @@ export function NewContentItemDialog({ companies }: { companies: { id: string; n
     formState: { errors, isSubmitting },
   } = useForm<NewContentItemFormValues>({
     resolver: zodResolver(newContentItemSchema),
-    defaultValues: { channels: ["instagram"] },
+    defaultValues: { channels: ["instagram"], scheduledFor: defaultScheduledFor },
   });
 
   async function onSubmit(values: NewContentItemFormValues) {
@@ -43,10 +53,21 @@ export function NewContentItemDialog({ companies }: { companies: { id: string; n
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>
-        <Plus size={16} strokeWidth={1.75} />
-        Nieuw content-item
-      </Button>
+      {compact ? (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label="Content-item toevoegen"
+          className="flex h-5 w-5 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-canvas hover:text-ink dark:text-ink-dark-muted dark:hover:bg-canvas-dark dark:hover:text-ink-dark"
+        >
+          <Plus size={13} strokeWidth={2} />
+        </button>
+      ) : (
+        <Button onClick={() => setOpen(true)}>
+          <Plus size={16} strokeWidth={1.75} />
+          Nieuw content-item
+        </Button>
+      )}
 
       <Dialog open={open} onClose={() => setOpen(false)} title="Nieuw content-item">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>

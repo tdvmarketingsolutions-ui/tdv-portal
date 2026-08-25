@@ -69,7 +69,7 @@ export default async function ContentPlanningPage({ searchParams }: { searchPara
           description={isStaff ? "Maak een content-item aan om te beginnen." : "Zodra TDV content inplant, verschijnt die hier."}
         />
       ) : (
-        <CalendarGrid items={items} days={days} monthStart={monthStart} isStaff={isStaff} />
+        <CalendarGrid items={items} days={days} monthStart={monthStart} isStaff={isStaff} companies={companies} />
       )}
     </div>
   );

@@ -9,6 +9,7 @@ import { NewContentItemDialog } from "./NewContentItemDialog";
 import { ContentStatusSelect } from "./ContentStatusSelect";
 import { EditContentItemDialog } from "./EditContentItemDialog";
 import { DeleteContentItemButton } from "./DeleteContentItemButton";
+import { DuplicateContentItemButton } from "./DuplicateContentItemButton";
 
 export default async function AdminContentPage() {
   const [items, companies] = await Promise.all([getAllContentItemsForAdmin(), getAllCompaniesForSelect()]);
@@ -66,6 +67,7 @@ export default async function AdminContentPage() {
                       scheduledFor={item.scheduled_for}
                       visualFileName={item.visual?.file_name ?? null}
                     />
+                    <DuplicateContentItemButton contentItemId={item.id} title={item.title} />
                     <DeleteContentItemButton contentItemId={item.id} title={item.title} />
                   </div>
                 </Table.Cell>

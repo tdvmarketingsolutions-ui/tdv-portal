@@ -64,12 +64,19 @@ van het systeem.
   die ene beslissing kan wijzigen.
 - **Feedback & goedkeuring**: lijst, detail met versiehistoriek, preview en
   status-acties (goedkeuren/revisie vragen) — `lib/data/deliverables.ts`.
-- **Contentplanning**: maandkalender + lijst, detail met visual
-  (afbeelding/video), opmerkingen en de volledige statuslevenscyclus
-  (concept → wacht op goedkeuring → goedgekeurd/revisie → ingepland →
-  gepubliceerd) — klant keurt goed/vraagt revisie, staff beheert de rest
-  (aanmaken, bewerken, visual uploaden, status verzetten) vanaf
-  `/admin/content` — `lib/data/content.ts` + `lib/data/admin/content.ts`.
+- **Contentplanning**: maandkalender (drag-and-drop herplannen, sleep vanuit
+  "Nog niet ingepland") + lijst, detail met visual (afbeelding/video),
+  opmerkingen en de volledige statuslevenscyclus (concept → wacht op
+  goedkeuring → goedgekeurd/revisie → ingepland → gepubliceerd) — klant
+  keurt goed/vraagt revisie, staff beheert de rest (aanmaken, dupliceren,
+  verwijderen, bewerken, visual uploaden, status verzetten) vanaf
+  `/admin/content` of rechtstreeks vanuit de kalender. Elk item ondersteunt
+  meerdere social-mediakanalen tegelijk (`channels`-array); de kalender kan
+  filteren op zowel status als kanaal, en heeft per dag een snel-toevoegen-
+  knop die de datum al invult. Dupliceren zet een kopie in "Nog niet
+  ingepland" (status concept), zodat een reeks vergelijkbare posts snel
+  aangemaakt en dan één voor één naar hun dag gesleept kan worden —
+  `lib/data/content.ts` + `lib/data/admin/content.ts`.
 - **Bestanden**: overzicht + upload naar de `client-files` Storage-bucket —
   `lib/data/files.ts`.
 - **Meldingen**: lijst, ongelezen-badge in de sidebar, alles-gelezen-actie,
