@@ -77,6 +77,51 @@ export async function deleteContentItemAdmin(id: string): Promise<void> {
 }
 
 /**
+ * Duplicates a content item as a new draft, unscheduled — the copy lands in
+ * the calendar's "Nog niet ingepland" tray rather than on the same date, so
+ * bulk-entering a month of similar posts becomes: duplicate N times, then
+ * drag each copy onto its own day (reusing the existing drag-to-reschedule
+ * flow instead of adding a second date-picking UI). The visual is not
+ * copied along — a shared `visual_file_id` would mean editing/replacing the
+ * visual on one item silently changes it on the other.
+ */
+export async function duplicateContentItemAdmin(id: string): Promise<void> {
+  await assertTdvStaff();
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Niet ingelogd.");
+
+  const { data: source, error: fetchError } = await supabase
+    .from("content_items")
+    .select("company_id, project_id, title, caption, channels")
+    .eq("id", id)
+    .single();
+  if (fetchError || !source) throw new Error("Kon content-item niet vinden om te dupliceren.");
+
+  const original = source as {
+    company_id: string;
+    project_id: string | null;
+    title: string;
+    caption: string | null;
+    channels: ContentChannel[];
+  };
+
+  const { error: insertError } = await supabase.from("content_items").insert({
+    company_id: original.company_id,
+    project_id: original.project_id,
+    title: `${original.title} (kopie)`,
+    caption: original.caption,
+    channels: original.channels,
+    status: "draft",
+    scheduled_for: null,
+    created_by: user.id,
+  });
+  if (insertError) throw new Error(`Kon content-item niet dupliceren: ${insertError.message}`);
+}
+
+/**
  * Uploads a visual (image/video) for a content item and links it via
  * `visual_file_id`. Uses the RLS-bound client, not the admin client — the
  * caller runs as TDV staff, and `is_tdv_staff()` already grants storage and

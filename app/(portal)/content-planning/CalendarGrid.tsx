@@ -11,8 +11,10 @@ import { useToast } from "@/components/ui/ToastProvider";
 import { Badge, TONE_CLASS } from "@/components/ui/Badge";
 import { CONTENT_STATUS_LABEL, CONTENT_STATUS_TONE, CONTENT_CHANNEL_LABEL } from "@/lib/content-status";
 import type { ContentItemWithCompany } from "@/lib/data/content";
-import type { ContentStatus } from "@/types/domain";
+import type { ContentChannel, ContentStatus } from "@/types/domain";
 import { EditContentItemDialog } from "./EditContentItemDialog";
+import { NewContentItemDialog } from "@/app/(admin)/admin/content/NewContentItemDialog";
+import { DuplicateContentItemButton } from "@/app/(admin)/admin/content/DuplicateContentItemButton";
 import { rescheduleContentItemAction } from "./actions";
 
 const WEEKDAYS = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"];
@@ -20,17 +22,20 @@ const WEEKDAYS = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"];
 // means "not currently hovering any drop zone") on the dragOverKey state.
 const UNSCHEDULED = "__unscheduled__";
 const STATUSES = Object.keys(CONTENT_STATUS_LABEL) as ContentStatus[];
+const CHANNELS = Object.keys(CONTENT_CHANNEL_LABEL) as ContentChannel[];
 
 export function CalendarGrid({
   items,
   days,
   monthStart,
   isStaff,
+  companies,
 }: {
   items: ContentItemWithCompany[];
   days: Date[];
   monthStart: Date;
   isStaff: boolean;
+  companies: { id: string; name: string }[];
 }) {
   const router = useRouter();
   const { push } = useToast();
@@ -38,6 +43,7 @@ export function CalendarGrid({
   const [dragOverKey, setDragOverKey] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [statusFilter, setStatusFilter] = useState<ContentStatus | "all">("all");
+  const [channelFilter, setChannelFilter] = useState<ContentChannel | "all">("all");
 
   const counts = useMemo(() => {
     const byStatus = new Map<ContentStatus, number>();
@@ -45,7 +51,17 @@ export function CalendarGrid({
     return byStatus;
   }, [items]);
 
-  const visibleItems = statusFilter === "all" ? items : items.filter((i) => i.status === statusFilter);
+  const channelCounts = useMemo(() => {
+    const byChannel = new Map<ContentChannel, number>();
+    for (const item of items) {
+      for (const c of item.channels) byChannel.set(c, (byChannel.get(c) ?? 0) + 1);
+    }
+    return byChannel;
+  }, [items]);
+
+  const visibleItems = items
+    .filter((i) => statusFilter === "all" || i.status === statusFilter)
+    .filter((i) => channelFilter === "all" || i.channels.includes(channelFilter));
 
   const itemsByDay = new Map<string, ContentItemWithCompany[]>();
   for (const item of visibleItems) {
@@ -153,14 +169,17 @@ export function CalendarGrid({
           </p>
         </Link>
         {isStaff && (
-          <EditContentItemDialog
-            contentItemId={item.id}
-            title={item.title}
-            caption={item.caption}
-            channels={item.channels}
-            scheduledFor={item.scheduled_for}
-            visualFileName={item.visual?.file_name ?? null}
-          />
+          <div className="flex shrink-0 items-center gap-1">
+            <DuplicateContentItemButton contentItemId={item.id} title={item.title} />
+            <EditContentItemDialog
+              contentItemId={item.id}
+              title={item.title}
+              caption={item.caption}
+              channels={item.channels}
+              scheduledFor={item.scheduled_for}
+              visualFileName={item.visual?.file_name ?? null}
+            />
+          </div>
         )}
       </li>
     );
@@ -199,11 +218,41 @@ export function CalendarGrid({
         ))}
       </div>
 
+      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+        <button
+          type="button"
+          onClick={() => setChannelFilter("all")}
+          className={cn(
+            "shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+            channelFilter === "all"
+              ? "border-ink bg-ink text-white dark:border-ink-dark dark:bg-ink-dark dark:text-ink"
+              : "border-border text-ink-muted hover:border-ink/30 dark:border-border-dark dark:text-ink-dark-muted"
+          )}
+        >
+          Alle kanalen
+        </button>
+        {CHANNELS.filter((c) => (channelCounts.get(c) ?? 0) > 0).map((channel) => (
+          <button
+            key={channel}
+            type="button"
+            onClick={() => setChannelFilter((current) => (current === channel ? "all" : channel))}
+            className={cn(
+              "shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+              channelFilter === channel
+                ? "border-ink bg-ink text-white dark:border-ink-dark dark:bg-ink-dark dark:text-ink"
+                : "border-border text-ink-muted hover:border-ink/30 dark:border-border-dark dark:text-ink-dark-muted"
+            )}
+          >
+            {CONTENT_CHANNEL_LABEL[channel]} ({channelCounts.get(channel) ?? 0})
+          </button>
+        ))}
+      </div>
+
       {/* Mobile: agenda list, one section per day that actually has something. */}
       <div className="space-y-4 sm:hidden">
         {agendaDays.length === 0 ? (
           <p className="card p-4 text-center text-sm text-ink-muted dark:text-ink-dark-muted">
-            Niets gepland deze maand{statusFilter !== "all" ? " voor deze status" : ""}.
+            Niets gepland deze maand{statusFilter !== "all" || channelFilter !== "all" ? " voor dit filter" : ""}.
           </p>
         ) : (
           agendaDays.map(({ day, key, dayItems }) => (
@@ -249,7 +298,12 @@ export function CalendarGrid({
                 dragOverKey === key ? "bg-accent-soft dark:bg-accent/10" : ""
               }`}
             >
-              <div className="mb-1 flex justify-end">
+              <div className="mb-1 flex items-center justify-between">
+                {isStaff ? (
+                  <NewContentItemDialog companies={companies} defaultScheduledFor={key} compact />
+                ) : (
+                  <span />
+                )}
                 <span
                   className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] ${
                     isSameDay(day, new Date())
@@ -311,14 +365,17 @@ export function CalendarGrid({
                     ))}
                     <Badge tone={CONTENT_STATUS_TONE[item.status]}>{CONTENT_STATUS_LABEL[item.status]}</Badge>
                     {isStaff && (
-                      <EditContentItemDialog
-                        contentItemId={item.id}
-                        title={item.title}
-                        caption={item.caption}
-                        channels={item.channels}
-                        scheduledFor={item.scheduled_for}
-                        visualFileName={item.visual?.file_name ?? null}
-                      />
+                      <>
+                        <DuplicateContentItemButton contentItemId={item.id} title={item.title} />
+                        <EditContentItemDialog
+                          contentItemId={item.id}
+                          title={item.title}
+                          caption={item.caption}
+                          channels={item.channels}
+                          scheduledFor={item.scheduled_for}
+                          visualFileName={item.visual?.file_name ?? null}
+                        />
+                      </>
                     )}
                   </div>
                 </li>
