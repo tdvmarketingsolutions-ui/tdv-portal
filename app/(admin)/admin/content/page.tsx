@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CalendarDays, ImageIcon } from "lucide-react";
-import { getAllContentItemsForAdmin } from "@/lib/data/admin/content";
+import { getAllContentItemsForAdmin, withVisualThumbnailsAdmin } from "@/lib/data/admin/content";
 import { getAllCompaniesForSelect } from "@/lib/data/admin/projects";
 import { Table } from "@/components/ui/Table";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -12,7 +12,8 @@ import { DeleteContentItemButton } from "./DeleteContentItemButton";
 import { DuplicateContentItemButton } from "./DuplicateContentItemButton";
 
 export default async function AdminContentPage() {
-  const [items, companies] = await Promise.all([getAllContentItemsForAdmin(), getAllCompaniesForSelect()]);
+  const [rawItems, companies] = await Promise.all([getAllContentItemsForAdmin(), getAllCompaniesForSelect()]);
+  const items = await withVisualThumbnailsAdmin(rawItems);
 
   return (
     <div className="space-y-6">
@@ -45,7 +46,10 @@ export default async function AdminContentPage() {
                 <Table.Cell>{item.companies?.name ?? "—"}</Table.Cell>
                 <Table.Cell>{item.channels.map((c) => CONTENT_CHANNEL_LABEL[c]).join(", ")}</Table.Cell>
                 <Table.Cell>
-                  {item.visual ? (
+                  {item.visualThumbnailUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={item.visualThumbnailUrl} alt="" className="h-8 w-8 rounded-lg object-cover" />
+                  ) : item.visual ? (
                     <span className="flex items-center gap-1 text-ink-muted dark:text-ink-dark-muted">
                       <ImageIcon size={14} strokeWidth={1.75} />
                     </span>

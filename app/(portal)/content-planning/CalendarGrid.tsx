@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/ToastProvider";
 import { Badge, TONE_CLASS } from "@/components/ui/Badge";
 import { CONTENT_STATUS_LABEL, CONTENT_STATUS_TONE, CONTENT_CHANNEL_LABEL } from "@/lib/content-status";
-import type { ContentItemWithCompany } from "@/lib/data/content";
+import type { ContentItemWithThumbnail } from "@/lib/data/content";
 import type { ContentChannel, ContentStatus } from "@/types/domain";
 import { EditContentItemDialog } from "./EditContentItemDialog";
 import { NewContentItemDialog } from "@/app/(admin)/admin/content/NewContentItemDialog";
@@ -31,7 +31,7 @@ export function CalendarGrid({
   isStaff,
   companies,
 }: {
-  items: ContentItemWithCompany[];
+  items: ContentItemWithThumbnail[];
   days: Date[];
   monthStart: Date;
   isStaff: boolean;
@@ -63,7 +63,7 @@ export function CalendarGrid({
     .filter((i) => statusFilter === "all" || i.status === statusFilter)
     .filter((i) => channelFilter === "all" || i.channels.includes(channelFilter));
 
-  const itemsByDay = new Map<string, ContentItemWithCompany[]>();
+  const itemsByDay = new Map<string, ContentItemWithThumbnail[]>();
   for (const item of visibleItems) {
     if (!item.scheduled_for) continue;
     const key = format(new Date(item.scheduled_for), "yyyy-MM-dd");
@@ -119,7 +119,7 @@ export function CalendarGrid({
     };
   }
 
-  function Chip({ item }: { item: ContentItemWithCompany }) {
+  function Chip({ item }: { item: ContentItemWithThumbnail }) {
     return (
       <div
         draggable={isStaff}
@@ -136,7 +136,12 @@ export function CalendarGrid({
           draggedId === item.id ? "opacity-40" : ""
         )}
       >
-        {item.visual_file_id && <ImageIcon size={10} strokeWidth={2} className="shrink-0" />}
+        {item.visualThumbnailUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={item.visualThumbnailUrl} alt="" className="h-4 w-4 shrink-0 rounded-sm object-cover" />
+        ) : (
+          item.visual_file_id && <ImageIcon size={10} strokeWidth={2} className="shrink-0" />
+        )}
         <Link href={`/content-planning/${item.id}`} className="min-w-0 flex-1 truncate">
           {item.title}
         </Link>
@@ -154,12 +159,17 @@ export function CalendarGrid({
     );
   }
 
-  function AgendaCard({ item }: { item: ContentItemWithCompany }) {
+  function AgendaCard({ item }: { item: ContentItemWithThumbnail }) {
     return (
       <li className="card flex items-center gap-3 p-3">
         <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full", TONE_CLASS[CONTENT_STATUS_TONE[item.status]])} />
-        {item.visual_file_id && (
-          <ImageIcon size={16} strokeWidth={1.75} className="shrink-0 text-ink-muted dark:text-ink-dark-muted" />
+        {item.visualThumbnailUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={item.visualThumbnailUrl} alt="" className="h-10 w-10 shrink-0 rounded-lg object-cover" />
+        ) : (
+          item.visual_file_id && (
+            <ImageIcon size={16} strokeWidth={1.75} className="shrink-0 text-ink-muted dark:text-ink-dark-muted" />
+          )
         )}
         <Link href={`/content-planning/${item.id}`} className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium">{item.title}</p>
@@ -354,9 +364,19 @@ export function CalendarGrid({
                     isStaff ? "cursor-grab active:cursor-grabbing" : ""
                   } ${draggedId === item.id ? "opacity-40" : ""}`}
                 >
-                  <Link href={`/content-planning/${item.id}`} className="min-w-0 flex-1 truncate">
-                    {item.title}
-                  </Link>
+                  <div className="flex min-w-0 flex-1 items-center gap-2">
+                    {item.visualThumbnailUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={item.visualThumbnailUrl} alt="" className="h-8 w-8 shrink-0 rounded-lg object-cover" />
+                    ) : (
+                      item.visual_file_id && (
+                        <ImageIcon size={14} strokeWidth={1.75} className="shrink-0 text-ink-muted dark:text-ink-dark-muted" />
+                      )
+                    )}
+                    <Link href={`/content-planning/${item.id}`} className="min-w-0 flex-1 truncate">
+                      {item.title}
+                    </Link>
+                  </div>
                   <div className="flex shrink-0 flex-wrap items-center gap-2">
                     {item.channels.map((c) => (
                       <Badge key={c} tone="gray">
