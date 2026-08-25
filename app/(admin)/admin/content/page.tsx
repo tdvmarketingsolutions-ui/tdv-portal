@@ -48,7 +48,7 @@ export default async function AdminContentPage() {
                 <Table.Cell>
                   {item.visualThumbnailUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={item.visualThumbnailUrl} alt="" className="h-8 w-8 rounded-lg object-cover" />
+                    <img src={item.visualThumbnailUrl} alt="" className="h-11 w-11 rounded-lg object-cover" />
                   ) : item.visual ? (
                     <span className="flex items-center gap-1 text-ink-muted dark:text-ink-dark-muted">
                       <ImageIcon size={14} strokeWidth={1.75} />
