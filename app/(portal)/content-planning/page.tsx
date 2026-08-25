@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getContentItemsForCurrentUser, withVisualThumbnails } from "@/lib/data/content";
 import { getAllCompaniesForSelect } from "@/lib/data/admin/projects";
+import { getStaffViewCompanyId } from "@/lib/staff-view";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CalendarGrid } from "./CalendarGrid";
 import { NewContentItemDialog } from "./NewContentItemDialog";
@@ -19,10 +20,15 @@ export default async function ContentPlanningPage({ searchParams }: { searchPara
     ? await supabase.from("profiles").select("role").eq("id", user.id).single()
     : { data: null };
   const isStaff = profile?.role === "tdv_admin" || profile?.role === "tdv_staff";
+  // While staff previews "as a client" (sidebar switcher), the calendar should
+  // behave exactly like the client would see it — no edit/duplicate/drag/quick-add
+  // affordances — so staff can actually verify the client experience instead of
+  // just narrowing which company's data shows.
+  const canManage = isStaff && !getStaffViewCompanyId();
 
   const [rawItems, companies] = await Promise.all([
     getContentItemsForCurrentUser(),
-    isStaff ? getAllCompaniesForSelect() : Promise.resolve([]),
+    canManage ? getAllCompaniesForSelect() : Promise.resolve([]),
   ]);
   const items = await withVisualThumbnails(rawItems);
 
@@ -42,7 +48,7 @@ export default async function ContentPlanningPage({ searchParams }: { searchPara
         <div>
           <h1 className="font-display text-2xl font-semibold">Contentplanning</h1>
           <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
-            {isStaff
+            {canManage
               ? "Sleep items naar een andere dag om te herplannen, of klik het potloodje om te bewerken."
               : "Bekijk en keur geplande content goed, of stel zelf iets voor."}
           </p>
@@ -59,7 +65,7 @@ export default async function ContentPlanningPage({ searchParams }: { searchPara
               <ChevronRight size={16} strokeWidth={1.75} />
             </Link>
           </div>
-          {isStaff ? <StaffNewContentItemDialog companies={companies} /> : <NewContentItemDialog />}
+          {canManage ? <StaffNewContentItemDialog companies={companies} /> : <NewContentItemDialog />}
         </div>
       </header>
 
@@ -67,10 +73,10 @@ export default async function ContentPlanningPage({ searchParams }: { searchPara
         <EmptyState
           icon={CalendarDays}
           title="Nog geen content gepland"
-          description={isStaff ? "Maak een content-item aan om te beginnen." : "Zodra TDV content inplant, verschijnt die hier."}
+          description={canManage ? "Maak een content-item aan om te beginnen." : "Zodra TDV content inplant, verschijnt die hier."}
         />
       ) : (
-        <CalendarGrid items={items} days={days} monthStart={monthStart} isStaff={isStaff} companies={companies} />
+        <CalendarGrid items={items} days={days} monthStart={monthStart} canManage={canManage} companies={companies} />
       )}
     </div>
   );

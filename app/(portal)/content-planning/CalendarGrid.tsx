@@ -28,13 +28,13 @@ export function CalendarGrid({
   items,
   days,
   monthStart,
-  isStaff,
+  canManage,
   companies,
 }: {
   items: ContentItemWithThumbnail[];
   days: Date[];
   monthStart: Date;
-  isStaff: boolean;
+  canManage: boolean;
   companies: { id: string; name: string }[];
 }) {
   const router = useRouter();
@@ -105,7 +105,7 @@ export function CalendarGrid({
   }
 
   function dropZoneProps(key: string) {
-    if (!isStaff) return {};
+    if (!canManage) return {};
     return {
       onDragOver: (e: React.DragEvent) => {
         e.preventDefault();
@@ -122,7 +122,7 @@ export function CalendarGrid({
   function Chip({ item }: { item: ContentItemWithThumbnail }) {
     return (
       <div
-        draggable={isStaff}
+        draggable={canManage}
         onDragStart={() => setDraggedId(item.id)}
         onDragEnd={() => {
           setDraggedId(null);
@@ -132,20 +132,25 @@ export function CalendarGrid({
         className={cn(
           "flex items-center gap-1.5 truncate rounded-md px-1.5 py-1 text-[11px] hover:opacity-80",
           TONE_CLASS[CONTENT_STATUS_TONE[item.status]],
-          isStaff ? "cursor-grab active:cursor-grabbing" : "",
+          canManage ? "cursor-grab active:cursor-grabbing" : "",
           draggedId === item.id ? "opacity-40" : ""
         )}
       >
         {item.visualThumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={item.visualThumbnailUrl} alt="" className="h-7 w-7 shrink-0 rounded object-cover" />
+          <img
+            src={item.visualThumbnailUrl}
+            alt=""
+            draggable={false}
+            className="h-9 w-9 shrink-0 rounded object-cover"
+          />
         ) : (
           item.visual_file_id && <ImageIcon size={10} strokeWidth={2} className="shrink-0" />
         )}
         <Link href={`/content-planning/${item.id}`} className="min-w-0 flex-1 truncate">
           {item.title}
         </Link>
-        {isStaff && (
+        {canManage && (
           <EditContentItemDialog
             contentItemId={item.id}
             title={item.title}
@@ -165,7 +170,12 @@ export function CalendarGrid({
         <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full", TONE_CLASS[CONTENT_STATUS_TONE[item.status]])} />
         {item.visualThumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={item.visualThumbnailUrl} alt="" className="h-10 w-10 shrink-0 rounded-lg object-cover" />
+          <img
+            src={item.visualThumbnailUrl}
+            alt=""
+            draggable={false}
+            className="h-14 w-14 shrink-0 rounded-lg object-cover"
+          />
         ) : (
           item.visual_file_id && (
             <ImageIcon size={16} strokeWidth={1.75} className="shrink-0 text-ink-muted dark:text-ink-dark-muted" />
@@ -178,7 +188,7 @@ export function CalendarGrid({
             {item.companies?.name ? ` · ${item.companies.name}` : ""}
           </p>
         </Link>
-        {isStaff && (
+        {canManage && (
           <div className="flex shrink-0 items-center gap-1">
             <DuplicateContentItemButton contentItemId={item.id} title={item.title} />
             <EditContentItemDialog
@@ -304,12 +314,12 @@ export function CalendarGrid({
             <div
               key={key}
               {...dropZoneProps(key)}
-              className={`min-h-[104px] bg-surface p-1.5 dark:bg-surface-dark ${!isSameMonth(day, monthStart) ? "opacity-40" : ""} ${
+              className={`min-h-[116px] bg-surface p-1.5 dark:bg-surface-dark ${!isSameMonth(day, monthStart) ? "opacity-40" : ""} ${
                 dragOverKey === key ? "bg-accent-soft dark:bg-accent/10" : ""
               }`}
             >
               <div className="mb-1 flex items-center justify-between">
-                {isStaff ? (
+                {canManage ? (
                   <NewContentItemDialog companies={companies} defaultScheduledFor={`${key}T09:00`} compact />
                 ) : (
                   <span />
@@ -334,14 +344,14 @@ export function CalendarGrid({
         })}
       </div>
 
-      {(unscheduled.length > 0 || (isStaff && draggedId)) && (
+      {(unscheduled.length > 0 || (canManage && draggedId)) && (
         <section
           {...dropZoneProps(UNSCHEDULED)}
           className={`card p-6 ${dragOverKey === UNSCHEDULED ? "bg-accent-soft dark:bg-accent/10" : ""}`}
         >
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="font-display text-base font-medium">Nog niet ingepland</h2>
-            {isStaff && (
+            {canManage && (
               <p className="hidden text-xs text-ink-muted dark:text-ink-dark-muted sm:block">
                 Sleep hierheen om te ontplannen
               </p>
@@ -354,20 +364,25 @@ export function CalendarGrid({
               {unscheduled.map((item) => (
                 <li
                   key={item.id}
-                  draggable={isStaff}
+                  draggable={canManage}
                   onDragStart={() => setDraggedId(item.id)}
                   onDragEnd={() => {
                     setDraggedId(null);
                     setDragOverKey(null);
                   }}
                   className={`flex flex-col gap-2 rounded-xl px-3 py-2 text-sm hover:bg-canvas dark:hover:bg-canvas-dark sm:flex-row sm:items-center sm:justify-between ${
-                    isStaff ? "cursor-grab active:cursor-grabbing" : ""
+                    canManage ? "cursor-grab active:cursor-grabbing" : ""
                   } ${draggedId === item.id ? "opacity-40" : ""}`}
                 >
                   <div className="flex min-w-0 flex-1 items-center gap-2">
                     {item.visualThumbnailUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={item.visualThumbnailUrl} alt="" className="h-8 w-8 shrink-0 rounded-lg object-cover" />
+                      <img
+                        src={item.visualThumbnailUrl}
+                        alt=""
+                        draggable={false}
+                        className="h-11 w-11 shrink-0 rounded-lg object-cover"
+                      />
                     ) : (
                       item.visual_file_id && (
                         <ImageIcon size={14} strokeWidth={1.75} className="shrink-0 text-ink-muted dark:text-ink-dark-muted" />
@@ -384,7 +399,7 @@ export function CalendarGrid({
                       </Badge>
                     ))}
                     <Badge tone={CONTENT_STATUS_TONE[item.status]}>{CONTENT_STATUS_LABEL[item.status]}</Badge>
-                    {isStaff && (
+                    {canManage && (
                       <>
                         <DuplicateContentItemButton contentItemId={item.id} title={item.title} />
                         <EditContentItemDialog
