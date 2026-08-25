@@ -76,7 +76,17 @@ van het systeem.
   knop die de datum al invult. Dupliceren zet een kopie in "Nog niet
   ingepland" (status concept), zodat een reeks vergelijkbare posts snel
   aangemaakt en dan één voor één naar hun dag gesleept kan worden —
-  `lib/data/content.ts` + `lib/data/admin/content.ts`.
+  `lib/data/content.ts` + `lib/data/admin/content.ts`. Het "gepland
+  voor"-veld voor staff is nu datum + tijd (i.p.v. enkel datum), zodat het
+  exacte postmoment vastligt zodra er automatisch gepubliceerd kan worden.
+- **Social kanalen** (scaffold, nog niet functioneel): `social_accounts`
+  (migratie 0019) + `/admin/clients/[id]` toont per klant of Instagram/
+  Facebook/LinkedIn verbonden zijn. Nog geen OAuth-koppelflow of echte
+  publicatie — dat vereist eerst Meta App Review
+  (`instagram_content_publish`/`pages_manage_posts`) en toegang tot het
+  LinkedIn Marketing Developer Platform, externe goedkeuringen die TDV zelf
+  moet aanvragen. De "Verbinden"-knop staat er al, maar is bewust
+  uitgeschakeld tot die koppeling bestaat — `lib/data/admin/social-accounts.ts`.
 - **Bestanden**: overzicht + upload naar de `client-files` Storage-bucket —
   `lib/data/files.ts`.
 - **Meldingen**: lijst, ongelezen-badge in de sidebar, alles-gelezen-actie,

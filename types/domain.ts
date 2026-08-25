@@ -172,6 +172,18 @@ export interface ContentItem {
   updated_at: string;
 }
 
+export type SocialPlatform = "instagram" | "facebook" | "linkedin";
+export type SocialAccountStatus = "not_connected" | "connected" | "error";
+
+export interface SocialAccount {
+  id: string;
+  company_id: string;
+  platform: SocialPlatform;
+  status: SocialAccountStatus;
+  account_label: string | null;
+  connected_at: string | null;
+}
+
 export type NotificationType = "ticket" | "comment" | "approval" | "file" | "deadline";
 
 export interface Notification {
