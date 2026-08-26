@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { format, isSameMonth, isSameDay } from "date-fns";
 import { nl } from "date-fns/locale";
-import { ImageIcon } from "lucide-react";
+import { ImageIcon, List, LayoutGrid } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/ToastProvider";
 import { Badge, TONE_CLASS } from "@/components/ui/Badge";
@@ -44,6 +44,7 @@ export function CalendarGrid({
   const [busy, setBusy] = useState(false);
   const [statusFilter, setStatusFilter] = useState<ContentStatus | "all">("all");
   const [channelFilter, setChannelFilter] = useState<ContentChannel | "all">("all");
+  const [viewMode, setViewMode] = useState<"calendar" | "list">("calendar");
 
   const counts = useMemo(() => {
     const byStatus = new Map<ContentStatus, number>();
@@ -247,6 +248,39 @@ export function CalendarGrid({
 
   return (
     <>
+      <div className="flex items-center justify-between gap-2">
+        <div className="inline-flex rounded-lg border border-border p-0.5 dark:border-border-dark">
+          <button
+            type="button"
+            onClick={() => setViewMode("calendar")}
+            aria-pressed={viewMode === "calendar"}
+            className={cn(
+              "flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
+              viewMode === "calendar"
+                ? "bg-ink text-white dark:bg-ink-dark dark:text-ink"
+                : "text-ink-muted hover:text-ink dark:text-ink-dark-muted dark:hover:text-ink-dark"
+            )}
+          >
+            <LayoutGrid size={14} strokeWidth={1.75} />
+            Kalender
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode("list")}
+            aria-pressed={viewMode === "list"}
+            className={cn(
+              "flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
+              viewMode === "list"
+                ? "bg-ink text-white dark:bg-ink-dark dark:text-ink"
+                : "text-ink-muted hover:text-ink dark:text-ink-dark-muted dark:hover:text-ink-dark"
+            )}
+          >
+            <List size={14} strokeWidth={1.75} />
+            Lijst
+          </button>
+        </div>
+      </div>
+
       <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
         <button
           type="button"
@@ -308,8 +342,11 @@ export function CalendarGrid({
         ))}
       </div>
 
-      {/* Mobile: agenda list, one section per day that actually has something. */}
-      <div className="space-y-4 sm:hidden">
+      {/* Agenda list, one section per day that actually has something.
+          Always shown in "list" view mode; in "calendar" view mode it's the
+          mobile fallback for the grid below (a 7-column grid has no room
+          left for real content on a phone). */}
+      <div className={viewMode === "list" ? "space-y-4" : "space-y-4 sm:hidden"}>
         {agendaDays.length === 0 ? (
           <p className="card p-4 text-center text-sm text-ink-muted dark:text-ink-dark-muted">
             Niets gepland deze maand{statusFilter !== "all" || channelFilter !== "all" ? " voor dit filter" : ""}.
@@ -340,49 +377,51 @@ export function CalendarGrid({
         )}
       </div>
 
-      {/* Tablet/desktop: full month grid. */}
-      <div className="hidden grid-cols-7 gap-px overflow-hidden rounded-2xl border border-border bg-border text-xs dark:border-border-dark dark:bg-border-dark sm:grid">
-        {WEEKDAYS.map((d) => (
-          <div key={d} className="bg-surface p-2 text-center font-medium text-ink-muted dark:bg-surface-dark dark:text-ink-dark-muted">
-            {d}
-          </div>
-        ))}
-        {days.map((day) => {
-          const key = format(day, "yyyy-MM-dd");
-          const dayItems = itemsByDay.get(key) ?? [];
-          return (
-            <div
-              key={key}
-              {...dropZoneProps(key)}
-              className={`min-h-[150px] bg-surface p-1.5 dark:bg-surface-dark ${!isSameMonth(day, monthStart) ? "opacity-40" : ""} ${
-                dragOverKey === key ? "bg-accent-soft dark:bg-accent/10" : ""
-              }`}
-            >
-              <div className="mb-1 flex items-center justify-between">
-                {canManage ? (
-                  <NewContentItemDialog companies={companies} defaultScheduledFor={`${key}T09:00`} compact />
-                ) : (
-                  <span />
-                )}
-                <span
-                  className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] ${
-                    isSameDay(day, new Date())
-                      ? "bg-accent font-semibold text-white dark:bg-accent-dark"
-                      : "text-ink-muted dark:text-ink-dark-muted"
-                  }`}
-                >
-                  {format(day, "d")}
-                </span>
-              </div>
-              <div className="space-y-1">
-                {dayItems.map((item) => (
-                  <Chip key={item.id} item={item} />
-                ))}
-              </div>
+      {/* Tablet/desktop month grid — only in "calendar" view mode. */}
+      {viewMode === "calendar" && (
+        <div className="hidden grid-cols-7 gap-px overflow-hidden rounded-2xl border border-border bg-border text-xs dark:border-border-dark dark:bg-border-dark sm:grid">
+          {WEEKDAYS.map((d) => (
+            <div key={d} className="bg-surface p-2 text-center font-medium text-ink-muted dark:bg-surface-dark dark:text-ink-dark-muted">
+              {d}
             </div>
-          );
-        })}
-      </div>
+          ))}
+          {days.map((day) => {
+            const key = format(day, "yyyy-MM-dd");
+            const dayItems = itemsByDay.get(key) ?? [];
+            return (
+              <div
+                key={key}
+                {...dropZoneProps(key)}
+                className={`min-h-[150px] bg-surface p-1.5 dark:bg-surface-dark ${!isSameMonth(day, monthStart) ? "opacity-40" : ""} ${
+                  dragOverKey === key ? "bg-accent-soft dark:bg-accent/10" : ""
+                }`}
+              >
+                <div className="mb-1 flex items-center justify-between">
+                  {canManage ? (
+                    <NewContentItemDialog companies={companies} defaultScheduledFor={`${key}T09:00`} compact />
+                  ) : (
+                    <span />
+                  )}
+                  <span
+                    className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] ${
+                      isSameDay(day, new Date())
+                        ? "bg-accent font-semibold text-white dark:bg-accent-dark"
+                        : "text-ink-muted dark:text-ink-dark-muted"
+                    }`}
+                  >
+                    {format(day, "d")}
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  {dayItems.map((item) => (
+                    <Chip key={item.id} item={item} />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {(unscheduled.length > 0 || (canManage && draggedId)) && (
         <section
