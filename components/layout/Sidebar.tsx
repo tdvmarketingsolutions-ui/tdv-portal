@@ -9,19 +9,27 @@ export function Sidebar({
   fullName,
   unreadCount,
   staffView,
+  companyLogoUrl,
 }: {
   userId: string;
   userEmail: string;
   fullName?: string | null;
   unreadCount: number;
   staffView?: { companies: { id: string; name: string }[]; currentCompanyId: string | null } | null;
+  companyLogoUrl?: string | null;
 }) {
   return (
     <aside className="hidden w-60 shrink-0 flex-col overflow-y-auto border-r border-border bg-surface px-3 py-6 dark:border-border-dark dark:bg-surface-dark md:sticky md:top-0 md:flex md:h-screen">
       <div className="mb-8 flex items-center justify-between px-3">
-        <div>
-          <span className="font-display text-lg font-semibold">TDV</span>
-          <span className="ml-1 text-sm text-ink-muted dark:text-ink-dark-muted">Portaal</span>
+        <div className="flex items-center gap-2">
+          {companyLogoUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={companyLogoUrl} alt="" className="h-6 w-6 shrink-0 rounded object-cover" />
+          )}
+          <div>
+            <span className="font-display text-lg font-semibold">TDV</span>
+            <span className="ml-1 text-sm text-ink-muted dark:text-ink-dark-muted">Portaal</span>
+          </div>
         </div>
         <NotificationBell userId={userId} initialUnreadCount={unreadCount} />
       </div>

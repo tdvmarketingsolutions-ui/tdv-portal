@@ -18,11 +18,16 @@ export default async function PortalLayout({ children }: { children: React.React
   if (!user) redirect("/login");
 
   const [{ data: profile }, unreadCount] = await Promise.all([
-    supabase.from("profiles").select("full_name, role").eq("id", user.id).single(),
+    supabase.from("profiles").select("full_name, role, companies ( logo_url )").eq("id", user.id).single(),
     getUnreadNotificationCount(),
   ]);
   const fullName = profile?.full_name as string | null;
   const isStaff = isStaffRole(profile?.role as string | null | undefined);
+  // Only ever set for a real client account — a company's own logo has no
+  // place in TDV's own portal chrome while staff are using it as staff.
+  const companyLogoUrl = !isStaff
+    ? ((profile as { companies: { logo_url: string | null } | null } | null)?.companies?.logo_url ?? null)
+    : null;
 
   // "Bekijk als klant": lets staff preview client-facing list views + create
   // flows for one company without a second login (see lib/staff-view.ts).
@@ -43,7 +48,14 @@ export default async function PortalLayout({ children }: { children: React.React
         unreadCount={unreadCount}
         staffView={staffView}
       />
-      <Sidebar userId={user.id} userEmail={user.email!} fullName={fullName} unreadCount={unreadCount} staffView={staffView} />
+      <Sidebar
+        userId={user.id}
+        userEmail={user.email!}
+        fullName={fullName}
+        unreadCount={unreadCount}
+        staffView={staffView}
+        companyLogoUrl={companyLogoUrl}
+      />
       <div className="min-w-0 flex-1">
         <main className="mx-auto max-w-6xl px-4 py-8 md:px-8">{children}</main>
       </div>

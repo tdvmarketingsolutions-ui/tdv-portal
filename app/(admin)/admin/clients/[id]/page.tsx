@@ -6,6 +6,7 @@ import { getSocialAccountsForCompany } from "@/lib/data/admin/social-accounts";
 import { Badge } from "@/components/ui/Badge";
 import { PROJECT_STATUS_LABEL, PROJECT_STATUS_TONE } from "@/lib/project-status";
 import { SOCIAL_PLATFORM_LABEL, SOCIAL_ACCOUNT_STATUS_LABEL, SOCIAL_ACCOUNT_STATUS_TONE } from "@/lib/content-status";
+import { CompanyLogoUpload } from "./CompanyLogoUpload";
 
 const ROLE_LABEL: Record<string, string> = {
   tdv_admin: "TDV Admin",
@@ -29,9 +30,12 @@ export default async function AdminClientDetailPage({ params }: { params: { id: 
         Terug naar klanten
       </Link>
 
-      <header>
-        <h1 className="font-display text-2xl font-semibold">{company.name}</h1>
-        <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">/{company.slug}</p>
+      <header className="flex flex-wrap items-center gap-4">
+        <CompanyLogoUpload companyId={company.id} companyName={company.name} logoUrl={company.logo_url} />
+        <div>
+          <h1 className="font-display text-2xl font-semibold">{company.name}</h1>
+          <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">/{company.slug}</p>
+        </div>
       </header>
 
       <div className="grid gap-6 md:grid-cols-2">
