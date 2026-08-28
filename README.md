@@ -92,6 +92,13 @@ van het systeem.
   uitgeschakeld tot die koppeling bestaat — `lib/data/admin/social-accounts.ts`.
 - **Bestanden**: overzicht + upload naar de `client-files` Storage-bucket —
   `lib/data/files.ts`.
+- **Klantlogo**: staff kan per klant een logo uploaden op `/admin/clients/[id]`
+  (`companies.logo_url`, al aanwezig sinds migratie 0001, nu voor het eerst
+  gebruikt). Opslag in de publieke `company-logos`-bucket (migratie 0021) —
+  `logo_url` is dus meteen een stabiele, publieke URL, geen signed URL die
+  telkens opnieuw gegenereerd moet worden. Zichtbaar in de klantenlijst, het
+  klantdetail, en — als de ingelogde gebruiker een klant is, niet staff — in
+  de sidebar naast "TDV Portaal" — `lib/data/admin/companies.ts`.
 - **Meldingen**: lijst, ongelezen-badge in de sidebar, alles-gelezen-actie,
   live updates via `supabase.channel(...)` (migratie 0013 zet `notifications`
   in de `supabase_realtime`-publicatie) + e-mail via Resend

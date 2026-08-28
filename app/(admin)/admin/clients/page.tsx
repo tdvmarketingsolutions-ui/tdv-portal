@@ -28,7 +28,15 @@ export default async function AdminClientsPage() {
             {companies.map((c) => (
               <Table.Row key={c.id}>
                 <Table.Cell>
-                  <Link href={`/admin/clients/${c.id}`} className="font-medium hover:underline">
+                  <Link href={`/admin/clients/${c.id}`} className="flex items-center gap-2.5 font-medium hover:underline">
+                    {c.logo_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={c.logo_url} alt="" className="h-7 w-7 shrink-0 rounded-md object-cover" />
+                    ) : (
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-canvas text-xs font-semibold text-ink-muted dark:bg-canvas-dark dark:text-ink-dark-muted">
+                        {c.name.charAt(0).toUpperCase()}
+                      </span>
+                    )}
                     {c.name}
                   </Link>
                 </Table.Cell>
