@@ -57,15 +57,25 @@ export interface ContentItemWithThumbnail extends ContentItemWithCompany {
   visualThumbnailUrl: string | null;
 }
 
+/**
+ * Best-effort: a signed-URL request failing (storage hiccup, rate limit
+ * across many concurrent items, a stale/missing object) must never take the
+ * whole calendar down over one thumbnail — fall back to null (the icon)
+ * instead of throwing.
+ */
 export async function withVisualThumbnails(items: ContentItemWithCompany[]): Promise<ContentItemWithThumbnail[]> {
   return Promise.all(
-    items.map(async (item) => ({
-      ...item,
-      visualThumbnailUrl:
-        item.visual && item.visual.mime_type?.startsWith("image/")
-          ? await getFileDownloadUrl(item.visual.storage_path)
-          : null,
-    }))
+    items.map(async (item) => {
+      if (!item.visual || !item.visual.mime_type?.startsWith("image/")) {
+        return { ...item, visualThumbnailUrl: null };
+      }
+      try {
+        return { ...item, visualThumbnailUrl: await getFileDownloadUrl(item.visual.storage_path) };
+      } catch (err) {
+        console.error("Kon thumbnail niet laden:", err);
+        return { ...item, visualThumbnailUrl: null };
+      }
+    })
   );
 }
 
