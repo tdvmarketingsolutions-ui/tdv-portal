@@ -36,7 +36,8 @@ export async function withVisualThumbnailsAdmin(items: AdminContentItem[]): Prom
       if (!item.visual || !item.visual.mime_type?.startsWith("image/")) {
         return { ...item, visualThumbnailUrl: null };
       }
-      const { data } = await supabase.storage.from(STORAGE_BUCKET).createSignedUrl(item.visual.storage_path, 60 * 5);
+      const { data, error } = await supabase.storage.from(STORAGE_BUCKET).createSignedUrl(item.visual.storage_path, 60 * 5);
+      if (error) console.error("Kon thumbnail niet laden:", error);
       return { ...item, visualThumbnailUrl: data?.signedUrl ?? null };
     })
   );
