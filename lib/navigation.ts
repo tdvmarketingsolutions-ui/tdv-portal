@@ -6,7 +6,6 @@ import {
   CalendarDays,
   FileStack,
   Sparkles,
-  Settings,
   Building2,
   Users,
   Bot,
@@ -19,16 +18,18 @@ export type NavItem = { href: string; label: string; icon: LucideIcon };
 // there), and feedback lives on deliverables, which are also shown per
 // project — see app/(portal)/projects/[id]/page.tsx. "Meldingen" isn't
 // listed either since the bell icon in the sidebar header already opens
-// /notifications; a second nav entry for the same page was redundant.
+// /notifications, and "Instellingen" isn't listed since the AccountMenu
+// (bottom of the sidebar) already has a single link to it — a second nav
+// entry for the same page was redundant in both cases.
 export const PORTAL_NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/projects", label: "Projecten", icon: FolderKanban },
   { href: "/content-planning", label: "Contentplanning", icon: CalendarDays },
   { href: "/files", label: "Bestanden", icon: FileStack },
   { href: "/ai-assistant", label: "AI Assistent", icon: Sparkles },
-  { href: "/settings", label: "Instellingen", icon: Settings },
 ];
 
+// Same reasoning as above: AccountMenu already links to /admin/settings.
 export const ADMIN_NAV_ITEMS: NavItem[] = [
   { href: "/admin/clients", label: "Klanten", icon: Building2 },
   { href: "/admin/projects", label: "Projecten", icon: FolderKanban },
@@ -36,5 +37,4 @@ export const ADMIN_NAV_ITEMS: NavItem[] = [
   { href: "/admin/aanvragen", label: "Aanvragen", icon: Inbox },
   { href: "/admin/content", label: "Content", icon: CalendarDays },
   { href: "/admin/ai", label: "AI", icon: Bot },
-  { href: "/admin/settings", label: "Instellingen", icon: Settings },
 ];
