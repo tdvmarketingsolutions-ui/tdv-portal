@@ -41,7 +41,7 @@ export default async function ProjectsPage() {
           <h1 className="font-display text-2xl font-semibold">Projecten</h1>
           <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
             {isStaff
-              ? "Alle projecten, per klant. Kies links \"Bekijk als klant\" om een aanvraag te testen, of beheer aanvragen vanaf /admin/projects."
+              ? "Alle projecten, per klant."
               : "Alle projecten die TDV voor jouw bedrijf uitvoert."}
           </p>
         </div>
