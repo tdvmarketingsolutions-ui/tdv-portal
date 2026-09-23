@@ -17,7 +17,6 @@ export function MobileNav({
   userEmail,
   fullName,
   unreadCount,
-  accountHref,
   settingsHref,
   staffView,
 }: {
@@ -28,7 +27,6 @@ export function MobileNav({
   userEmail: string;
   fullName?: string | null;
   unreadCount?: number;
-  accountHref?: string;
   settingsHref?: string;
   staffView?: { companies: { id: string; name: string }[]; currentCompanyId: string | null } | null;
 }) {
@@ -137,7 +135,7 @@ export function MobileNav({
             )}
 
             <div className="mt-4 border-t border-border pt-4 dark:border-border-dark">
-              <AccountMenu email={userEmail} fullName={fullName} accountHref={accountHref} settingsHref={settingsHref} />
+              <AccountMenu email={userEmail} fullName={fullName} settingsHref={settingsHref} />
             </div>
           </div>
         </div>

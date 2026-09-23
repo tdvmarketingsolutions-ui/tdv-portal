@@ -45,7 +45,14 @@ export default async function ProjectsPage() {
               : "Alle projecten die TDV voor jouw bedrijf uitvoert."}
           </p>
         </div>
-        {canActAsClient && <NewProjectRequestDialog />}
+        {canActAsClient && (
+          <div className="flex flex-wrap gap-2">
+            <Link href="/aanvragen/new" className="btn-secondary">
+              Aanvraag stellen
+            </Link>
+            <NewProjectRequestDialog />
+          </div>
+        )}
       </header>
 
       {projectRequests.length > 0 && (

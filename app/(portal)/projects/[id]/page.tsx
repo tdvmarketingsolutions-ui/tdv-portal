@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { Plus } from "lucide-react";
 import { getProjectById } from "@/lib/data/projects";
 import { Badge } from "@/components/ui/Badge";
 import { PROJECT_STATUS_LABEL, PROJECT_STATUS_TONE } from "@/lib/project-status";
+import { FEEDBACK_STATUS_LABEL, FEEDBACK_STATUS_TONE } from "@/lib/feedback-status";
 import { CommentForm } from "./CommentForm";
 
 export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
@@ -49,6 +51,34 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
           </section>
 
           <section className="card p-6">
+            <h2 className="font-display text-lg font-medium">Feedback &amp; opleveringen</h2>
+            {project.deliverables?.length ? (
+              <ul className="mt-4 space-y-2">
+                {project.deliverables.map((d) => {
+                  const latest = [...d.deliverable_versions].sort((a, b) => b.version_number - a.version_number)[0];
+                  return (
+                    <li key={d.id}>
+                      <Link
+                        href={`/feedback/${d.id}`}
+                        className="flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm hover:bg-canvas dark:hover:bg-canvas-dark"
+                      >
+                        <span className="min-w-0 truncate">{d.title}</span>
+                        {latest && (
+                          <Badge tone={FEEDBACK_STATUS_TONE[latest.status]}>{FEEDBACK_STATUS_LABEL[latest.status]}</Badge>
+                        )}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <p className="mt-3 text-sm text-ink-muted dark:text-ink-dark-muted">
+                Nog geen opleveringen om feedback op te geven.
+              </p>
+            )}
+          </section>
+
+          <section className="card p-6">
             <h2 className="font-display text-lg font-medium">Opmerkingen</h2>
             <div className="mt-4 space-y-3">
               {comments.length ? (
@@ -75,7 +105,16 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
 
         <aside className="space-y-6">
           <section className="card p-6">
-            <h2 className="font-display text-base font-medium">Gekoppelde aanvragen</h2>
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="font-display text-base font-medium">Gekoppelde aanvragen</h2>
+              <Link
+                href={`/aanvragen/new?project=${project.id}`}
+                aria-label="Nieuwe aanvraag voor dit project"
+                className="rounded-lg p-1 text-ink-muted transition-colors hover:bg-canvas hover:text-ink dark:text-ink-dark-muted dark:hover:bg-canvas-dark dark:hover:text-ink-dark"
+              >
+                <Plus size={16} strokeWidth={1.75} />
+              </Link>
+            </div>
             <ul className="mt-3 space-y-2 text-sm">
               {project.tickets?.length
                 ? project.tickets.map((t) => (

@@ -11,7 +11,13 @@ import { ticketSchema, type TicketFormValues } from "./schema";
 import { createTicketAction } from "./actions";
 import type { Project } from "@/types/domain";
 
-export function TicketForm({ projects }: { projects: Pick<Project, "id" | "name">[] }) {
+export function TicketForm({
+  projects,
+  defaultProjectId,
+}: {
+  projects: Pick<Project, "id" | "name">[];
+  defaultProjectId?: string;
+}) {
   const { push } = useToast();
   const {
     register,
@@ -19,7 +25,7 @@ export function TicketForm({ projects }: { projects: Pick<Project, "id" | "name"
     formState: { errors, isSubmitting },
   } = useForm<TicketFormValues>({
     resolver: zodResolver(ticketSchema),
-    defaultValues: { priority: "normal", projectId: "" },
+    defaultValues: { priority: "normal", projectId: defaultProjectId ?? "" },
   });
 
   async function onSubmit(values: TicketFormValues) {

@@ -1,7 +1,7 @@
 import { getProjectsForCurrentUser } from "@/lib/data/projects";
 import { TicketForm } from "./TicketForm";
 
-export default async function NewTicketPage() {
+export default async function NewTicketPage({ searchParams }: { searchParams: { project?: string } }) {
   const projects = await getProjectsForCurrentUser();
 
   return (
@@ -13,7 +13,7 @@ export default async function NewTicketPage() {
         </p>
       </header>
 
-      <TicketForm projects={projects} />
+      <TicketForm projects={projects} defaultProjectId={searchParams.project} />
     </div>
   );
 }

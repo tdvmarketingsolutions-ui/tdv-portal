@@ -4,10 +4,8 @@ import {
   FolderKanban,
   Inbox,
   CalendarDays,
-  MessageSquareText,
   FileStack,
   Sparkles,
-  Bell,
   Settings,
   Building2,
   Users,
@@ -16,15 +14,18 @@ import {
 
 export type NavItem = { href: string; label: string; icon: LucideIcon };
 
+// "Aanvragen" and "Feedback" are deliberately not top-level items: aanvragen
+// (tickets) live under a project's own detail page (linked + creatable from
+// there), and feedback lives on deliverables, which are also shown per
+// project — see app/(portal)/projects/[id]/page.tsx. "Meldingen" isn't
+// listed either since the bell icon in the sidebar header already opens
+// /notifications; a second nav entry for the same page was redundant.
 export const PORTAL_NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/projects", label: "Projecten", icon: FolderKanban },
-  { href: "/aanvragen", label: "Aanvragen", icon: Inbox },
   { href: "/content-planning", label: "Contentplanning", icon: CalendarDays },
-  { href: "/feedback", label: "Feedback", icon: MessageSquareText },
   { href: "/files", label: "Bestanden", icon: FileStack },
   { href: "/ai-assistant", label: "AI Assistent", icon: Sparkles },
-  { href: "/notifications", label: "Meldingen", icon: Bell },
   { href: "/settings", label: "Instellingen", icon: Settings },
 ];
 
