@@ -55,10 +55,15 @@ export function MobileNav({
   return (
     <>
       <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-surface px-4 dark:border-border-dark dark:bg-surface-dark md:hidden">
-        <div>
-          <span className="font-display text-base font-semibold">{title}</span>
-          {subtitle && <span className="ml-1 text-sm text-ink-muted dark:text-ink-dark-muted">{subtitle}</span>}
-        </div>
+        {variant === "portal" ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-5 w-auto" />
+        ) : (
+          <div>
+            <span className="font-display text-base font-semibold">{title}</span>
+            {subtitle && <span className="ml-1 text-sm text-ink-muted dark:text-ink-dark-muted">{subtitle}</span>}
+          </div>
+        )}
         <div className="flex items-center gap-1">
           {userId !== undefined && unreadCount !== undefined && (
             <NotificationBell userId={userId} initialUnreadCount={unreadCount} />
@@ -89,12 +94,17 @@ export function MobileNav({
             className="fixed inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col border-r border-border bg-surface px-3 py-6 shadow-lg dark:border-border-dark dark:bg-surface-dark"
           >
             <div className="mb-8 flex items-center justify-between px-3">
-              <div>
-                <span className="font-display text-lg font-semibold">{title}</span>
-                {subtitle && (
-                  <span className="ml-1 text-sm text-ink-muted dark:text-ink-dark-muted">{subtitle}</span>
-                )}
-              </div>
+              {variant === "portal" ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-6 w-auto" />
+              ) : (
+                <div>
+                  <span className="font-display text-lg font-semibold">{title}</span>
+                  {subtitle && (
+                    <span className="ml-1 text-sm text-ink-muted dark:text-ink-dark-muted">{subtitle}</span>
+                  )}
+                </div>
+              )}
               <button
                 type="button"
                 onClick={() => setOpen(false)}
