@@ -1,4 +1,6 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import { LayoutDashboard } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { AccountMenu } from "@/components/layout/AccountMenu";
 import { MobileNav } from "@/components/layout/MobileNav";
@@ -34,6 +36,15 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           TDV — Adminportaal
         </div>
         <NavLinks variant="admin" />
+        <div className="mt-4 border-t border-border pt-4 dark:border-border-dark">
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-ink-muted transition-colors hover:bg-canvas hover:text-ink dark:text-ink-dark-muted dark:hover:bg-canvas-dark dark:hover:text-ink-dark"
+          >
+            <LayoutDashboard size={18} strokeWidth={1.75} />
+            Naar klantportaal
+          </Link>
+        </div>
         <div className="mt-4 border-t border-border pt-4 dark:border-border-dark">
           <AccountMenu email={user.email!} fullName={fullName} settingsHref="/admin/settings" />
         </div>

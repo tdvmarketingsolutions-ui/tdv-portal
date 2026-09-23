@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import Link from "next/link";
+import { Menu, X, ShieldCheck, LayoutDashboard } from "lucide-react";
 import { AccountMenu } from "@/components/layout/AccountMenu";
 import { NavLinks } from "@/components/layout/NavLinks";
 import { NotificationBell } from "@/components/layout/NotificationBell";
@@ -108,8 +109,29 @@ export function MobileNav({
 
             <NavLinks variant={variant} onNavigate={() => setOpen(false)} />
 
-            {staffView && (
+            {variant === "admin" && (
               <div className="mt-4 border-t border-border pt-4 dark:border-border-dark">
+                <Link
+                  href="/dashboard"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-ink-muted transition-colors hover:bg-canvas hover:text-ink dark:text-ink-dark-muted dark:hover:bg-canvas-dark dark:hover:text-ink-dark"
+                >
+                  <LayoutDashboard size={18} strokeWidth={1.75} />
+                  Naar klantportaal
+                </Link>
+              </div>
+            )}
+
+            {staffView && (
+              <div className="mt-4 space-y-3 border-t border-border pt-4 dark:border-border-dark">
+                <Link
+                  href="/admin/clients"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-ink-muted transition-colors hover:bg-canvas hover:text-ink dark:text-ink-dark-muted dark:hover:bg-canvas-dark dark:hover:text-ink-dark"
+                >
+                  <ShieldCheck size={18} strokeWidth={1.75} />
+                  Naar adminportaal
+                </Link>
                 <StaffViewSwitcher companies={staffView.companies} currentCompanyId={staffView.currentCompanyId} />
               </div>
             )}
