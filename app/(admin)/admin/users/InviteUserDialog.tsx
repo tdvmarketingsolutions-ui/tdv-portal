@@ -20,12 +20,20 @@ const ROLE_LABEL: Record<string, string> = {
   client_member: "Klant (lid)",
 };
 
+const CLIENT_ROLE_LABEL: Record<string, string> = {
+  client_admin: "Klant (admin)",
+  client_member: "Klant (lid)",
+};
+
 export function InviteUserDialog({
   companies,
   serviceRoleConfigured,
+  lockedCompany,
 }: {
   companies: { id: string; name: string }[];
   serviceRoleConfigured: boolean;
+  /** Set when opened from a specific client's own page — skips picking a client, since it's already known. */
+  lockedCompany?: { id: string; name: string };
 }) {
   const router = useRouter();
   const { push } = useToast();
@@ -38,10 +46,11 @@ export function InviteUserDialog({
     formState: { errors, isSubmitting },
   } = useForm<InviteUserFormValues>({
     resolver: zodResolver(inviteUserSchema),
-    defaultValues: { role: "client_member" },
+    defaultValues: { role: "client_member", companyId: lockedCompany?.id },
   });
   const role = watch("role");
-  const needsCompany = role === "client_admin" || role === "client_member";
+  const needsCompany = !lockedCompany && (role === "client_admin" || role === "client_member");
+  const roleOptions = lockedCompany ? CLIENT_ROLE_LABEL : ROLE_LABEL;
 
   async function onSubmit(values: InviteUserFormValues) {
     const result = await inviteUserAction(values);
@@ -79,21 +88,33 @@ export function InviteUserDialog({
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
             <Input label="E-mailadres" type="email" placeholder="naam@bedrijf.be" error={errors.email?.message} {...register("email")} />
             <Select label="Rol" {...register("role")}>
-              {Object.entries(ROLE_LABEL).map(([value, label]) => (
+              {Object.entries(roleOptions).map(([value, label]) => (
                 <option key={value} value={value}>
                   {label}
                 </option>
               ))}
             </Select>
-            {needsCompany && (
-              <Select label="Klant" error={errors.companyId?.message} {...register("companyId")}>
-                <option value="">Kies een klant…</option>
-                {companies.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </Select>
+            {lockedCompany ? (
+              <>
+                <input type="hidden" {...register("companyId")} />
+                <div>
+                  <p className="mb-1 block text-sm font-medium">Klant</p>
+                  <p className="rounded-lg border border-border bg-canvas px-3 py-2 text-sm text-ink-muted dark:border-border-dark dark:bg-canvas-dark dark:text-ink-dark-muted">
+                    {lockedCompany.name}
+                  </p>
+                </div>
+              </>
+            ) : (
+              needsCompany && (
+                <Select label="Klant" error={errors.companyId?.message} {...register("companyId")}>
+                  <option value="">Kies een klant…</option>
+                  {companies.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </Select>
+              )
             )}
             <div className="flex justify-end gap-2">
               <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
