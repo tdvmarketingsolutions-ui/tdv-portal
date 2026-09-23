@@ -9,6 +9,7 @@ export interface CompanySummary {
   name: string;
   slug: string;
   logo_url: string | null;
+  onboarding_status: "pending_review" | "active";
   created_at: string;
   projects: { count: number }[];
   profiles: { count: number }[];
@@ -19,6 +20,7 @@ export interface CompanyDetail {
   name: string;
   slug: string;
   logo_url: string | null;
+  onboarding_status: "pending_review" | "active";
   created_at: string;
   projects: { id: string; name: string; status: string }[];
   profiles: { id: string; full_name: string | null; role: string }[];
@@ -28,7 +30,7 @@ export async function getCompaniesWithCounts(): Promise<CompanySummary[]> {
   const supabase = createClient();
   const { data, error } = await supabase
     .from("companies")
-    .select("id, name, slug, logo_url, created_at, projects(count), profiles(count)")
+    .select("id, name, slug, logo_url, onboarding_status, created_at, projects(count), profiles(count)")
     .order("name");
 
   if (error) throw new Error(`Kon klanten niet laden: ${error.message}`);
@@ -40,7 +42,7 @@ export async function getCompanyById(id: string): Promise<CompanyDetail | null> 
   const { data, error } = await supabase
     .from("companies")
     .select(
-      `id, name, slug, logo_url, created_at,
+      `id, name, slug, logo_url, onboarding_status, created_at,
       projects ( id, name, status ),
       profiles ( id, full_name, role )`
     )
@@ -51,11 +53,19 @@ export async function getCompanyById(id: string): Promise<CompanyDetail | null> 
   return data as unknown as CompanyDetail | null;
 }
 
+/** Self-registered companies (see app/(auth)/register) start 'pending_review'. */
+export async function activateCompany(companyId: string): Promise<void> {
+  await assertTdvStaff();
+  const supabase = createClient();
+  const { error } = await supabase.from("companies").update({ onboarding_status: "active" }).eq("id", companyId);
+  if (error) throw new Error(`Kon klant niet activeren: ${error.message}`);
+}
+
 export async function createCompany(input: { name: string; slug: string }): Promise<{ id: string }> {
   const supabase = createClient();
   const { data, error } = await supabase
     .from("companies")
-    .insert({ name: input.name, slug: input.slug })
+    .insert({ name: input.name, slug: input.slug, onboarding_status: "active" })
     .select("id")
     .single();
 

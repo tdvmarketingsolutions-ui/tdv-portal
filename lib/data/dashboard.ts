@@ -19,6 +19,7 @@ export interface ActivityItem {
 
 export interface DashboardData {
   isStaff: boolean;
+  companyOnboardingStatus: "pending_review" | "active" | null;
   projectCount: number;
   openTicketCount: number;
   unreadNotificationCount: number;
@@ -41,8 +42,31 @@ export async function getDashboardData(): Promise<DashboardData> {
   } = await supabase.auth.getUser();
   if (!user) throw new Error("Niet ingelogd.");
 
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, companies ( onboarding_status )")
+    .eq("id", user.id)
+    .single();
   const isStaff = profile?.role === "tdv_admin" || profile?.role === "tdv_staff";
+  const companyOnboardingStatus = isStaff
+    ? null
+    : (((profile as { companies: { onboarding_status: "pending_review" | "active" } | null } | null)?.companies
+        ?.onboarding_status) ?? null);
+
+  // A brand-new self-registered company has nothing to show yet anyway (no
+  // projects/tickets/content), so skip the full query bundle below and
+  // return early — the page renders a dedicated "wachten op TDV" state.
+  if (companyOnboardingStatus === "pending_review") {
+    return {
+      isStaff,
+      companyOnboardingStatus,
+      projectCount: 0,
+      openTicketCount: 0,
+      unreadNotificationCount: 0,
+      attentionItems: [],
+      activityItems: [],
+    };
+  }
 
   const [
     projectsRes,
@@ -260,6 +284,7 @@ export async function getDashboardData(): Promise<DashboardData> {
 
   return {
     isStaff,
+    companyOnboardingStatus,
     projectCount: projects.length,
     openTicketCount,
     unreadNotificationCount: notifCountRes.count ?? 0,
