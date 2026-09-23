@@ -47,7 +47,8 @@ export async function getProjectById(projectId: string): Promise<ProjectWithRela
       project_timeline_events (*),
       project_comments (*, profiles ( full_name, avatar_url )),
       tickets ( id, subject, status ),
-      files ( id, file_name, category, created_at )`
+      files ( id, file_name, category, created_at ),
+      deliverables ( id, title, deliverable_versions ( id, version_number, status ) )`
     )
     .eq("id", projectId)
     .maybeSingle();

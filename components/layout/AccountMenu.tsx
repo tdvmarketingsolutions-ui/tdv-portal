@@ -3,22 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User, Settings, LogOut, ChevronsUpDown } from "lucide-react";
+import { Settings, LogOut, ChevronsUpDown } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 type AccountMenuProps = {
   email: string;
   fullName?: string | null;
-  accountHref?: string;
   settingsHref?: string;
 };
 
-export function AccountMenu({
-  email,
-  fullName,
-  accountHref = "/settings#account",
-  settingsHref = "/settings#instellingen",
-}: AccountMenuProps) {
+export function AccountMenu({ email, fullName, settingsHref = "/settings" }: AccountMenuProps) {
   const router = useRouter();
   const supabase = createClient();
   const [open, setOpen] = useState(false);
@@ -70,15 +64,6 @@ export function AccountMenu({
 
           <div className="my-1 h-px bg-border dark:bg-border-dark" />
 
-          <Link
-            href={accountHref}
-            role="menuitem"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-ink transition-colors hover:bg-canvas dark:text-ink-dark dark:hover:bg-canvas-dark"
-          >
-            <User size={16} strokeWidth={1.75} />
-            Account
-          </Link>
           <Link
             href={settingsHref}
             role="menuitem"

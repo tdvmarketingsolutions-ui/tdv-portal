@@ -54,6 +54,9 @@ export interface ProjectWithRelations extends Project {
   project_comments: ProjectComment[];
   tickets: Pick<Ticket, "id" | "subject" | "status">[];
   files: Pick<FileRecord, "id" | "file_name" | "category" | "created_at">[];
+  deliverables: (Pick<Deliverable, "id" | "title"> & {
+    deliverable_versions: Pick<DeliverableVersion, "id" | "version_number" | "status">[];
+  })[];
 }
 
 export type ProjectRequestStatus = "requested" | "awaiting_quote" | "project_active" | "declined";

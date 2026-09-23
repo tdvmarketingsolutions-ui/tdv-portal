@@ -47,7 +47,12 @@ van het systeem.
   + RLS — `lib/data/projects.ts` → `app/(portal)/projects/*`.
 - **Aanvragen** (route `/aanvragen`, ex-"tickets" — enkel de UI/routes zijn
   hernoemd, de tabel heet in de database nog steeds `tickets` en
-  `lib/data/tickets.ts` ook): lijst, nieuw, detail + reageren.
+  `lib/data/tickets.ts` ook): lijst, nieuw, detail + reageren. Geen eigen
+  item meer in de klant-navigatie — een aanvraag hoort bij een project, dus
+  die maak/bekijk je vanaf de projectdetailpagina ("Gekoppelde aanvragen" +
+  het "+"-knopje, dat naar `/aanvragen/new?project=<id>` linkt en het
+  project vooraf invult). `/aanvragen/new` en `/aanvragen/[id]` blijven
+  gewoon bestaan als routes, ook zonder projectcontext.
 - **Projectaanvragen**: lichte statustracker naast de gewone aanvragen — een
   klant vraagt een nieuw project aan (`/projects` → "Project aanvragen") via
   een korte intake: titel, type project en budget-indicatie (selects, geen
@@ -67,6 +72,10 @@ van het systeem.
   zodat een klant nooit iets anders dan die ene beslissing kan wijzigen.
 - **Feedback & goedkeuring**: lijst, detail met versiehistoriek, preview en
   status-acties (goedkeuren/revisie vragen) — `lib/data/deliverables.ts`.
+  Ook geen eigen item meer in de klant-navigatie: een deliverable hoort bij
+  een project (`deliverables.project_id`), dus de "Feedback & opleveringen"-
+  sectie op de projectdetailpagina lijst ze per project op (titel + status
+  van de laatste versie) en linkt door naar de bestaande `/feedback/[id]`.
 - **Contentplanning**: maandkalender (drag-and-drop herplannen, sleep vanuit
   "Nog niet ingepland") + lijst, detail met visual (afbeelding/video),
   opmerkingen en de volledige statuslevenscyclus (concept → wacht op
@@ -106,7 +115,9 @@ van het systeem.
   (`profiles.email_notifications`, migratie 0014). Triggers zitten in
   `createTicket`/`addTicketMessage` (nieuw ticket / nieuw bericht) en
   `updateContentItemAdmin` (content naar "wacht op goedkeuring") —
-  `lib/data/notifications.ts`.
+  `lib/data/notifications.ts`. Geen eigen item meer in de klant-navigatie —
+  het belletje bovenaan de sidebar linkt al naar `/notifications`, dus een
+  tweede menu-item naar diezelfde pagina was overbodig.
 - **Dashboard**: "vraagt je aandacht" (openstaande goedkeuringen, aanvragen
   die op je wachten) + recente activiteit, rolgebonden (klant vs. staff) —
   `lib/data/dashboard.ts`.
