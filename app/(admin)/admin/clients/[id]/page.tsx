@@ -3,10 +3,12 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { getCompanyById } from "@/lib/data/admin/companies";
 import { getSocialAccountsForCompany } from "@/lib/data/admin/social-accounts";
+import { isServiceRoleConfigured } from "@/lib/data/admin/users";
 import { Badge } from "@/components/ui/Badge";
 import { PROJECT_STATUS_LABEL, PROJECT_STATUS_TONE } from "@/lib/project-status";
 import { SOCIAL_PLATFORM_LABEL, SOCIAL_ACCOUNT_STATUS_LABEL, SOCIAL_ACCOUNT_STATUS_TONE } from "@/lib/content-status";
 import { CompanyLogoUpload } from "./CompanyLogoUpload";
+import { InviteUserDialog } from "@/app/(admin)/admin/users/InviteUserDialog";
 
 const ROLE_LABEL: Record<string, string> = {
   tdv_admin: "TDV Admin",
@@ -58,7 +60,14 @@ export default async function AdminClientDetailPage({ params }: { params: { id: 
         </section>
 
         <section className="card p-6">
-          <h2 className="font-display text-base font-medium">Gebruikers</h2>
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="font-display text-base font-medium">Gebruikers</h2>
+            <InviteUserDialog
+              companies={[]}
+              serviceRoleConfigured={isServiceRoleConfigured()}
+              lockedCompany={{ id: company.id, name: company.name }}
+            />
+          </div>
           {company.profiles.length === 0 ? (
             <p className="mt-3 text-sm text-ink-muted dark:text-ink-dark-muted">Nog geen gebruikers.</p>
           ) : (
