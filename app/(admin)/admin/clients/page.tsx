@@ -2,11 +2,14 @@ import Link from "next/link";
 import { Building2 } from "lucide-react";
 import { getCompaniesWithCounts } from "@/lib/data/admin/companies";
 import { Table } from "@/components/ui/Table";
+import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { NewCompanyDialog } from "./NewCompanyDialog";
 
 export default async function AdminClientsPage() {
-  const companies = await getCompaniesWithCounts();
+  const companies = (await getCompaniesWithCounts()).sort((a, b) =>
+    a.onboarding_status === b.onboarding_status ? 0 : a.onboarding_status === "pending_review" ? -1 : 1
+  );
 
   return (
     <div className="space-y-6">
@@ -38,6 +41,7 @@ export default async function AdminClientsPage() {
                       </span>
                     )}
                     {c.name}
+                    {c.onboarding_status === "pending_review" && <Badge tone="amber">Nog te beoordelen</Badge>}
                   </Link>
                 </Table.Cell>
                 <Table.Cell>{c.projects?.[0]?.count ?? 0}</Table.Cell>

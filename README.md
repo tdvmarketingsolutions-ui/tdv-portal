@@ -40,9 +40,21 @@ van het systeem.
 
 ## Wat er echt werkt (volg dit patroon voor de rest)
 
-- **Auth**: login, wachtwoord vergeten/resetten, sessiebeheer via cookies,
-  middleware die elke request ververst en niet-ingelogde gebruikers naar
-  `/login` stuurt.
+- **Auth**: login, registratie, wachtwoord vergeten/resetten, sessiebeheer
+  via cookies, middleware die elke request ververst en niet-ingelogde
+  gebruikers naar `/login` stuurt.
+- **Registratie**: `/register` laat een nieuwe klant zelf een account +
+  bedrijf aanmaken (naam, bedrijfsnaam, e-mail, wachtwoord) —
+  `app/(auth)/register/actions.ts`. Alles (auth user, `companies`-rij,
+  `profiles`-rij) wordt in één server action met de admin-client aangemaakt,
+  niet via een client-side `signUp()` gevolgd door een losse server action —
+  dat laatste zou een client-aangeleverde user-id vertrouwen bij het
+  schrijven van de profielrij. Het nieuwe bedrijf start op
+  `onboarding_status = 'pending_review'` (migratie 0022, standaard `'active'`
+  voor door staff aangemaakte klanten) en de klant ziet op `/dashboard` een
+  "wachten op TDV"-scherm tot een staff-lid het activeert vanaf
+  `/admin/clients/[id]` ("Activeren"-knop, ook zichtbaar als badge in de
+  klantenlijst).
 - **Projecten**: lijst + detail + opmerkingen, volledig via Server Components
   + RLS — `lib/data/projects.ts` → `app/(portal)/projects/*`.
 - **Aanvragen** (route `/aanvragen`, ex-"tickets" — enkel de UI/routes zijn

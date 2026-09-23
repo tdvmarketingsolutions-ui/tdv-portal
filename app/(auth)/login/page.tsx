@@ -82,6 +82,13 @@ export default function LoginPage() {
             Inloggen
           </Button>
         </form>
+
+        <p className="mt-6 text-center text-sm text-ink-muted dark:text-ink-dark-muted">
+          Nog geen account?{" "}
+          <Link href="/register" className="text-accent hover:underline dark:text-accent-dark">
+            Account aanmaken
+          </Link>
+        </p>
       </div>
     </main>
   );

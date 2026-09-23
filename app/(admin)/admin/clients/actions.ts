@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createCompany, uploadCompanyLogo, removeCompanyLogo } from "@/lib/data/admin/companies";
+import { createCompany, uploadCompanyLogo, removeCompanyLogo, activateCompany } from "@/lib/data/admin/companies";
 import { companySchema, type CompanyFormValues } from "./schema";
 
 export async function createCompanyAction(input: CompanyFormValues): Promise<{ error?: string }> {
@@ -48,6 +48,18 @@ export async function removeCompanyLogoAction(companyId: string): Promise<{ erro
     await removeCompanyLogo(companyId);
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Kon logo niet verwijderen." };
+  }
+
+  revalidatePath("/admin/clients");
+  revalidatePath(`/admin/clients/${companyId}`);
+  return {};
+}
+
+export async function activateCompanyAction(companyId: string): Promise<{ error?: string }> {
+  try {
+    await activateCompany(companyId);
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Kon klant niet activeren." };
   }
 
   revalidatePath("/admin/clients");

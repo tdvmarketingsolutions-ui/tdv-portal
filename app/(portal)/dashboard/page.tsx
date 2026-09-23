@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { nl } from "date-fns/locale";
-import { CheckCircle2, MessageSquare, Sparkles } from "lucide-react";
+import { CheckCircle2, Clock, MessageSquare, Sparkles } from "lucide-react";
 import { getDashboardData } from "@/lib/data/dashboard";
 import { EmptyState } from "@/components/ui/EmptyState";
 
@@ -9,6 +9,21 @@ export const dynamic = "force-dynamic"; // always fresh — this is a live statu
 
 export default async function DashboardPage() {
   const data = await getDashboardData();
+
+  if (data.companyOnboardingStatus === "pending_review") {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent-soft dark:bg-accent/10">
+          <Clock size={26} strokeWidth={1.75} className="text-accent dark:text-accent-dark" />
+        </div>
+        <h1 className="mt-4 font-display text-2xl font-semibold">Bedankt voor je registratie</h1>
+        <p className="mt-2 max-w-md text-sm text-ink-muted dark:text-ink-dark-muted">
+          TDV neemt je account door. Zodra dat is gebeurd, krijg je hier toegang tot projecten, contentplanning en de
+          rest van het portaal.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">

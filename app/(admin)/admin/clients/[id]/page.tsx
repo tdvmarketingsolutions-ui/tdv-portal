@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/Badge";
 import { PROJECT_STATUS_LABEL, PROJECT_STATUS_TONE } from "@/lib/project-status";
 import { SOCIAL_PLATFORM_LABEL, SOCIAL_ACCOUNT_STATUS_LABEL, SOCIAL_ACCOUNT_STATUS_TONE } from "@/lib/content-status";
 import { CompanyLogoUpload } from "./CompanyLogoUpload";
+import { ActivateCompanyButton } from "./ActivateCompanyButton";
 import { InviteUserDialog } from "@/app/(admin)/admin/users/InviteUserDialog";
 
 const ROLE_LABEL: Record<string, string> = {
@@ -32,12 +33,18 @@ export default async function AdminClientDetailPage({ params }: { params: { id: 
         Terug naar klanten
       </Link>
 
-      <header className="flex flex-wrap items-center gap-4">
-        <CompanyLogoUpload companyId={company.id} companyName={company.name} logoUrl={company.logo_url} />
-        <div>
-          <h1 className="font-display text-2xl font-semibold">{company.name}</h1>
-          <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">/{company.slug}</p>
+      <header className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center gap-4">
+          <CompanyLogoUpload companyId={company.id} companyName={company.name} logoUrl={company.logo_url} />
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="font-display text-2xl font-semibold">{company.name}</h1>
+              {company.onboarding_status === "pending_review" && <Badge tone="amber">Nog te beoordelen</Badge>}
+            </div>
+            <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">/{company.slug}</p>
+          </div>
         </div>
+        {company.onboarding_status === "pending_review" && <ActivateCompanyButton companyId={company.id} />}
       </header>
 
       <div className="grid gap-6 md:grid-cols-2">
