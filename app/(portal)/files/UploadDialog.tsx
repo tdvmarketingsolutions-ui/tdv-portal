@@ -10,12 +10,12 @@ import { useToast } from "@/components/ui/ToastProvider";
 import { FILE_CATEGORIES, FILE_CATEGORY_LABEL, type FileCategory } from "@/lib/file-category";
 import { uploadFileAction } from "./actions";
 
-export function UploadDialog() {
+export function UploadDialog({ defaultCategory }: { defaultCategory?: FileCategory } = {}) {
   const router = useRouter();
   const { push } = useToast();
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [category, setCategory] = useState<FileCategory>("other");
+  const [category, setCategory] = useState<FileCategory>(defaultCategory ?? "other");
   const [dragOver, setDragOver] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +23,7 @@ export function UploadDialog() {
 
   function reset() {
     setFile(null);
-    setCategory("other");
+    setCategory(defaultCategory ?? "other");
     setError(null);
     setDragOver(false);
   }

@@ -111,8 +111,14 @@ van het systeem.
   LinkedIn Marketing Developer Platform, externe goedkeuringen die TDV zelf
   moet aanvragen. De "Verbinden"-knop staat er al, maar is bewust
   uitgeschakeld tot die koppeling bestaat — `lib/data/admin/social-accounts.ts`.
-- **Bestanden**: overzicht + upload naar de `client-files` Storage-bucket —
-  `lib/data/files.ts`.
+- **Bestanden**: mappenstructuur + upload naar de `client-files`
+  Storage-bucket — `lib/data/files.ts`. `/files` toont een map per
+  bestandscategorie (Logo, Huisstijl, Foto, Video, Factuur, Contract,
+  Overig — `lib/file-category.ts`) met aantal bestanden; klikken opent
+  `/files/[category]` met enkel die bestanden. Geen nieuwe tabel/kolom
+  nodig — `files.category` bestond al als vlak veld, de mappen zijn een
+  UI-laag erbovenop. Uploaden vanuit een map vult die categorie meteen in
+  (`UploadDialog`'s `defaultCategory`-prop).
 - **Klantlogo**: staff kan per klant een logo uploaden op `/admin/clients/[id]`
   (`companies.logo_url`, al aanwezig sinds migratie 0001, nu voor het eerst
   gebruikt). Opslag in de publieke `company-logos`-bucket (migratie 0021) —
