@@ -135,7 +135,10 @@ van het systeem.
   sturen de navigatie niet meer aan — mappen doen dat nu.
   Bestandsverplaatsing tussen mappen na upload kan nog niet (geen
   `files`-updatebeleid), enkel de bestemmingsmap kiezen bij het uploaden
-  zelf.
+  zelf. "Nieuwe map"/"Bestand uploaden" zijn verborgen voor staff zolang
+  er geen klant gekozen is via "Bekijk als klant" (zelfde patroon als
+  `/projects`) — zonder klant is er geen `company_id` om de map/het
+  bestand aan te hangen.
 - **Klantlogo**: staff kan per klant een logo uploaden op `/admin/clients/[id]`
   (`companies.logo_url`, al aanwezig sinds migratie 0001, nu voor het eerst
   gebruikt). Opslag in de publieke `company-logos`-bucket (migratie 0021) —

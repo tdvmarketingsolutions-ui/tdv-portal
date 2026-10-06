@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight, Folder, FileStack } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import { isStaffRole, getStaffViewCompanyId } from "@/lib/staff-view";
 import { getFolderContents } from "@/lib/data/folders";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { UploadDialog } from "./UploadDialog";
@@ -9,6 +11,19 @@ import { DeleteFolderButton } from "./DeleteFolderButton";
 import { FileList } from "./FileList";
 
 export async function FolderBrowser({ folderId }: { folderId: string | null }) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { data: profile } = user
+    ? await supabase.from("profiles").select("role").eq("id", user.id).single()
+    : { data: null };
+  const isStaff = isStaffRole(profile?.role as string | null | undefined);
+  // Same pattern as /projects: staff has no company of its own, so creating
+  // a folder/uploading a file needs "Bekijk als klant" picked first —
+  // otherwise resolveWriteCompanyId() has nothing to write against.
+  const canActAsClient = !isStaff || getStaffViewCompanyId() !== null;
+
   let contents;
   try {
     contents = await getFolderContents(folderId);
@@ -52,18 +67,29 @@ export async function FolderBrowser({ folderId }: { folderId: string | null }) {
               </p>
             )}
           </div>
-          <div className="flex flex-wrap gap-2">
-            <NewFolderDialog parentId={folderId} />
-            <UploadDialog folderId={folderId} />
-          </div>
+          {canActAsClient && (
+            <div className="flex flex-wrap gap-2">
+              <NewFolderDialog parentId={folderId} />
+              <UploadDialog folderId={folderId} />
+            </div>
+          )}
         </div>
+        {!canActAsClient && (
+          <p className="text-sm text-ink-muted dark:text-ink-dark-muted">
+            Kies links &quot;Bekijk als klant&quot; om mappen aan te maken of bestanden te uploaden voor een klant.
+          </p>
+        )}
       </header>
 
       {isEmpty ? (
         <EmptyState
           icon={FileStack}
           title={folder ? "Deze map is leeg" : "Nog geen bestanden"}
-          description="Maak een submap aan of upload je eerste bestand."
+          description={
+            canActAsClient
+              ? "Maak een submap aan of upload je eerste bestand."
+              : "Kies links \"Bekijk als klant\" om hier iets aan te maken."
+          }
         />
       ) : (
         <div className="space-y-6">

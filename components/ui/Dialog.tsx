@@ -18,11 +18,21 @@ export function Dialog({
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
 
+  // Mirrors the latest onClose without making the effect below depend on
+  // it — callers that pass an inline `() => ...}` (common for dialogs with
+  // a plain useState-controlled field instead of react-hook-form's
+  // uncontrolled register()) get a new onClose identity on every keystroke.
+  // If that identity were a dependency, this effect would re-run and
+  // re-focus the panel after every character, stealing focus right back out
+  // of whatever input the person is typing into.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
   useEffect(() => {
     if (!open) return;
 
     function handleEscape(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") onCloseRef.current();
     }
     document.addEventListener("keydown", handleEscape);
 
@@ -38,7 +48,7 @@ export function Dialog({
       document.body.style.overflow = originalOverflow;
       previouslyFocused?.focus();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
 
