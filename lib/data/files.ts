@@ -28,6 +28,7 @@ export async function uploadFile(input: {
   file: File;
   category: FileCategory;
   projectId?: string;
+  folderId?: string | null;
 }): Promise<FileRecord> {
   const supabase = createClient();
   const {
@@ -56,6 +57,7 @@ export async function uploadFile(input: {
     .insert({
       company_id: companyId,
       project_id: input.projectId ?? null,
+      folder_id: input.folderId ?? null,
       storage_path: storagePath,
       file_name: input.file.name,
       mime_type: input.file.type || null,
