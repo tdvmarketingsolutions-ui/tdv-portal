@@ -78,6 +78,13 @@ export async function uploadFile(input: {
   return record as unknown as FileRecord;
 }
 
+/** RLS (migration 0024) restricts this to staff or the file's own uploader. */
+export async function moveFile(fileId: string, folderId: string | null): Promise<void> {
+  const supabase = createClient();
+  const { error } = await supabase.from("files").update({ folder_id: folderId }).eq("id", fileId);
+  if (error) throw new Error(`Kon bestand niet verplaatsen: ${error.message}`);
+}
+
 export async function getFileDownloadUrl(storagePath: string): Promise<string> {
   const supabase = createClient();
   const { data, error } = await supabase.storage.from(STORAGE_BUCKET).createSignedUrl(storagePath, 60 * 5);

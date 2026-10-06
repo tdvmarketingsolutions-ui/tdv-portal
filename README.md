@@ -133,12 +133,15 @@ van het systeem.
   vaste categorieën (Logo, Huisstijl, Foto, …) blijven bestaan als tag per
   bestand (`files.category`, zichtbaar als badge in `FileList`), maar
   sturen de navigatie niet meer aan — mappen doen dat nu.
-  Bestandsverplaatsing tussen mappen na upload kan nog niet (geen
-  `files`-updatebeleid), enkel de bestemmingsmap kiezen bij het uploaden
-  zelf. "Nieuwe map"/"Bestand uploaden" zijn verborgen voor staff zolang
-  er geen klant gekozen is via "Bekijk als klant" (zelfde patroon als
-  `/projects`) — zonder klant is er geen `company_id` om de map/het
-  bestand aan te hangen.
+  "Nieuwe map"/"Bestand uploaden" zijn verborgen voor staff zolang er geen
+  klant gekozen is via "Bekijk als klant" (zelfde patroon als `/projects`)
+  — zonder klant is er geen `company_id` om de map/het bestand aan te
+  hangen. Bestanden zijn sleepbaar (native HTML5 drag-and-drop, geen
+  library) naar een submap-tegel of naar om het even welke stap in het
+  broodkruimelpad, om ze tussen mappen te verplaatsen — `moveFile`
+  (`lib/data/files.ts`), met een `files`-updatebeleid (migratie 0024:
+  staff of de eigen uploader, zelfde beperking als het bestaande
+  verwijderbeleid) dat er voordien niet was.
 - **Klantlogo**: staff kan per klant een logo uploaden op `/admin/clients/[id]`
   (`companies.logo_url`, al aanwezig sinds migratie 0001, nu voor het eerst
   gebruikt). Opslag in de publieke `company-logos`-bucket (migratie 0021) —

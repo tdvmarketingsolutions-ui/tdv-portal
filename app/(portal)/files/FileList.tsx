@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { File as FileIcon, Trash2 } from "lucide-react";
+import { File as FileIcon, Trash2, GripVertical } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Dialog } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
@@ -10,6 +10,11 @@ import { useToast } from "@/components/ui/ToastProvider";
 import { FILE_CATEGORY_LABEL, type FileCategory } from "@/lib/file-category";
 import type { FileRecord } from "@/types/domain";
 import { deleteFileAction } from "./actions";
+
+// Shared across FileList (drag source) and FolderTile/BreadcrumbNav (drop
+// targets) — a plain string constant beats importing one file from another
+// just for a MIME-type literal.
+export const FILE_DRAG_MIME = "application/x-tdv-file-id";
 
 function formatSize(bytes: number | null): string {
   if (!bytes) return "";
@@ -43,7 +48,21 @@ export function FileList({ files, folderId = null }: { files: FileRecord[]; fold
     <>
       <ul className="space-y-2">
         {files.map((file) => (
-          <li key={file.id} className="card flex items-center gap-4 p-4">
+          <li
+            key={file.id}
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData(FILE_DRAG_MIME, file.id);
+              e.dataTransfer.effectAllowed = "move";
+            }}
+            className="card flex cursor-grab items-center gap-4 p-4 active:cursor-grabbing"
+          >
+            <GripVertical
+              size={14}
+              strokeWidth={1.75}
+              className="shrink-0 text-ink-muted/50 dark:text-ink-dark-muted/50"
+              aria-hidden="true"
+            />
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-canvas dark:bg-canvas-dark">
               <FileIcon size={18} strokeWidth={1.75} className="text-ink-muted dark:text-ink-dark-muted" />
             </div>
