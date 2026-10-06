@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { addProjectComment } from "@/lib/data/projects";
+import { createDeliverable, uploadDeliverableVersion } from "@/lib/data/admin/deliverables";
 import { projectCommentSchema, type ProjectCommentFormValues } from "./schema";
 
 export async function addProjectCommentAction(
@@ -20,5 +21,27 @@ export async function addProjectCommentAction(
   }
 
   revalidatePath(`/projects/${projectId}`);
+  return {};
+}
+
+export async function createDeliverableAction(
+  projectId: string,
+  formData: FormData
+): Promise<{ error?: string }> {
+  const title = (formData.get("title") as string | null)?.trim();
+  const file = formData.get("file");
+  if (!title) return { error: "Vul een titel in." };
+  if (!(file instanceof File) || file.size === 0) return { error: "Kies een bestand." };
+  if (file.size > 25 * 1024 * 1024) return { error: "Bestand is te groot (max 25 MB)." };
+
+  try {
+    const deliverable = await createDeliverable({ projectId, title });
+    await uploadDeliverableVersion({ deliverableId: deliverable.id, file });
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Kon deliverable niet aanmaken." };
+  }
+
+  revalidatePath(`/projects/${projectId}`);
+  revalidatePath("/feedback");
   return {};
 }

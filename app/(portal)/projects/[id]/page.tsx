@@ -1,13 +1,25 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import { isStaffRole, getStaffViewCompanyId } from "@/lib/staff-view";
 import { getProjectById } from "@/lib/data/projects";
 import { Badge } from "@/components/ui/Badge";
 import { PROJECT_STATUS_LABEL, PROJECT_STATUS_TONE } from "@/lib/project-status";
 import { FEEDBACK_STATUS_LABEL, FEEDBACK_STATUS_TONE } from "@/lib/feedback-status";
 import { CommentForm } from "./CommentForm";
+import { NewDeliverableDialog } from "./NewDeliverableDialog";
 
 export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { data: profile } = user
+    ? await supabase.from("profiles").select("role").eq("id", user.id).single()
+    : { data: null };
+  const canManage = isStaffRole(profile?.role as string | null | undefined) && !getStaffViewCompanyId();
+
   const project = await getProjectById(params.id);
   if (!project) notFound();
 
@@ -51,7 +63,10 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
           </section>
 
           <section className="card p-6">
-            <h2 className="font-display text-lg font-medium">Feedback &amp; opleveringen</h2>
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="font-display text-lg font-medium">Feedback &amp; opleveringen</h2>
+              {canManage && <NewDeliverableDialog projectId={project.id} />}
+            </div>
             {project.deliverables?.length ? (
               <ul className="mt-4 space-y-2">
                 {project.deliverables.map((d) => {
