@@ -41,11 +41,14 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/register") ||
     request.nextUrl.pathname.startsWith("/forgot-password") ||
     request.nextUrl.pathname.startsWith("/reset-password");
+  // Exact match, not startsWith — every path "starts with" "/", this is
+  // only the public marketing/pricing landing page itself.
+  const isLandingPage = request.nextUrl.pathname === "/";
   const isAdminRoute = request.nextUrl.pathname.startsWith("/admin");
   const isPublicAsset = request.nextUrl.pathname.startsWith("/_next") ||
     request.nextUrl.pathname.startsWith("/favicon");
 
-  if (!user && !isAuthRoute && !isPublicAsset) {
+  if (!user && !isAuthRoute && !isLandingPage && !isPublicAsset) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/login";
     redirectUrl.searchParams.set("redirectedFrom", request.nextUrl.pathname);
