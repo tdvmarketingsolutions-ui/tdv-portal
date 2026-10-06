@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { uploadFile, deleteFile } from "@/lib/data/files";
+import { uploadFile, deleteFile, moveFile } from "@/lib/data/files";
 import { createFolder, deleteFolder } from "@/lib/data/folders";
 import { FILE_CATEGORIES, type FileCategory } from "@/lib/file-category";
 
@@ -42,6 +42,22 @@ export async function deleteFileAction(fileId: string, folderId: string | null):
   }
 
   revalidatePath(folderPath(folderId));
+  return {};
+}
+
+export async function moveFileAction(
+  fileId: string,
+  targetFolderId: string | null,
+  currentFolderId: string | null
+): Promise<{ error?: string }> {
+  try {
+    await moveFile(fileId, targetFolderId);
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Kon bestand niet verplaatsen." };
+  }
+
+  revalidatePath(folderPath(currentFolderId));
+  revalidatePath(folderPath(targetFolderId));
   return {};
 }
 
