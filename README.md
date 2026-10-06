@@ -119,14 +119,23 @@ van het systeem.
   LinkedIn Marketing Developer Platform, externe goedkeuringen die TDV zelf
   moet aanvragen. De "Verbinden"-knop staat er al, maar is bewust
   uitgeschakeld tot die koppeling bestaat — `lib/data/admin/social-accounts.ts`.
-- **Bestanden**: mappenstructuur + upload naar de `client-files`
-  Storage-bucket — `lib/data/files.ts`. `/files` toont een map per
-  bestandscategorie (Logo, Huisstijl, Foto, Video, Factuur, Contract,
-  Overig — `lib/file-category.ts`) met aantal bestanden; klikken opent
-  `/files/[category]` met enkel die bestanden. Geen nieuwe tabel/kolom
-  nodig — `files.category` bestond al als vlak veld, de mappen zijn een
-  UI-laag erbovenop. Uploaden vanuit een map vult die categorie meteen in
-  (`UploadDialog`'s `defaultCategory`-prop).
+- **Bestanden**: echte, zelf aan te maken geneste mappen (OneDrive-stijl) +
+  upload naar de `client-files` Storage-bucket — `lib/data/folders.ts` +
+  `lib/data/files.ts`. Een nieuwe `folders`-tabel (migratie 0023,
+  `parent_id` voor nesting, RLS zoals `files`: iedereen van het bedrijf mag
+  aanmaken, staff of de aanmaker mag verwijderen) + `files.folder_id`.
+  `/files` is de root, `/files/[folderId]` een specifieke map; bovenaan
+  staat altijd een klikbaar broodkruimelpad (`FolderBrowser.tsx`) zodat
+  nooit onduidelijk is waar je je bevindt. Een map verwijderen verwijdert
+  ook de submappen erin (cascade), maar bestanden overleven altijd — ze
+  vallen terug naar de dichtstbijzijnde map die blijft bestaan
+  (`folder_id` → `on delete set null`), nooit stilletjes weg. De oude
+  vaste categorieën (Logo, Huisstijl, Foto, …) blijven bestaan als tag per
+  bestand (`files.category`, zichtbaar als badge in `FileList`), maar
+  sturen de navigatie niet meer aan — mappen doen dat nu.
+  Bestandsverplaatsing tussen mappen na upload kan nog niet (geen
+  `files`-updatebeleid), enkel de bestemmingsmap kiezen bij het uploaden
+  zelf.
 - **Klantlogo**: staff kan per klant een logo uploaden op `/admin/clients/[id]`
   (`companies.logo_url`, al aanwezig sinds migratie 0001, nu voor het eerst
   gebruikt). Opslag in de publieke `company-logos`-bucket (migratie 0021) —
@@ -175,11 +184,9 @@ van het systeem.
 - [ ] Kennisbank-ingest is nu een synchrone admin-actie die alles herembedt;
       bij meer data wordt dat een achtergrondtaak met incrementele sync
       (bv. op basis van `updated_at`) in plaats van volledige resync.
-- [ ] Bestanden heeft nu enkel vaste categorie-"mappen" (zie "Bestanden"
-      hierboven). De klant wil echte, zelf aan te maken, geneste mappen
-      (OneDrive-achtig) met een broodkruimelpad bovenaan dat toont waar je
-      je bevindt. Vereist een nieuwe `folders`-tabel (parent_id voor
-      nesting, RLS zoals `files`) + `files.folder_id`.
+- [ ] Een bestaand bestand verplaatsen naar een andere map kan nog niet —
+      enkel de bestemmingsmap kiezen bij het uploaden zelf. Vereist een
+      `files`-updatebeleid (bestaat nu niet, enkel select/insert/delete).
 
 ## Performance
 

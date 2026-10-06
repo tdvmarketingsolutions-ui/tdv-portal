@@ -18,7 +18,7 @@ function formatSize(bytes: number | null): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export function FileList({ files }: { files: FileRecord[] }) {
+export function FileList({ files, folderId = null }: { files: FileRecord[]; folderId?: string | null }) {
   const router = useRouter();
   const { push } = useToast();
   const [pendingDelete, setPendingDelete] = useState<FileRecord | null>(null);
@@ -27,7 +27,7 @@ export function FileList({ files }: { files: FileRecord[] }) {
   async function confirmDelete() {
     if (!pendingDelete) return;
     setDeleting(true);
-    const result = await deleteFileAction(pendingDelete.id);
+    const result = await deleteFileAction(pendingDelete.id, folderId);
     setDeleting(false);
 
     if (result.error) {

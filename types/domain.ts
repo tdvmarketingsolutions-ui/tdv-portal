@@ -117,12 +117,22 @@ export interface FileRecord {
   id: string;
   company_id: string;
   project_id: string | null;
+  folder_id: string | null;
   storage_path: string;
   file_name: string;
   mime_type: string | null;
   size_bytes: number | null;
   category: string | null;
   uploaded_by: string | null;
+  created_at: string;
+}
+
+export interface FolderRecord {
+  id: string;
+  company_id: string;
+  parent_id: string | null;
+  name: string;
+  created_by: string | null;
   created_at: string;
 }
 
