@@ -9,12 +9,32 @@ const sans = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const display = Epilogue({ subsets: ["latin"], variable: "--font-display", weight: ["500", "600", "700"] });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
+const title = "TDV Klantenportaal";
+const description = "Volg je projecten, content en communicatie met TDV Marketing Solutions op één plek.";
+
 export const metadata: Metadata = {
-  title: "TDV Klantenportaal",
-  description: "Volg je projecten, content en communicatie met TDV Marketing Solutions op één plek.",
-  // app/icon.png + app/apple-icon.png (TDV-brandmark) are picked up
-  // automatically by Next's file-based metadata convention — no explicit
-  // `icons` entry needed here. Same for app/manifest.ts (PWA/Android icons).
+  // Needed so the relative app/opengraph-image.png resolves to an absolute
+  // URL in the og:image/twitter:image tags — without it, link previews in
+  // WhatsApp/Slack/etc. silently fail to load the image.
+  metadataBase: new URL("https://tdvmarketingsolutions.be"),
+  title,
+  description,
+  openGraph: {
+    title,
+    description,
+    siteName: title,
+    locale: "nl_BE",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+  },
+  // app/icon.png + app/apple-icon.png (TDV-brandmark) and
+  // app/opengraph-image.png (link-preview card) are picked up automatically
+  // by Next's file-based metadata convention — no explicit `icons`/`images`
+  // entry needed here. Same for app/manifest.ts (PWA/Android icons).
 };
 
 export const viewport: Viewport = {
