@@ -1,8 +1,9 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { assertTdvStaff } from "@/lib/auth/assert-staff";
-import { resolveListFilterCompanyId, resolveWriteCompanyId } from "@/lib/staff-view";
+import { resolveListFilterCompanyId, resolveWriteCompanyId, isStaffRole } from "@/lib/staff-view";
 import { getFileDownloadUrl } from "@/lib/data/files";
+import { createNotifications } from "@/lib/data/notifications";
 import type { ContentChannel, ContentItem, ContentStatus } from "@/types/domain";
 
 export interface ContentVisual {
@@ -189,4 +190,48 @@ export async function addContentItemComment(contentItemId: string, body: string)
     .insert({ content_item_id: contentItemId, author_id: user.id, body });
 
   if (error) throw new Error(`Kon opmerking niet plaatsen: ${error.message}`);
+
+  // Notify whichever side didn't just write this comment — same "notify the
+  // other party" pattern as addTicketMessage (lib/data/tickets.ts). Content
+  // items have no single assigned staff member, so a client's comment goes
+  // to all of TDV's team, same as a brand-new ticket.
+  const { data: authorProfile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  const { data: itemData } = await supabase
+    .from("content_items")
+    .select("title, company_id")
+    .eq("id", contentItemId)
+    .single();
+  const item = itemData as { title: string; company_id: string } | null;
+  if (!item) return;
+
+  const linkPath = `/content-planning/${contentItemId}`;
+  const notificationTitle = `Nieuwe opmerking bij "${item.title}"`;
+
+  if (isStaffRole((authorProfile as { role: string } | null)?.role)) {
+    const { data: clientProfiles } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("company_id", item.company_id)
+      .in("role", ["client_admin", "client_member"]);
+    await createNotifications(
+      ((clientProfiles ?? []) as { id: string }[]).map((p) => ({
+        recipientId: p.id,
+        type: "comment" as const,
+        title: notificationTitle,
+        body,
+        linkPath,
+      }))
+    );
+  } else {
+    const { data: staff } = await supabase.from("profiles").select("id").in("role", ["tdv_admin", "tdv_staff"]);
+    await createNotifications(
+      ((staff ?? []) as { id: string }[]).map((s) => ({
+        recipientId: s.id,
+        type: "comment" as const,
+        title: notificationTitle,
+        body,
+        linkPath,
+      }))
+    );
+  }
 }
