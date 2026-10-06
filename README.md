@@ -187,12 +187,44 @@ van het systeem.
 
 ## Wat nog moet worden bijgebouwd
 
+Backlog voor de doorlopende 5-uurlijkse routine (zie onder) — één
+afgebakende PR per punt, in deze volgorde:
+
+- [ ] **Landingpage (Fase 1)**: publieke marketing-/pricingpagina in
+      TDV-branding, buiten de ingelogde portal-shell. Drie tiers binnen de
+      €100–€1000/maand-bandbreedte die de klant aangaf (concrete
+      namen/bedragen/limieten zijn een eerste ontwerp, expliciet
+      aanpasbaar — geen definitieve commerciële beslissing). "Start
+      gratis proefperiode" linkt naar het bestaande `/register`
+      (14 dagen), "Inloggen" naar `/login`. Puur presentationeel: geen
+      Stripe, geen nieuwe tabellen, geen wijziging aan het
+      company/tenancy-model — dat blijft bewust aparte, begeleide
+      architectuurwerk (zie hieronder).
 - [ ] Kennisbank-ingest is nu een synchrone admin-actie die alles herembedt;
       bij meer data wordt dat een achtergrondtaak met incrementele sync
       (bv. op basis van `updated_at`) in plaats van volledige resync.
-- [ ] Een bestaand bestand verplaatsen naar een andere map kan nog niet —
-      enkel de bestemmingsmap kiezen bij het uploaden zelf. Vereist een
-      `files`-updatebeleid (bestaat nu niet, enkel select/insert/delete).
+- [ ] **Toegankelijkheidsaudit**: toetsenbordnavigatie, aria-labels,
+      focus-states en kleurcontrast systematisch nalopen over alle
+      modules — hoort bij de "premium, A-tot-Z"-lat die de klant stelt.
+- [ ] **Lege staten en foutafhandeling verfijnen**: een aantal oudere
+      pagina's heeft nog een generieke of ontbrekende lege/foutstaat in
+      plaats van de doordachte `EmptyState`-aanpak die de nieuwere
+      modules (bestanden, deliverables) al hebben — gelijktrekken.
+- [ ] **Performance-audit op resterende trage interacties**: plekken waar
+      een actie op een volledige `router.refresh()`-rondtrip wacht i.p.v.
+      optimistic UI, en queries die sneller kunnen — vervolg op de
+      regio-fix (zie "Performance" hieronder).
+
+Expliciet **niet** in scope van de onbemande routine, ook niet als het
+logisch aansluit bij bovenstaande punten: de echte multi-tenant/white-label
+SaaS-architectuur waar de klant naartoe wil (andere agency's/freelancers
+die elk hun eigen afgeschermde, zelf-gebrande omgeving krijgen om hun
+eigen klanten in te beheren, met een abonnement erbovenop). Dat vereist
+een nieuwe `agencies`-laag boven `companies`, elke RLS-policy in dit hele
+schema herschreven naar agency-scoped, per-agency branding i.p.v. de
+hardcoded TDV-tokens, en Stripe-facturatie per agency — raakt "de
+belangrijkste invariant" die hierboven staat beschreven, dus dat gebeurt
+stap voor stap samen met de klant, niet onbemand.
 
 ## Performance
 
