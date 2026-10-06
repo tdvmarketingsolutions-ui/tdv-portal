@@ -88,6 +88,14 @@ van het systeem.
   een project (`deliverables.project_id`), dus de "Feedback & opleveringen"-
   sectie op de projectdetailpagina lijst ze per project op (titel + status
   van de laatste versie) en linkt door naar de bestaande `/feedback/[id]`.
+  Staff kan nu ook vanuit de app zelf een nieuwe deliverable aanmaken (titel
+  + eerste versie, vanaf de projectdetailpagina) en een nieuwe versie
+  uploaden op een bestaande deliverable (vanaf `/feedback/[id]`) —
+  `lib/data/admin/deliverables.ts`. Voorheen bestonden deliverables/
+  deliverable_versions enkel als ze rechtstreeks in de database werden
+  aangemaakt; de RLS-insertpolicies daarvoor stonden er wel al sinds
+  migratie 0007, alleen de app-laag ontbrak nog. Een nieuwe versie
+  notifieert de klant, zelfde patroon als contentgoedkeuring.
 - **Contentplanning**: maandkalender (drag-and-drop herplannen, sleep vanuit
   "Nog niet ingepland") + lijst, detail met visual (afbeelding/video),
   opmerkingen en de volledige statuslevenscyclus (concept → wacht op
@@ -167,11 +175,11 @@ van het systeem.
 - [ ] Kennisbank-ingest is nu een synchrone admin-actie die alles herembedt;
       bij meer data wordt dat een achtergrondtaak met incrementele sync
       (bv. op basis van `updated_at`) in plaats van volledige resync.
-- [ ] Deliverables heeft nog geen "nieuwe versie uploaden"-flow in de app
-      zelf — deliverables/deliverable_versions bestaan enkel als ze
-      rechtstreeks in de database aangemaakt worden. Vereist ook nog een
-      INSERT-RLS-policy op `deliverable_versions` (er is nu enkel een
-      update-policy voor de klant-goedkeuring).
+- [ ] Bestanden heeft nu enkel vaste categorie-"mappen" (zie "Bestanden"
+      hierboven). De klant wil echte, zelf aan te maken, geneste mappen
+      (OneDrive-achtig) met een broodkruimelpad bovenaan dat toont waar je
+      je bevindt. Vereist een nieuwe `folders`-tabel (parent_id voor
+      nesting, RLS zoals `files`) + `files.folder_id`.
 
 ## Performance
 

@@ -1,12 +1,15 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, FileText } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import { isStaffRole, getStaffViewCompanyId } from "@/lib/staff-view";
 import { getDeliverableById, getSignedFileUrl } from "@/lib/data/deliverables";
 import { Badge } from "@/components/ui/Badge";
 import { FEEDBACK_STATUS_LABEL, FEEDBACK_STATUS_TONE } from "@/lib/feedback-status";
 import { VersionPreview } from "./VersionPreview";
 import { FeedbackStatusActions } from "./FeedbackStatusActions";
 import { CommentForm } from "./CommentForm";
+import { UploadVersionDialog } from "./UploadVersionDialog";
 import { cn } from "@/lib/utils";
 
 export default async function DeliverableDetailPage({
@@ -16,6 +19,17 @@ export default async function DeliverableDetailPage({
   params: { id: string };
   searchParams: { version?: string };
 }) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { data: profile } = user
+    ? await supabase.from("profiles").select("role").eq("id", user.id).single()
+    : { data: null };
+  // Staff previewing "as a client" (Bekijk als klant) should see the same
+  // controls a real client sees — same canManage pattern as content-planning.
+  const canManage = isStaffRole(profile?.role as string | null | undefined) && !getStaffViewCompanyId();
+
   const deliverable = await getDeliverableById(params.id);
   if (!deliverable) notFound();
 
@@ -42,9 +56,12 @@ export default async function DeliverableDetailPage({
       </Link>
 
       <header className="space-y-2">
-        <div className="flex flex-wrap items-center gap-3">
-          <h1 className="font-display text-2xl font-semibold">{deliverable.title}</h1>
-          <Badge tone={FEEDBACK_STATUS_TONE[version.status]}>{FEEDBACK_STATUS_LABEL[version.status]}</Badge>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="font-display text-2xl font-semibold">{deliverable.title}</h1>
+            <Badge tone={FEEDBACK_STATUS_TONE[version.status]}>{FEEDBACK_STATUS_LABEL[version.status]}</Badge>
+          </div>
+          {canManage && <UploadVersionDialog deliverableId={deliverable.id} />}
         </div>
         {deliverable.projects?.name && (
           <p className="text-sm text-ink-muted dark:text-ink-dark-muted">{deliverable.projects.name}</p>

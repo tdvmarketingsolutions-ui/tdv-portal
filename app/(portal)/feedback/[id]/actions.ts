@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { addDeliverableComment, updateDeliverableVersionStatus } from "@/lib/data/deliverables";
+import { uploadDeliverableVersion } from "@/lib/data/admin/deliverables";
 import type { FeedbackStatus } from "@/types/domain";
 import { deliverableCommentSchema, type DeliverableCommentFormValues } from "./schema";
 
@@ -43,5 +44,29 @@ export async function updateVersionStatusAction(
 
   revalidatePath(`/feedback/${deliverableId}`);
   revalidatePath("/feedback");
+  return {};
+}
+
+export async function uploadDeliverableVersionAction(
+  deliverableId: string,
+  formData: FormData
+): Promise<{ error?: string }> {
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) {
+    return { error: "Kies eerst een bestand." };
+  }
+  if (file.size > 25 * 1024 * 1024) {
+    return { error: "Bestand is te groot (max 25 MB)." };
+  }
+
+  try {
+    await uploadDeliverableVersion({ deliverableId, file });
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Kon versie niet uploaden." };
+  }
+
+  revalidatePath(`/feedback/${deliverableId}`);
+  revalidatePath("/feedback");
+  revalidatePath("/projects");
   return {};
 }
