@@ -42,7 +42,21 @@ van het systeem.
 
 - **Auth**: login, registratie, wachtwoord vergeten/resetten, sessiebeheer
   via cookies, middleware die elke request ververst en niet-ingelogde
-  gebruikers naar `/login` stuurt.
+  gebruikers naar `/login` stuurt — behalve op `/` zelf, zie hieronder.
+- **Landingpage** (`/`, `app/page.tsx`): publieke marketing-/pricingpagina
+  in TDV-branding, de eerste stap richting een zelfbedienbaar SaaS-product
+  voor marketingbureaus, freelancers en agency-startups. Ingelogde
+  bezoekers worden meteen doorgestuurd naar `/dashboard` (zelfde route,
+  gewoon een `redirect()` in de page in plaats van middleware — middleware
+  laat `/` nu als enige uitzondering door zonder sessie). Drie
+  prijstiers (Starter €129, Growth €349, Agency €899) binnen de
+  €100–€1000/maand-bandbreedte die de klant aangaf — een eerste ontwerp,
+  expliciet aanpasbaar, geen definitieve commerciële beslissing. "Start
+  gratis proefperiode" linkt naar het bestaande `/register` (14 dagen),
+  "Inloggen" naar `/login`. Bewust puur presentationeel: geen Stripe, geen
+  nieuwe tabellen, geen wijziging aan het company/tenancy-model — zie de
+  uitleg verderop in dit bestand over waarom de echte SaaS-architectuur
+  apart, begeleid werk blijft.
 - **Registratie**: `/register` laat een nieuwe klant zelf een account +
   bedrijf aanmaken (naam, bedrijfsnaam, e-mail, wachtwoord) —
   `app/(auth)/register/actions.ts`. Alles (auth user, `companies`-rij,
@@ -190,16 +204,6 @@ van het systeem.
 Backlog voor de doorlopende 5-uurlijkse routine (zie onder) — één
 afgebakende PR per punt, in deze volgorde:
 
-- [ ] **Landingpage (Fase 1)**: publieke marketing-/pricingpagina in
-      TDV-branding, buiten de ingelogde portal-shell. Drie tiers binnen de
-      €100–€1000/maand-bandbreedte die de klant aangaf (concrete
-      namen/bedragen/limieten zijn een eerste ontwerp, expliciet
-      aanpasbaar — geen definitieve commerciële beslissing). "Start
-      gratis proefperiode" linkt naar het bestaande `/register`
-      (14 dagen), "Inloggen" naar `/login`. Puur presentationeel: geen
-      Stripe, geen nieuwe tabellen, geen wijziging aan het
-      company/tenancy-model — dat blijft bewust aparte, begeleide
-      architectuurwerk (zie hieronder).
 - [ ] Kennisbank-ingest is nu een synchrone admin-actie die alles herembedt;
       bij meer data wordt dat een achtergrondtaak met incrementele sync
       (bv. op basis van `updated_at`) in plaats van volledige resync.
