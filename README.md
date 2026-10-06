@@ -167,6 +167,17 @@ van het systeem.
       INSERT-RLS-policy op `deliverable_versions` (er is nu enkel een
       update-policy voor de klant-goedkeuring).
 
+## Performance
+
+`vercel.json` pint serverless functions op `fra1` (Frankfurt) vast. Het
+Supabase-project draait in `eu-central-2` (Zürich) — zonder deze pin viel
+Vercel terug op zijn default `iad1` (US-oost), wat elke server-side
+Supabase-call (elke paginalaad, elke Server Action) een transatlantische
+heen-en-terugreis liet maken in plaats van een paar honderd kilometer. Dat
+was de hoofdoorzaak van een traag aanvoelend portaal — niet iets dat een
+andere hostingprovider zou oplossen, wel iets dat elke andere EU-gehoste
+backend al automatisch goed zou hebben.
+
 ## Setup
 
 ```bash
