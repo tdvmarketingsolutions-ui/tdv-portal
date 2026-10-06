@@ -125,11 +125,16 @@ van het systeem.
   in de `supabase_realtime`-publicatie) + e-mail via Resend
   (`lib/email/send.ts`), met een opt-out per gebruiker in Instellingen
   (`profiles.email_notifications`, migratie 0014). Triggers zitten in
-  `createTicket`/`addTicketMessage` (nieuw ticket / nieuw bericht) en
-  `updateContentItemAdmin` (content naar "wacht op goedkeuring") —
-  `lib/data/notifications.ts`. Geen eigen item meer in de klant-navigatie —
-  het belletje bovenaan de sidebar linkt al naar `/notifications`, dus een
-  tweede menu-item naar diezelfde pagina was overbodig.
+  `createTicket`/`addTicketMessage` (nieuw ticket / nieuw bericht),
+  `updateContentItemAdmin` (content naar "wacht op goedkeuring"), en
+  `addContentItemComment`/`addDeliverableComment` (nieuwe opmerking bij
+  content resp. feedback/deliverables) — `lib/data/notifications.ts`. Elke
+  opmerking-trigger notifieert "de andere kant": schrijft een klant, dan
+  heel TDV (geen vaste toewijzing per content-item/deliverable, dus net als
+  bij een nieuw ticket); schrijft staff, dan alle klantprofielen van dat
+  bedrijf. Geen eigen item meer in de klant-navigatie — het belletje
+  bovenaan de sidebar linkt al naar `/notifications`, dus een tweede
+  menu-item naar diezelfde pagina was overbodig.
 - **Dashboard**: "vraagt je aandacht" (openstaande goedkeuringen, aanvragen
   die op je wachten) + recente activiteit, rolgebonden (klant vs. staff) —
   `lib/data/dashboard.ts`.
@@ -156,11 +161,11 @@ van het systeem.
 - [ ] Kennisbank-ingest is nu een synchrone admin-actie die alles herembedt;
       bij meer data wordt dat een achtergrondtaak met incrementele sync
       (bv. op basis van `updated_at`) in plaats van volledige resync.
-- [ ] Notificatietriggers dekken nu aanvragen en content-goedkeuring. Feedback
-      (deliverables) en contentopmerkingen hebben nog geen trigger — die
-      module heeft ook nog geen "nieuwe versie uploaden"-flow in de app zelf
-      (deliverables/versions bestaan enkel als ze rechtstreeks in de
-      database aangemaakt worden).
+- [ ] Deliverables heeft nog geen "nieuwe versie uploaden"-flow in de app
+      zelf — deliverables/deliverable_versions bestaan enkel als ze
+      rechtstreeks in de database aangemaakt worden. Vereist ook nog een
+      INSERT-RLS-policy op `deliverable_versions` (er is nu enkel een
+      update-policy voor de klant-goedkeuring).
 
 ## Setup
 
