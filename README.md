@@ -198,7 +198,15 @@ van het systeem.
   heeft geen `updated_at`), en incrementeel ruimt nooit chunks op voor
   een bron die volledig verwijderd is — daarvoor is de "Volledig
   herbouwen"-link op `/admin/ai` bedoeld (`ingestKnowledgeBase({
-  fullResync: true })`).
+  fullResync: true })`). Draait ook automatisch: `/api/cron/ai-ingest`
+  (Vercel Cron, `vercel.json`, dagelijks 03:00 UTC) roept
+  `ingestKnowledgeBaseAsCronJob()` aan — een aparte entry point die via
+  de admin-client leest i.p.v. de RLS-bound sessie-client, want een
+  cron-aanroep heeft geen staff-sessie om `is_tdv_staff()` tegen te
+  laten gelden. Geauthenticeerd via een `CRON_SECRET`-omgevingsvariabele
+  die Vercel zelf als bearer-header meestuurt bij geplande aanroepen —
+  **moet nog toegevoegd worden in Vercel**, zie de TODO hieronder. Tot
+  dan 401't de job gewoon (fail closed), geen beveiligingsrisico.
 - **Admin**: layout met dubbele rolcheck (middleware + layout zelf), en CRUD
   voor klanten, projecten, aanvragen, content en gebruikers, plus
   AI-activiteit en instellingen.
@@ -215,11 +223,12 @@ van het systeem.
 Backlog voor de doorlopende 5-uurlijkse routine (zie onder) — één
 afgebakende PR per punt, in deze volgorde:
 
-- [ ] Kennisbank-ingest is nu incrementeel (zie "Wat er echt werkt"
-      hierboven), maar nog steeds enkel handmatig te starten vanaf
-      `/admin/ai` — de "achtergrondtaak"-kant (automatisch, zonder dat
-      iemand op de knop moet duwen, bv. via Vercel Cron) is de resterende
-      stap.
+- [ ] **Actie vereist**: de Vercel Cron-job voor kennisbank-ingest
+      (`/api/cron/ai-ingest`, dagelijks 03:00 UTC) staat klaar in de code
+      maar faalt tot er een `CRON_SECRET`-omgevingsvariabele toegevoegd
+      wordt in Vercel → Settings → Environment Variables — zie "Wat er
+      echt werkt" hierboven voor details. Zonder die variabele faalt de
+      job veilig (401), niet onveilig (open).
 - [ ] **Toegankelijkheidsaudit**: toetsenbordnavigatie, aria-labels,
       focus-states en kleurcontrast systematisch nalopen over alle
       modules — hoort bij de "premium, A-tot-Z"-lat die de klant stelt.
