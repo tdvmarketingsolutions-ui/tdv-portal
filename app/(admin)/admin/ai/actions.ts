@@ -3,15 +3,21 @@
 import { revalidatePath } from "next/cache";
 import { ingestKnowledgeBase } from "@/lib/data/admin/ai-ingest";
 
-export async function runKnowledgeBaseIngestAction(): Promise<{ error?: string; message?: string }> {
+export async function runKnowledgeBaseIngestAction(options?: {
+  fullResync?: boolean;
+}): Promise<{ error?: string; message?: string }> {
   try {
-    const result = await ingestKnowledgeBase();
+    const result = await ingestKnowledgeBase(options);
     revalidatePath("/admin/ai");
     return {
       message:
         result.chunksWritten === 0
-          ? "Kennisbank bijgewerkt, maar er was nog geen data om te indexeren."
-          : `Kennisbank bijgewerkt: ${result.chunksWritten} fragmenten voor ${result.companiesTouched} klant(en).`,
+          ? options?.fullResync
+            ? "Kennisbank volledig herbouwd, maar er was nog geen data om te indexeren."
+            : "Kennisbank bijgewerkt — geen wijzigingen sinds de vorige run."
+          : options?.fullResync
+            ? `Kennisbank volledig herbouwd: ${result.chunksWritten} fragmenten voor ${result.companiesTouched} klant(en).`
+            : `Kennisbank bijgewerkt: ${result.chunksWritten} fragmenten voor ${result.companiesTouched} klant(en).`,
     };
   } catch (err) {
     if (err instanceof Error && err.message === "NOT_AUTHORIZED") {
