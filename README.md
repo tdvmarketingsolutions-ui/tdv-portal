@@ -258,16 +258,36 @@ afgebakende PR per punt, in deze volgorde:
       optimistic UI, en queries die sneller kunnen — vervolg op de
       regio-fix (zie "Performance" hieronder).
 
-Expliciet **niet** in scope van de onbemande routine, ook niet als het
-logisch aansluit bij bovenstaande punten: de echte multi-tenant/white-label
-SaaS-architectuur waar de klant naartoe wil (andere agency's/freelancers
-die elk hun eigen afgeschermde, zelf-gebrande omgeving krijgen om hun
-eigen klanten in te beheren, met een abonnement erbovenop). Dat vereist
-een nieuwe `agencies`-laag boven `companies`, elke RLS-policy in dit hele
-schema herschreven naar agency-scoped, per-agency branding i.p.v. de
-hardcoded TDV-tokens, en Stripe-facturatie per agency — raakt "de
-belangrijkste invariant" die hierboven staat beschreven, dus dat gebeurt
-stap voor stap samen met de klant, niet onbemand.
+## Multi-tenant white-label architectuur (actief traject, niet voor de onbemande routine)
+
+De landingspagina belooft een white-label SaaS (andere agency's/freelancers
+krijgen een eigen afgeschermde, zelf-gebrande omgeving, met een abonnement
+erbovenop) maar `/register` leverde dat tot nu toe niet — het maakte gewoon
+een nieuwe klant aan onder TDV's eigen, enige tenant. Dit wordt stap voor
+stap rechtgezet via 6 losse, elk apart geverifieerde PR's (plan:
+`/root/.claude/plans/whimsical-sauteeing-crayon.md` in de sessie die dit
+traject startte) — raakt "de belangrijkste invariant" hierboven beschreven,
+dus **expliciet niet voor de onbemande routine**, elke stap begeleid:
+
+1. [ ] `agencies`-tabel + backfill van bestaande data naar TDV als Agency #1
+       (migratie `0025`) — schema-only, geen gedragsverandering.
+2. [ ] Rolnaam-hernoeming `tdv_admin`/`tdv_staff` → `agency_admin`/`agency_staff`
+       (migratie `0026` + ~15 bestanden, in dezelfde release).
+3. [ ] Agency-bewuste RLS-herschrijving (migratie `0027`) — `is_tdv_staff()`
+       vervangen door `is_agency_staff()` + `current_agency_id()` in alle
+       ~38 policies, inclusief twee bestaande losstaande gaten
+       (`profiles_select_staff_public`, `social_accounts` hadden al géén
+       enkele scoping). Hoogste-risico stap van dit traject.
+4. [ ] Agency-zelfregistratie (`/register` maakt een `agencies`-rij, directe
+       trial, geen betaalstap) + vijf onveilige "notificeer alle staff"-queries
+       scopen op agency.
+5. [ ] Per-agency branding: DB-gedreven theming (logo/kleuren/naam per
+       agency) i.p.v. de hardcoded TDV-tokens in Sidebar/layout/manifest.
+6. [ ] Facturatie via **Billit** (niet Stripe — bewuste keuze: geen
+       betaalprovider/kaartincasso, agency's kiezen maand/kwartaal/jaar-ritme,
+       het systeem maakt en verstuurt zelf facturen via de Billit API,
+       betaling via overschrijving). Vereist een `BILLIT_API_KEY` in Vercel
+       zodra deze stap gebouwd wordt.
 
 ## Performance
 
