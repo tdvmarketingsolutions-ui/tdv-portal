@@ -49,10 +49,9 @@ van het systeem.
   bezoekers worden meteen doorgestuurd naar `/dashboard` (zelfde route,
   gewoon een `redirect()` in de page in plaats van middleware — middleware
   laat `/` nu als enige uitzondering door zonder sessie). Drie
-  prijstiers (Starter €129, Growth €349, Agency €899) binnen de
-  €100–€1000/maand-bandbreedte die de klant aangaf — een eerste ontwerp,
-  expliciet aanpasbaar, geen definitieve commerciële beslissing. "Start
-  gratis proefperiode" linkt naar het bestaande `/register` (14 dagen),
+  prijstiers (Starter €129, Growth €349, Agency €899), door de klant
+  bevestigd. "Start gratis proefperiode" linkt naar het bestaande
+  `/register` (14 dagen),
   "Inloggen" naar `/login`. Bewust puur presentationeel: geen Stripe, geen
   nieuwe tabellen, geen wijziging aan het company/tenancy-model — zie de
   uitleg verderop in dit bestand over waarom de echte SaaS-architectuur
