@@ -12,12 +12,24 @@ import { assertTdvStaff } from "@/lib/auth/assert-staff";
  * no `invoices` table in this schema (despite older docs mentioning one), so
  * those four modules are the real source set.
  *
- * Full resync on every run: all `ai_documents` rows for these source types
- * are deleted and rebuilt from scratch. That avoids needing an upsert key
- * per source row and guarantees edits/deletes in the source data are
- * reflected — the tradeoff is that a run re-embeds everything rather than
- * only what changed, which is fine at this scaffold's data volume but would
- * need incremental diffing (e.g. an `updated_at` watermark) at real scale.
+ * Incremental by default: the watermark is simply the newest
+ * `ai_documents.created_at` from the previous run (no separate state table
+ * needed — a row's created_at only moves forward when it's rewritten, so
+ * the max is always "the last time anything was successfully synced").
+ * Each run only re-embeds sources that changed since that watermark —
+ * detected via each source's own `updated_at` plus its child comment/
+ * version tables' `created_at` (a new comment doesn't bump its parent's
+ * `updated_at`, so both have to be checked). A changed source has ALL of
+ * its chunks deleted and rebuilt, not diffed chunk-by-chunk — simpler, and
+ * correct, since one source's chunks are cheap to regenerate together.
+ *
+ * Known gap: `deliverable_versions.status` (approve/revision, migration
+ * 0001) can change without any new row and has no `updated_at` column, so
+ * a status-only edit isn't picked up incrementally. Call
+ * `ingestKnowledgeBase({ fullResync: true })` occasionally (the "Volledig
+ * herbouwen" link in /admin/ai) to heal that, and to clean up chunks for
+ * sources that were deleted entirely (incremental sync never removes
+ * chunks for a source that no longer exists).
  *
  * `ai_documents` has no INSERT/DELETE policy for anyone (see migration
  * 0001), by design — the only writer is this trusted server-side path,
@@ -199,7 +211,62 @@ function buildChunks(data: {
   return chunks;
 }
 
-export async function ingestKnowledgeBase(): Promise<IngestResult> {
+type SupabaseRLSClient = ReturnType<typeof createClient>;
+
+async function getChangedProjectIds(supabase: SupabaseRLSClient, watermark: string): Promise<Set<string>> {
+  const [{ data: byUpdate }, { data: byComment }, { data: byTimeline }] = await Promise.all([
+    supabase.from("projects").select("id").gte("updated_at", watermark),
+    supabase.from("project_comments").select("project_id").gte("created_at", watermark),
+    supabase.from("project_timeline_events").select("project_id").gte("occurred_at", watermark),
+  ]);
+  const ids = new Set<string>();
+  for (const r of (byUpdate ?? []) as { id: string }[]) ids.add(r.id);
+  for (const r of (byComment ?? []) as { project_id: string }[]) ids.add(r.project_id);
+  for (const r of (byTimeline ?? []) as { project_id: string }[]) ids.add(r.project_id);
+  return ids;
+}
+
+async function getChangedTicketIds(supabase: SupabaseRLSClient, watermark: string): Promise<Set<string>> {
+  const [{ data: byUpdate }, { data: byMessage }] = await Promise.all([
+    supabase.from("tickets").select("id").gte("updated_at", watermark),
+    supabase.from("ticket_messages").select("ticket_id").gte("created_at", watermark),
+  ]);
+  const ids = new Set<string>();
+  for (const r of (byUpdate ?? []) as { id: string }[]) ids.add(r.id);
+  for (const r of (byMessage ?? []) as { ticket_id: string }[]) ids.add(r.ticket_id);
+  return ids;
+}
+
+async function getChangedDeliverableIds(supabase: SupabaseRLSClient, watermark: string): Promise<Set<string>> {
+  // deliverables itself has no updated_at (migration 0001) — a new version
+  // or a new comment on a version are the only ways one changes.
+  const [{ data: byVersion }, { data: byComment }] = await Promise.all([
+    supabase.from("deliverable_versions").select("deliverable_id").gte("created_at", watermark),
+    supabase
+      .from("deliverable_comments")
+      .select("deliverable_versions ( deliverable_id )")
+      .gte("created_at", watermark),
+  ]);
+  const ids = new Set<string>();
+  for (const r of (byVersion ?? []) as { deliverable_id: string }[]) ids.add(r.deliverable_id);
+  for (const r of (byComment ?? []) as unknown as { deliverable_versions: { deliverable_id: string } | null }[]) {
+    if (r.deliverable_versions?.deliverable_id) ids.add(r.deliverable_versions.deliverable_id);
+  }
+  return ids;
+}
+
+async function getChangedContentItemIds(supabase: SupabaseRLSClient, watermark: string): Promise<Set<string>> {
+  const [{ data: byUpdate }, { data: byComment }] = await Promise.all([
+    supabase.from("content_items").select("id").gte("updated_at", watermark),
+    supabase.from("content_item_comments").select("content_item_id").gte("created_at", watermark),
+  ]);
+  const ids = new Set<string>();
+  for (const r of (byUpdate ?? []) as { id: string }[]) ids.add(r.id);
+  for (const r of (byComment ?? []) as { content_item_id: string }[]) ids.add(r.content_item_id);
+  return ids;
+}
+
+export async function ingestKnowledgeBase(options?: { fullResync?: boolean }): Promise<IngestResult> {
   await assertTdvStaff();
 
   if (!isServiceRoleConfigured()) {
@@ -209,25 +276,73 @@ export async function ingestKnowledgeBase(): Promise<IngestResult> {
   const supabase = createClient(); // staff session — RLS grants cross-company read
   const admin = createAdminClient(); // ai_documents has no write policy for anyone
 
+  let watermark: string | null = null;
+  if (!options?.fullResync) {
+    const { data: latest } = await supabase
+      .from("ai_documents")
+      .select("created_at")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    watermark = (latest as { created_at: string } | null)?.created_at ?? null;
+  }
+  // No prior ai_documents row (first run ever) behaves the same as an
+  // explicit full resync — there's nothing to diff against.
+  const incremental = watermark !== null;
+
+  let projectIds: string[] | null = null;
+  let ticketIds: string[] | null = null;
+  let deliverableIds: string[] | null = null;
+  let contentItemIds: string[] | null = null;
+
+  if (incremental) {
+    const [changedProjects, changedTickets, changedDeliverables, changedContentItems] = await Promise.all([
+      getChangedProjectIds(supabase, watermark!),
+      getChangedTicketIds(supabase, watermark!),
+      getChangedDeliverableIds(supabase, watermark!),
+      getChangedContentItemIds(supabase, watermark!),
+    ]);
+    projectIds = [...changedProjects];
+    ticketIds = [...changedTickets];
+    deliverableIds = [...changedDeliverables];
+    contentItemIds = [...changedContentItems];
+  }
+
+  // Incremental: only fetch the sources that actually changed. An empty
+  // .in() filter correctly yields zero rows (not an error), but skipping
+  // the query entirely avoids a pointless round trip when nothing changed
+  // for that source type.
+  let projectsQuery = supabase
+    .from("projects")
+    .select(
+      "id, company_id, name, description, status, deadline, companies ( name ), project_comments ( body ), project_timeline_events ( title, description, occurred_at )"
+    );
+  if (incremental) projectsQuery = projectsQuery.in("id", projectIds!);
+
+  let ticketsQuery = supabase
+    .from("tickets")
+    .select("id, company_id, subject, status, priority, companies ( name ), ticket_messages ( body )");
+  if (incremental) ticketsQuery = ticketsQuery.in("id", ticketIds!);
+
+  let deliverablesQuery = supabase
+    .from("deliverables")
+    .select(
+      "id, title, projects ( company_id, name ), deliverable_versions ( version_number, status, deliverable_comments ( body ) )"
+    );
+  if (incremental) deliverablesQuery = deliverablesQuery.in("id", deliverableIds!);
+
+  let contentItemsQuery = supabase
+    .from("content_items")
+    .select(
+      "id, company_id, title, caption, channels, status, scheduled_for, companies ( name ), content_item_comments ( body )"
+    );
+  if (incremental) contentItemsQuery = contentItemsQuery.in("id", contentItemIds!);
+
   const [projectsRes, ticketsRes, deliverablesRes, contentItemsRes] = await Promise.all([
-    supabase
-      .from("projects")
-      .select(
-        "id, company_id, name, description, status, deadline, companies ( name ), project_comments ( body ), project_timeline_events ( title, description, occurred_at )"
-      ),
-    supabase
-      .from("tickets")
-      .select("id, company_id, subject, status, priority, companies ( name ), ticket_messages ( body )"),
-    supabase
-      .from("deliverables")
-      .select(
-        "id, title, projects ( company_id, name ), deliverable_versions ( version_number, status, deliverable_comments ( body ) )"
-      ),
-    supabase
-      .from("content_items")
-      .select(
-        "id, company_id, title, caption, channels, status, scheduled_for, companies ( name ), content_item_comments ( body )"
-      ),
+    incremental && projectIds!.length === 0 ? Promise.resolve({ data: [], error: null }) : projectsQuery,
+    incremental && ticketIds!.length === 0 ? Promise.resolve({ data: [], error: null }) : ticketsQuery,
+    incremental && deliverableIds!.length === 0 ? Promise.resolve({ data: [], error: null }) : deliverablesQuery,
+    incremental && contentItemIds!.length === 0 ? Promise.resolve({ data: [], error: null }) : contentItemsQuery,
   ]);
 
   if (projectsRes.error) throw new Error(`Kon projecten niet laden voor ingest: ${projectsRes.error.message}`);
@@ -259,8 +374,24 @@ export async function ingestKnowledgeBase(): Promise<IngestResult> {
     });
   }
 
-  const { error: deleteError } = await admin.from("ai_documents").delete().in("source_type", INGESTED_SOURCE_TYPES);
-  if (deleteError) throw new Error(`Kon oude kennisbank-fragmenten niet verwijderen: ${deleteError.message}`);
+  if (incremental) {
+    // Only clear chunks for the sources being rebuilt — everything else is
+    // left exactly as it was.
+    const idsByType: [IngestedSourceType, string[] | null][] = [
+      ["project", projectIds],
+      ["ticket", ticketIds],
+      ["deliverable", deliverableIds],
+      ["content_item", contentItemIds],
+    ];
+    for (const [sourceType, ids] of idsByType) {
+      if (!ids || ids.length === 0) continue;
+      const { error } = await admin.from("ai_documents").delete().eq("source_type", sourceType).in("source_id", ids);
+      if (error) throw new Error(`Kon oude kennisbank-fragmenten niet verwijderen: ${error.message}`);
+    }
+  } else {
+    const { error: deleteError } = await admin.from("ai_documents").delete().in("source_type", INGESTED_SOURCE_TYPES);
+    if (deleteError) throw new Error(`Kon oude kennisbank-fragmenten niet verwijderen: ${deleteError.message}`);
+  }
 
   let written = 0;
   for (let i = 0; i < rows.length; i += EMBED_BATCH_SIZE) {

@@ -187,7 +187,18 @@ van het systeem.
   gespreksgeschiedenis, plus een kennisbank-ingestpipeline
   (`lib/data/admin/ai-ingest.ts`, te starten vanaf `/admin/ai`) die
   projecten, aanvragen, feedback en contentplanning omzet naar doorzoekbare
-  chunks in `ai_documents`.
+  chunks in `ai_documents`. Incrementeel by default: de watermark is
+  gewoon de nieuwste `ai_documents.created_at` van de vorige run (geen
+  aparte statustabel nodig), en elke bron die sinds dan veranderd is —
+  via zijn eigen `updated_at` + zijn commentaar-/versietabellen'
+  `created_at`, want een nieuwe opmerking stuwt de `updated_at` van de
+  ouder niet op — krijgt al zijn chunks herbouwd. Bekende beperking:
+  een statuswijziging op een `deliverable_versions`-rij (goedkeuren/
+  revisie) zonder nieuwe rij wordt niet incrementeel opgepikt (die tabel
+  heeft geen `updated_at`), en incrementeel ruimt nooit chunks op voor
+  een bron die volledig verwijderd is — daarvoor is de "Volledig
+  herbouwen"-link op `/admin/ai` bedoeld (`ingestKnowledgeBase({
+  fullResync: true })`).
 - **Admin**: layout met dubbele rolcheck (middleware + layout zelf), en CRUD
   voor klanten, projecten, aanvragen, content en gebruikers, plus
   AI-activiteit en instellingen.
@@ -204,9 +215,11 @@ van het systeem.
 Backlog voor de doorlopende 5-uurlijkse routine (zie onder) — één
 afgebakende PR per punt, in deze volgorde:
 
-- [ ] Kennisbank-ingest is nu een synchrone admin-actie die alles herembedt;
-      bij meer data wordt dat een achtergrondtaak met incrementele sync
-      (bv. op basis van `updated_at`) in plaats van volledige resync.
+- [ ] Kennisbank-ingest is nu incrementeel (zie "Wat er echt werkt"
+      hierboven), maar nog steeds enkel handmatig te starten vanaf
+      `/admin/ai` — de "achtergrondtaak"-kant (automatisch, zonder dat
+      iemand op de knop moet duwen, bv. via Vercel Cron) is de resterende
+      stap.
 - [ ] **Toegankelijkheidsaudit**: toetsenbordnavigatie, aria-labels,
       focus-states en kleurcontrast systematisch nalopen over alle
       modules — hoort bij de "premium, A-tot-Z"-lat die de klant stelt.
