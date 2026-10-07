@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/ToastProvider";
 import { FILE_CATEGORY_LABEL, type FileCategory } from "@/lib/file-category";
 import type { FileRecord } from "@/types/domain";
-import { deleteFileAction } from "./actions";
+import { deleteFileAction, moveFileAction } from "./actions";
 
 // Shared across FileList (drag source) and FolderTile/BreadcrumbNav (drop
 // targets) — a plain string constant beats importing one file from another
@@ -23,11 +23,21 @@ function formatSize(bytes: number | null): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export function FileList({ files, folderId = null }: { files: FileRecord[]; folderId?: string | null }) {
+export function FileList({
+  files,
+  folderId = null,
+  destinations = [],
+}: {
+  files: FileRecord[];
+  folderId?: string | null;
+  /** Keyboard/screen-reader-operable equivalent to the drag-and-drop move — same set of valid targets. */
+  destinations?: { id: string | null; name: string }[];
+}) {
   const router = useRouter();
   const { push } = useToast();
   const [pendingDelete, setPendingDelete] = useState<FileRecord | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [moving, setMoving] = useState<string | null>(null);
 
   async function confirmDelete() {
     if (!pendingDelete) return;
@@ -41,6 +51,20 @@ export function FileList({ files, folderId = null }: { files: FileRecord[]; fold
     }
     push(`"${pendingDelete.file_name}" verwijderd.`);
     setPendingDelete(null);
+    router.refresh();
+  }
+
+  async function handleMove(file: FileRecord, targetId: string | null, targetName: string, select: HTMLSelectElement) {
+    setMoving(file.id);
+    const result = await moveFileAction(file.id, targetId, folderId);
+    setMoving(null);
+    select.value = "";
+
+    if (result.error) {
+      push(result.error, "error");
+      return;
+    }
+    push(`"${file.file_name}" verplaatst naar "${targetName}".`);
     router.refresh();
   }
 
@@ -75,6 +99,31 @@ export function FileList({ files, folderId = null }: { files: FileRecord[]; fold
             </div>
             {file.category && (
               <Badge tone="gray">{FILE_CATEGORY_LABEL[file.category as FileCategory] ?? file.category}</Badge>
+            )}
+            {destinations.length > 0 && (
+              <select
+                aria-label={`${file.file_name} verplaatsen naar`}
+                disabled={moving === file.id}
+                defaultValue=""
+                onChange={(e) => {
+                  const select = e.target;
+                  const value = select.value;
+                  if (!value) return;
+                  const destination = destinations.find((d) => (d.id ?? "__root__") === value);
+                  if (!destination) return;
+                  void handleMove(file, destination.id, destination.name, select);
+                }}
+                className="input w-auto shrink-0 py-1.5 text-xs disabled:opacity-60"
+              >
+                <option value="" disabled>
+                  Verplaatsen naar…
+                </option>
+                {destinations.map((d) => (
+                  <option key={d.id ?? "__root__"} value={d.id ?? "__root__"}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
             )}
             <button
               type="button"

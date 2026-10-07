@@ -46,6 +46,17 @@ export function VersionPreview({
     setPendingPin({ x, y });
   }
 
+  // Keyboard users have no pointer position to place a pin at — a precise
+  // click target has no real keyboard equivalent — so Enter/Space drops one
+  // at the center instead of leaving this control keyboard-unreachable
+  // entirely. Not full parity with pointing at an exact spot, but the
+  // comment text itself can describe the location.
+  function handleKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    e.preventDefault();
+    setPendingPin({ x: 50, y: 50 });
+  }
+
   async function onSubmit(values: DeliverableCommentFormValues) {
     if (!pendingPin) return;
     const result = await addDeliverableCommentAction(deliverableId, versionId, {
@@ -68,7 +79,11 @@ export function VersionPreview({
       <div
         ref={imgRef}
         onClick={handleClick}
-        className="relative cursor-crosshair overflow-hidden rounded-xl border border-border dark:border-border-dark"
+        onKeyDown={handleKeyDown}
+        role="button"
+        tabIndex={0}
+        aria-label="Opmerking plaatsen op deze afbeelding"
+        className="relative cursor-crosshair overflow-hidden rounded-xl border border-border outline-none focus-visible:ring-2 focus-visible:ring-accent dark:border-border-dark"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={imageUrl} alt={fileName} className="block w-full select-none" draggable={false} />
@@ -84,7 +99,8 @@ export function VersionPreview({
         ))}
       </div>
       <p className="mt-2 text-xs text-ink-muted dark:text-ink-dark-muted">
-        Klik ergens op de afbeelding om een opmerking op die plek te plaatsen.
+        Klik ergens op de afbeelding om een opmerking op die plek te plaatsen, of druk op Enter/spatie
+        wanneer de afbeelding gefocust is.
       </p>
 
       <Dialog

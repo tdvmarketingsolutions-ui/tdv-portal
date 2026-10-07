@@ -187,7 +187,7 @@ export function AiAssistantClient({ initialConversations }: { initialConversatio
             placeholder="Bv. welke posts staan er volgende week gepland?"
             className="input flex-1"
           />
-          <button type="submit" className="btn-primary" disabled={loading || !input.trim()}>
+          <button type="submit" aria-label="Verstuur bericht" className="btn-primary" disabled={loading || !input.trim()}>
             <Send size={16} />
           </button>
         </form>
