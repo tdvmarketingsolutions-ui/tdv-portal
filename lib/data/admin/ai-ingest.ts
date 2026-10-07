@@ -266,14 +266,28 @@ async function getChangedContentItemIds(supabase: SupabaseRLSClient, watermark: 
   return ids;
 }
 
+/** Staff-triggered from /admin/ai — the RLS-bound session is the read path. */
 export async function ingestKnowledgeBase(options?: { fullResync?: boolean }): Promise<IngestResult> {
   await assertTdvStaff();
+  return runIngest(createClient(), options);
+}
 
+/**
+ * Cron-triggered — see app/api/cron/ai-ingest/route.ts, which is the actual
+ * authorization boundary (checks the CRON_SECRET bearer header; there is no
+ * user session on a cron invocation for assertTdvStaff() to check). Reads
+ * through the admin client too instead of the RLS-bound one, since there's
+ * no staff session for is_tdv_staff() to grant cross-company access to.
+ */
+export async function ingestKnowledgeBaseAsCronJob(options?: { fullResync?: boolean }): Promise<IngestResult> {
+  return runIngest(createAdminClient(), options);
+}
+
+async function runIngest(supabase: SupabaseRLSClient, options?: { fullResync?: boolean }): Promise<IngestResult> {
   if (!isServiceRoleConfigured()) {
     throw new Error("SERVICE_ROLE_NOT_CONFIGURED");
   }
 
-  const supabase = createClient(); // staff session — RLS grants cross-company read
   const admin = createAdminClient(); // ai_documents has no write policy for anyone
 
   let watermark: string | null = null;
