@@ -4,8 +4,8 @@ import { ChangePasswordForm } from "@/app/(portal)/settings/ChangePasswordForm";
 import { NotificationPreferenceForm } from "@/app/(portal)/settings/NotificationPreferenceForm";
 
 const ROLE_LABEL: Record<string, string> = {
-  tdv_admin: "TDV Admin",
-  tdv_staff: "TDV Staff",
+  agency_admin: "Bureau (beheerder)",
+  agency_staff: "Bureau (medewerker)",
 };
 
 export default async function AdminSettingsPage() {

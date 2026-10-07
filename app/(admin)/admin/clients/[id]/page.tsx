@@ -12,8 +12,8 @@ import { ActivateCompanyButton } from "./ActivateCompanyButton";
 import { InviteUserDialog } from "@/app/(admin)/admin/users/InviteUserDialog";
 
 const ROLE_LABEL: Record<string, string> = {
-  tdv_admin: "TDV Admin",
-  tdv_staff: "TDV Staff",
+  agency_admin: "Bureau (beheerder)",
+  agency_staff: "Bureau (medewerker)",
   client_admin: "Klant (admin)",
   client_member: "Klant (lid)",
 };

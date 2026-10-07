@@ -17,7 +17,7 @@ export async function assertTdvStaff(): Promise<void> {
   if (!user) throw new Error("NOT_AUTHORIZED");
 
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (profile?.role !== "tdv_admin" && profile?.role !== "tdv_staff") {
+  if (profile?.role !== "agency_admin" && profile?.role !== "agency_staff") {
     throw new Error("NOT_AUTHORIZED");
   }
 }
