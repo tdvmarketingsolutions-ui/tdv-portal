@@ -217,6 +217,18 @@ van het systeem.
   zonder uit- en opnieuw inloggen. Puur een UI-cookie (`lib/staff-view.ts`);
   RLS geeft staff sowieso al volledige toegang tot elke klant, dus dit
   vergroot niets, het schakelt enkel een bestaand write-pad in de UI in.
+- **Toegankelijkheid**: `.btn-secondary`/`Button`'s `ghost`-variant kregen
+  een `focus-visible`-ring (ontbrak voorheen — "Annuleren" in elke dialog
+  was onzichtbaar gefocust); het wachtwoord-toon/verberg-veld had
+  `tabIndex={-1}` en was daardoor via het toetsenbord onbereikbaar; de
+  pin-plaatsing op een feedback-afbeelding (`VersionPreview.tsx`) was een
+  plain `<div onClick>` zonder toetsenbordequivalent, nu met
+  `role="button"` + Enter/spatie (plaatst de pin in het midden — exact
+  op een pixel mikken heeft geen zinvol toetsenbordequivalent). Bestanden
+  verplaatsen tussen mappen kon enkel via slepen (geen
+  toetsenbord-/schermlezertoegankelijk alternatief) — `FileList.tsx`
+  heeft er nu een `<select>` "Verplaatsen naar…" per bestand bij, met
+  dezelfde bestemmingen als het slepen toelaat.
 
 ## Wat nog moet worden bijgebouwd
 
@@ -229,9 +241,15 @@ afgebakende PR per punt, in deze volgorde:
       wordt in Vercel → Settings → Environment Variables — zie "Wat er
       echt werkt" hierboven voor details. Zonder die variabele faalt de
       job veilig (401), niet onveilig (open).
-- [ ] **Toegankelijkheidsaudit**: toetsenbordnavigatie, aria-labels,
-      focus-states en kleurcontrast systematisch nalopen over alle
-      modules — hoort bij de "premium, A-tot-Z"-lat die de klant stelt.
+- [ ] **Toegankelijkheidsaudit, vervolg**: eerste ronde gedaan (zie "Wat er
+      echt werkt" hierboven) — ontbrekende aria-labels, niet-focusbare
+      focus-stijlen op secondary/ghost-knoppen en het wachtwoord-
+      toon/verberg-veld, en een toetsenbordalternatief voor het
+      bestanden-slepen. Nog open: de contentplanningskalender
+      (`CalendarGrid.tsx`) herplant posts ook enkel via sleep-en-loslaten,
+      zonder toetsenbordalternatief (bv. een "Inplannen op..."-actie per
+      item) — zelfde gat, nog niet gedicht. Kleurcontrast is nog niet
+      systematisch gecheckt.
 - [ ] **Lege staten en foutafhandeling verfijnen**: een aantal oudere
       pagina's heeft nog een generieke of ontbrekende lege/foutstaat in
       plaats van de doordachte `EmptyState`-aanpak die de nieuwere

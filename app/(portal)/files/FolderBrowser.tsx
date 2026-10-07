@@ -36,6 +36,13 @@ export async function FolderBrowser({ folderId }: { folderId: string | null }) {
   const { folder, breadcrumb, subfolders, files } = contents;
   const parentCrumb = breadcrumb.length >= 2 ? breadcrumb[breadcrumb.length - 2] : null;
   const isEmpty = subfolders.length === 0 && files.length === 0;
+  // Same destinations the drag-and-drop already allows (subfolders here +
+  // any ancestor in the breadcrumb) — exposed as a real control too, since
+  // native HTML5 drag-and-drop has no keyboard equivalent.
+  const moveDestinations = [
+    ...breadcrumb.slice(0, -1).map((c) => ({ id: c.id, name: c.name })),
+    ...subfolders.map((s) => ({ id: s.id, name: s.name })),
+  ];
 
   return (
     <div className="space-y-6">
@@ -89,12 +96,13 @@ export async function FolderBrowser({ folderId }: { folderId: string | null }) {
 
           {files.length > 0 && (
             <div className="space-y-2">
-              {(subfolders.length > 0 || breadcrumb.length > 1) && (
+              {moveDestinations.length > 0 && (
                 <p className="text-xs text-ink-muted dark:text-ink-dark-muted">
-                  Sleep een bestand naar een map hierboven of in het broodkruimelpad om het te verplaatsen.
+                  Sleep een bestand naar een map hierboven of in het broodkruimelpad om het te verplaatsen, of
+                  gebruik &quot;Verplaatsen naar&quot; per bestand.
                 </p>
               )}
-              <FileList files={files} folderId={folderId} />
+              <FileList files={files} folderId={folderId} destinations={moveDestinations} />
             </div>
           )}
         </div>
