@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 export const STAFF_VIEW_COOKIE = "staff_view_company_id";
 
 export function isStaffRole(role: string | null | undefined): boolean {
-  return role === "tdv_admin" || role === "tdv_staff";
+  return role === "agency_admin" || role === "agency_staff";
 }
 
 /**

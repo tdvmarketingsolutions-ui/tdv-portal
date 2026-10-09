@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const ROLES = ["tdv_admin", "tdv_staff", "client_admin", "client_member"] as const;
+const ROLES = ["agency_admin", "agency_staff", "client_admin", "client_member"] as const;
 
 export const inviteUserSchema = z
   .object({
@@ -8,7 +8,7 @@ export const inviteUserSchema = z
     role: z.enum(ROLES),
     companyId: z.string().optional(),
   })
-  .refine((v) => v.role === "tdv_admin" || v.role === "tdv_staff" || !!v.companyId, {
+  .refine((v) => v.role === "agency_admin" || v.role === "agency_staff" || !!v.companyId, {
     message: "Kies een klant voor deze rol.",
     path: ["companyId"],
   });
@@ -20,7 +20,7 @@ export const editUserRoleSchema = z
     role: z.enum(ROLES),
     companyId: z.string().optional(),
   })
-  .refine((v) => v.role === "tdv_admin" || v.role === "tdv_staff" || !!v.companyId, {
+  .refine((v) => v.role === "agency_admin" || v.role === "agency_staff" || !!v.companyId, {
     message: "Kies een klant voor deze rol.",
     path: ["companyId"],
   });

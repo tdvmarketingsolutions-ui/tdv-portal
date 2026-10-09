@@ -65,7 +65,7 @@ export async function createTicket(input: {
   // New requests have no assignee yet, so there's no single staff recipient
   // to notify — tell everyone on TDV's side instead, same as an unassigned
   // request showing up in /admin/aanvragen for anyone to pick up.
-  const { data: staff } = await supabase.from("profiles").select("id").in("role", ["tdv_admin", "tdv_staff"]);
+  const { data: staff } = await supabase.from("profiles").select("id").in("role", ["agency_admin", "agency_staff"]);
   await createNotifications(
     ((staff ?? []) as { id: string }[]).map((s) => ({
       recipientId: s.id,

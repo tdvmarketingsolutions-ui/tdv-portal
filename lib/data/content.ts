@@ -223,7 +223,7 @@ export async function addContentItemComment(contentItemId: string, body: string)
       }))
     );
   } else {
-    const { data: staff } = await supabase.from("profiles").select("id").in("role", ["tdv_admin", "tdv_staff"]);
+    const { data: staff } = await supabase.from("profiles").select("id").in("role", ["agency_admin", "agency_staff"]);
     await createNotifications(
       ((staff ?? []) as { id: string }[]).map((s) => ({
         recipientId: s.id,

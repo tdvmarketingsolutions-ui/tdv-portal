@@ -72,7 +72,7 @@ export async function createProjectRequest(input: {
     .single();
   if (error || !inserted) throw new Error(`Kon projectaanvraag niet versturen: ${error?.message}`);
 
-  const { data: staff } = await supabase.from("profiles").select("id").in("role", ["tdv_admin", "tdv_staff"]);
+  const { data: staff } = await supabase.from("profiles").select("id").in("role", ["agency_admin", "agency_staff"]);
   await createNotifications(
     ((staff ?? []) as { id: string }[]).map((s) => ({
       recipientId: s.id,
@@ -111,7 +111,7 @@ export async function respondToProjectRequestPrice(requestId: string, accepted: 
   const { data: requestData } = await supabase.from("project_requests").select("title").eq("id", requestId).single();
   const title = (requestData as { title: string } | null)?.title ?? "een projectaanvraag";
 
-  const { data: staff } = await supabase.from("profiles").select("id").in("role", ["tdv_admin", "tdv_staff"]);
+  const { data: staff } = await supabase.from("profiles").select("id").in("role", ["agency_admin", "agency_staff"]);
   await createNotifications(
     ((staff ?? []) as { id: string }[]).map((s) => ({
       recipientId: s.id,

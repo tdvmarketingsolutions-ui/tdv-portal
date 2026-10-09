@@ -15,7 +15,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase.from("profiles").select("role, full_name").eq("id", user.id).single();
-  if (profile?.role !== "tdv_admin" && profile?.role !== "tdv_staff") {
+  if (profile?.role !== "agency_admin" && profile?.role !== "agency_staff") {
     redirect("/dashboard");
   }
   const fullName = profile?.full_name as string | null;

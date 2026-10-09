@@ -14,8 +14,8 @@ import { updateUserRoleAction } from "./actions";
 import type { UserRole } from "@/types/domain";
 
 const ROLE_LABEL: Record<string, string> = {
-  tdv_admin: "TDV Admin",
-  tdv_staff: "TDV Staff",
+  agency_admin: "Bureau (beheerder)",
+  agency_staff: "Bureau (medewerker)",
   client_admin: "Klant (admin)",
   client_member: "Klant (lid)",
 };

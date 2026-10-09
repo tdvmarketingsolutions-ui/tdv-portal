@@ -47,7 +47,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     .select("role, companies ( onboarding_status )")
     .eq("id", user.id)
     .single();
-  const isStaff = profile?.role === "tdv_admin" || profile?.role === "tdv_staff";
+  const isStaff = profile?.role === "agency_admin" || profile?.role === "agency_staff";
   const companyOnboardingStatus = isStaff
     ? null
     : (((profile as { companies: { onboarding_status: "pending_review" | "active" } | null } | null)?.companies

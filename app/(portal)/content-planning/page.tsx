@@ -19,7 +19,7 @@ export default async function ContentPlanningPage({ searchParams }: { searchPara
   const { data: profile } = user
     ? await supabase.from("profiles").select("role").eq("id", user.id).single()
     : { data: null };
-  const isStaff = profile?.role === "tdv_admin" || profile?.role === "tdv_staff";
+  const isStaff = profile?.role === "agency_admin" || profile?.role === "agency_staff";
   // While staff previews "as a client" (sidebar switcher), the calendar should
   // behave exactly like the client would see it — no edit/duplicate/drag/quick-add
   // affordances — so staff can actually verify the client experience instead of

@@ -6,7 +6,7 @@
 // camelCase: lib/data/*.ts casts raw Supabase query results directly onto
 // these types, so the shape here must match the actual runtime shape.
 
-export type UserRole = "tdv_admin" | "tdv_staff" | "client_admin" | "client_member";
+export type UserRole = "agency_admin" | "agency_staff" | "client_admin" | "client_member";
 
 export interface Profile {
   id: string;
