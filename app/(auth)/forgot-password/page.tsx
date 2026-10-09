@@ -29,7 +29,11 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-4">
+    <main className="flex min-h-screen flex-col items-center justify-center px-4">
+      <Link href="/" className="mb-6">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-7 w-auto" />
+      </Link>
       <div className="card w-full max-w-sm p-8">
         {sent ? (
           <div className="text-center">

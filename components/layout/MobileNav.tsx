@@ -56,8 +56,10 @@ export function MobileNav({
     <>
       <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-surface px-4 dark:border-border-dark dark:bg-surface-dark md:hidden">
         {variant === "portal" ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-5 w-auto" />
+          <Link href="/dashboard">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-5 w-auto" />
+          </Link>
         ) : (
           <div>
             <span className="font-display text-base font-semibold">{title}</span>
@@ -95,8 +97,10 @@ export function MobileNav({
           >
             <div className="mb-8 flex items-center justify-between px-3">
               {variant === "portal" ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-6 w-auto" />
+                <Link href="/dashboard" onClick={() => setOpen(false)}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-6 w-auto" />
+                </Link>
               ) : (
                 <div>
                   <span className="font-display text-lg font-semibold">{title}</span>

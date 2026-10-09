@@ -14,8 +14,9 @@ const serif = Playfair_Display({ subsets: ["latin"], weight: ["500", "600"], sty
 
 const pillBase =
   "inline-flex items-center justify-center rounded-full px-5 py-2.5 text-xs font-medium uppercase tracking-[0.12em] transition-colors";
-const pillPrimary = `${pillBase} bg-ink text-canvas hover:bg-ink/90 dark:bg-ink-dark dark:text-canvas-dark dark:hover:bg-ink-dark/90`;
-const pillSecondary = `${pillBase} border border-ink/15 text-ink hover:border-ink/35 dark:border-ink-dark/20 dark:text-ink-dark dark:hover:border-ink-dark/40`;
+const pillPrimary = `${pillBase} bg-accent text-white hover:bg-accent/90 dark:bg-accent-dark dark:text-ink-dark dark:hover:bg-accent-dark/90`;
+const pillOnDark = `${pillBase} bg-accent text-white hover:bg-accent/90`;
+const textLink = "text-sm font-medium text-ink underline decoration-ink/25 underline-offset-4 transition-colors hover:decoration-ink dark:text-ink-dark dark:decoration-ink-dark/25 dark:hover:decoration-ink-dark";
 
 export const metadata: Metadata = {
   title: "TDV Portaal — Premium klantenportaal voor marketingbureaus",
@@ -95,10 +96,12 @@ export default async function LandingPage() {
 
   return (
     <main className="overflow-x-hidden">
-      <header className="mx-auto flex max-w-6xl items-center justify-between border-b border-border px-4 py-6 sm:px-8 dark:border-border-dark">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-6 w-auto sm:h-7" />
-        <nav className="hidden items-center gap-8 text-xs font-medium uppercase tracking-[0.15em] text-ink-muted md:flex dark:text-ink-dark-muted">
+      <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-6 sm:px-8">
+        <Link href="/">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-6 w-auto sm:h-7" />
+        </Link>
+        <nav className="hidden items-center gap-8 text-sm text-ink-muted md:flex dark:text-ink-dark-muted">
           <a href="#functies" className="hover:text-ink dark:hover:text-ink-dark">
             Functies
           </a>
@@ -106,8 +109,8 @@ export default async function LandingPage() {
             Prijzen
           </a>
         </nav>
-        <div className="flex items-center gap-3">
-          <Link href="/login" className={pillSecondary}>
+        <div className="flex items-center gap-5">
+          <Link href="/login" className={textLink}>
             Inloggen
           </Link>
           <Link href="/register" className={pillPrimary}>
@@ -116,25 +119,22 @@ export default async function LandingPage() {
         </div>
       </header>
 
-      <section className="mx-auto max-w-5xl px-4 pb-24 pt-20 sm:px-8 sm:pb-32 sm:pt-28">
-        <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] text-ink-muted dark:text-ink-dark-muted">
-          <span className="h-1.5 w-1.5 rounded-full bg-accent dark:bg-accent-dark" aria-hidden />
-          Voor marketingbureaus, freelancers &amp; agency-startups
-        </p>
+      <section className="mx-auto max-w-5xl px-4 pb-20 pt-12 sm:px-8 sm:pb-28 sm:pt-16">
         <h1
-          className={`${serif.className} mt-8 max-w-3xl text-5xl leading-[1.08] tracking-tight text-ink sm:text-6xl lg:text-7xl dark:text-ink-dark`}
+          className={`${serif.className} max-w-3xl text-5xl leading-[1.1] tracking-tight text-ink sm:text-6xl lg:text-7xl dark:text-ink-dark`}
         >
-          Een klantenportaal dat oogt alsof je het zelf liet bouwen
+          Een klantenportaal dat oogt alsof je het <span className="text-accent dark:text-accent-dark">zelf</span>{" "}
+          liet bouwen
         </h1>
-        <p className="mt-8 max-w-xl text-lg leading-relaxed text-ink-muted dark:text-ink-dark-muted">
-          Projecten, content, feedback en bestanden op één overzichtelijke plek — volledig in jouw huisstijl, met
-          beveiligde toegang per klant.
+        <p className="mt-7 max-w-xl text-lg leading-relaxed text-ink-muted dark:text-ink-dark-muted">
+          Voor marketingbureaus, freelancers en agency-startups: projecten, content, feedback en bestanden op één
+          overzichtelijke plek — volledig in jouw huisstijl, met beveiligde toegang per klant.
         </p>
-        <div className="mt-10 flex flex-wrap items-center gap-4">
+        <div className="mt-9 flex flex-wrap items-center gap-6">
           <Link href="/register" className={pillPrimary}>
             Start gratis proefperiode
           </Link>
-          <Link href="/login" className={pillSecondary}>
+          <Link href="/login" className={textLink}>
             Ik heb al een account
           </Link>
         </div>
@@ -143,18 +143,15 @@ export default async function LandingPage() {
         </p>
       </section>
 
-      <section id="functies" className="border-t border-border px-4 py-24 sm:px-8 sm:py-32 dark:border-border-dark">
+      <section id="functies" className="bg-accent-soft px-4 py-20 sm:px-8 sm:py-28 dark:bg-accent/10">
         <div className="mx-auto max-w-5xl">
           <h2 className={`${serif.className} max-w-xl text-3xl tracking-tight text-ink sm:text-4xl dark:text-ink-dark`}>
             Alles wat je bureau nodig heeft
           </h2>
-          <div className="mt-16 grid gap-x-12 gap-y-14 sm:grid-cols-2">
-            {FEATURES.map(({ title, description }, i) => (
-              <div key={title} className="border-t border-border pt-6 dark:border-border-dark">
-                <p className="text-xs font-medium uppercase tracking-[0.15em] text-accent dark:text-accent-dark">
-                  {String(i + 1).padStart(2, "0")}
-                </p>
-                <h3 className={`${serif.className} mt-3 text-xl text-ink dark:text-ink-dark`}>{title}</h3>
+          <div className="mt-14 grid gap-x-12 gap-y-10 sm:grid-cols-2">
+            {FEATURES.map(({ title, description }) => (
+              <div key={title}>
+                <h3 className={`${serif.className} text-xl text-ink dark:text-ink-dark`}>{title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-ink-muted dark:text-ink-dark-muted">{description}</p>
               </div>
             ))}
@@ -162,7 +159,7 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      <section id="prijzen" className="border-t border-border px-4 py-24 sm:px-8 sm:py-32 dark:border-border-dark">
+      <section id="prijzen" className="px-4 py-20 sm:px-8 sm:py-28">
         <div className="mx-auto max-w-5xl">
           <div className="max-w-xl">
             <h2 className={`${serif.className} text-3xl tracking-tight text-ink sm:text-4xl dark:text-ink-dark`}>
@@ -173,17 +170,17 @@ export default async function LandingPage() {
             </p>
           </div>
 
-          <div className="mt-16 grid gap-10 border-t border-border pt-10 sm:grid-cols-3 sm:gap-12 dark:border-border-dark">
+          <div className="mt-14 grid gap-6 sm:grid-cols-3">
             {PLANS.map((plan) => (
-              <div key={plan.name} className="flex flex-col">
-                {plan.featured ? (
-                  <p className="text-xs font-medium uppercase tracking-[0.15em] text-accent dark:text-accent-dark">
-                    Meest gekozen
-                  </p>
-                ) : (
-                  <div className="h-4" aria-hidden />
-                )}
-                <h3 className={`${serif.className} mt-2 text-2xl text-ink dark:text-ink-dark`}>{plan.name}</h3>
+              <div
+                key={plan.name}
+                className={
+                  plan.featured
+                    ? "flex flex-col rounded-2xl bg-accent-soft p-7 dark:bg-accent/10"
+                    : "flex flex-col p-7"
+                }
+              >
+                <h3 className={`${serif.className} text-2xl text-ink dark:text-ink-dark`}>{plan.name}</h3>
                 <p className={`${serif.className} mt-4 text-4xl text-ink dark:text-ink-dark`}>
                   €{plan.price}
                   <span className="font-sans text-sm font-normal text-ink-muted dark:text-ink-dark-muted"> / maand</span>
@@ -197,7 +194,14 @@ export default async function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/register" className={`mt-8 w-full ${plan.featured ? pillPrimary : pillSecondary}`}>
+                <Link
+                  href="/register"
+                  className={
+                    plan.featured
+                      ? `mt-8 w-full ${pillPrimary}`
+                      : `mt-8 w-full border border-ink/15 ${pillBase} text-ink hover:border-ink/35 dark:border-ink-dark/20 dark:text-ink-dark dark:hover:border-ink-dark/40`
+                  }
+                >
                   Start gratis proefperiode
                 </Link>
               </div>
@@ -206,10 +210,29 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      <footer className="border-t border-border py-8 dark:border-border-dark">
+      <section className="bg-ink px-4 py-20 text-center sm:px-8 sm:py-28 dark:bg-ink-dark">
+        <h2 className={`${serif.className} text-3xl text-canvas sm:text-4xl dark:text-canvas-dark`}>
+          Klaar om je bureau er professioneler te laten uitzien?
+        </h2>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-6">
+          <Link href="/register" className={pillOnDark}>
+            Start gratis proefperiode
+          </Link>
+          <Link
+            href="/login"
+            className="text-sm font-medium text-canvas underline decoration-canvas/30 underline-offset-4 hover:decoration-canvas dark:text-canvas-dark dark:decoration-canvas-dark/30"
+          >
+            Ik heb al een account
+          </Link>
+        </div>
+      </section>
+
+      <footer className="py-8">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 sm:px-8">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-5 w-auto opacity-70" />
+          <Link href="/">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-5 w-auto opacity-70" />
+          </Link>
           <div className="flex items-center gap-4 text-sm text-ink-muted dark:text-ink-dark-muted">
             <Link href="/login" className="hover:text-ink dark:hover:text-ink-dark">
               Inloggen

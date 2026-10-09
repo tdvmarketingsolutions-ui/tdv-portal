@@ -28,8 +28,10 @@ export function Sidebar({
             // eslint-disable-next-line @next/next/no-img-element
             <img src={companyLogoUrl} alt="" className="h-6 w-6 shrink-0 rounded object-cover" />
           )}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-6 w-auto shrink-0" />
+          <Link href="/dashboard" className="shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-6 w-auto" />
+          </Link>
         </div>
         <NotificationBell userId={userId} initialUnreadCount={unreadCount} />
       </div>
