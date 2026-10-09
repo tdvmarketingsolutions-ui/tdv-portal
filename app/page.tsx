@@ -19,35 +19,35 @@ const pillOnDark = `${pillBase} bg-accent text-white hover:bg-accent/90`;
 const textLink = "text-sm font-medium text-ink underline decoration-ink/25 underline-offset-4 transition-colors hover:decoration-ink dark:text-ink-dark dark:decoration-ink-dark/25 dark:hover:decoration-ink-dark";
 
 export const metadata: Metadata = {
-  title: "TDV Portaal — Premium klantenportaal voor marketingbureaus",
+  title: "TDV Portaal: klantenportaal voor marketingbureaus",
   description:
-    "Eén overzichtelijke, volledig gebrande plek voor projecten, content, feedback en bestanden met je klanten. Gebouwd voor marketingbureaus, freelancers en agency-startups.",
+    "Eén volledig gebrande plek voor projecten, content, feedback en bestanden met je klanten. Gebouwd voor marketingbureaus, freelancers en agency-startups.",
 };
 
 const FEATURES = [
   {
     title: "Projecten & aanvragen",
-    description: "Status, tijdlijn en opmerkingen per project — je klant hoeft nooit te mailen voor een update.",
+    description: "Status, tijdlijn en opmerkingen per project, zodat je klant nooit meer hoeft te mailen voor een update.",
   },
   {
     title: "Contentplanning",
-    description: "Kalender- en lijstweergave, goedkeuring per post, meerdere kanalen tegelijk.",
+    description: "Kalender- of lijstweergave, goedkeuring per post en meerdere kanalen tegelijk plannen.",
   },
   {
     title: "Feedback & opleveringen",
-    description: "Versiehistoriek met reacties rechtstreeks op het beeld — geen eindeloze e-mailthreads meer.",
+    description: "Versiehistoriek met reacties rechtstreeks op het beeld, zodat eindeloze e-mailthreads verleden tijd zijn.",
   },
   {
     title: "Bestanden met mappen",
-    description: "Geneste mappen, slepen tussen mappen, alles overzichtelijk per klant.",
+    description: "Geneste mappen en slepen tussen mappen, net zo overzichtelijk als je klant gewend is.",
   },
   {
     title: "AI-assistent",
-    description: "Je klant krijgt meteen antwoord op vragen over hun eigen projecten, dag en nacht.",
+    description: "Je klant krijgt dag en nacht meteen antwoord op vragen over zijn eigen projecten.",
   },
   {
     title: "Eigen branding, beveiligd per klant",
-    description: "Jouw logo, jouw kleuren. Elke klant ziet enkel zijn eigen gegevens — database-afgedwongen, niet enkel in de interface.",
+    description: "Jouw logo, jouw kleuren. Dat elke klant enkel zijn eigen gegevens ziet, wordt afgedwongen in de database, niet enkel op het scherm.",
   },
 ] as const;
 
@@ -75,7 +75,7 @@ const PLANS = [
   {
     name: "Agency",
     price: "899",
-    description: "Voor gevestigde bureaus met veel klanten en eigen team.",
+    description: "Voor gevestigde bureaus met veel klanten en een eigen team.",
     features: [
       "Onbeperkt klanten",
       "Onbeperkt teamleden",
@@ -127,8 +127,8 @@ export default async function LandingPage() {
           liet bouwen
         </h1>
         <p className="mt-7 max-w-xl text-lg leading-relaxed text-ink-muted dark:text-ink-dark-muted">
-          Voor marketingbureaus, freelancers en agency-startups: projecten, content, feedback en bestanden op één
-          overzichtelijke plek — volledig in jouw huisstijl, met beveiligde toegang per klant.
+          Jouw klanten krijgen hun eigen, volledig gebrande omgeving voor projecten, content, feedback en bestanden,
+          met beveiligde toegang per klant. Gebouwd voor marketingbureaus, freelancers en agency-startups.
         </p>
         <div className="mt-9 flex flex-wrap items-center gap-6">
           <Link href="/register" className={pillPrimary}>
@@ -139,14 +139,14 @@ export default async function LandingPage() {
           </Link>
         </div>
         <p className="mt-5 text-sm text-ink-muted dark:text-ink-dark-muted">
-          14 dagen gratis uitproberen — geen creditcard nodig.
+          14 dagen gratis uitproberen, geen creditcard nodig.
         </p>
       </section>
 
       <section id="functies" className="bg-accent-soft px-4 py-20 sm:px-8 sm:py-28 dark:bg-accent/10">
         <div className="mx-auto max-w-5xl">
           <h2 className={`${serif.className} max-w-xl text-3xl tracking-tight text-ink sm:text-4xl dark:text-ink-dark`}>
-            Alles wat je bureau nodig heeft
+            Wat je klanten in hun portaal vinden
           </h2>
           <div className="mt-14 grid gap-x-12 gap-y-10 sm:grid-cols-2">
             {FEATURES.map(({ title, description }) => (
@@ -166,7 +166,7 @@ export default async function LandingPage() {
               Eenvoudige, eerlijke prijzen
             </h2>
             <p className="mt-3 text-ink-muted dark:text-ink-dark-muted">
-              Maandelijks opzegbaar. Begin met een gratis proefperiode van 14 dagen, geen verplichtingen.
+              Maandelijks opzegbaar, zonder verplichtingen. Je begint met 14 dagen gratis.
             </p>
           </div>
 
@@ -212,7 +212,7 @@ export default async function LandingPage() {
 
       <section className="bg-ink px-4 py-20 text-center sm:px-8 sm:py-28 dark:bg-ink-dark">
         <h2 className={`${serif.className} text-3xl text-canvas sm:text-4xl dark:text-canvas-dark`}>
-          Klaar om je bureau er professioneler te laten uitzien?
+          Klaar om je klanten hun eigen portaal te geven?
         </h2>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-6">
           <Link href="/register" className={pillOnDark}>
