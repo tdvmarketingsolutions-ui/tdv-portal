@@ -109,19 +109,20 @@ export default async function LandingPage() {
             Prijzen
           </a>
         </nav>
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-3 sm:gap-5">
           <Link href="/login" className={textLink}>
             Inloggen
           </Link>
-          <Link href="/register" className={pillPrimary}>
-            Start proefperiode
+          <Link href="/register" className={`${pillPrimary} px-4 py-2 text-[11px] sm:px-5 sm:py-2.5 sm:text-xs`}>
+            <span className="sm:hidden">Start</span>
+            <span className="hidden sm:inline">Start proefperiode</span>
           </Link>
         </div>
       </header>
 
       <section className="mx-auto max-w-5xl px-4 pb-20 pt-12 sm:px-8 sm:pb-28 sm:pt-16">
         <h1
-          className={`${serif.className} max-w-3xl text-5xl leading-[1.1] tracking-tight text-ink sm:text-6xl lg:text-7xl dark:text-ink-dark`}
+          className={`${serif.className} max-w-3xl text-4xl leading-[1.15] tracking-tight text-ink sm:text-6xl sm:leading-[1.1] lg:text-7xl dark:text-ink-dark`}
         >
           Een klantenportaal dat oogt alsof je het <span className="text-accent dark:text-accent-dark">zelf</span>{" "}
           liet bouwen
