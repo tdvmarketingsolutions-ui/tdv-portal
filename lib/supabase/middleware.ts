@@ -45,8 +45,20 @@ export async function updateSession(request: NextRequest) {
   // only the public marketing/pricing landing page itself.
   const isLandingPage = request.nextUrl.pathname === "/";
   const isAdminRoute = request.nextUrl.pathname.startsWith("/admin");
-  const isPublicAsset = request.nextUrl.pathname.startsWith("/_next") ||
-    request.nextUrl.pathname.startsWith("/favicon");
+  // Everything the public landing page itself references (logo, favicon,
+  // Apple touch icon, OG link-preview image, PWA manifest) must stay
+  // reachable for anonymous visitors — a logged-out visitor is the landing
+  // page's whole audience. Without this, every one of these 404s-via-login-
+  // redirect for them: broken logo, broken favicon, and (worst) a broken
+  // OG image, so a shared landing-page link shows no preview at all.
+  const isPublicAsset =
+    request.nextUrl.pathname.startsWith("/_next") ||
+    request.nextUrl.pathname.startsWith("/favicon") ||
+    request.nextUrl.pathname.startsWith("/brand") ||
+    request.nextUrl.pathname === "/icon.png" ||
+    request.nextUrl.pathname === "/apple-icon.png" ||
+    request.nextUrl.pathname === "/opengraph-image.png" ||
+    request.nextUrl.pathname === "/manifest.webmanifest";
 
   if (!user && !isAuthRoute && !isLandingPage && !isPublicAsset) {
     const redirectUrl = request.nextUrl.clone();

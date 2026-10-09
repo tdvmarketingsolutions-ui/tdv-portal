@@ -64,7 +64,11 @@ export default function ResetPasswordPage() {
 
   if (invalidLink) {
     return (
-      <main className="flex min-h-screen items-center justify-center px-4">
+      <main className="flex min-h-screen flex-col items-center justify-center px-4">
+      <Link href="/" className="mb-6">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-7 w-auto" />
+      </Link>
         <div className="card w-full max-w-sm p-8 text-center">
           <h1 className="font-display text-xl font-semibold">Link verlopen of ongeldig</h1>
           <p className="mt-2 text-sm text-ink-muted dark:text-ink-dark-muted">
@@ -79,7 +83,11 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-4">
+    <main className="flex min-h-screen flex-col items-center justify-center px-4">
+      <Link href="/" className="mb-6">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-7 w-auto" />
+      </Link>
       <div className="card w-full max-w-sm p-8">
         <h1 className="font-display text-2xl font-semibold">Nieuw wachtwoord</h1>
         <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">Kies een nieuw wachtwoord voor je account.</p>
