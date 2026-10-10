@@ -35,7 +35,7 @@ export async function POST(req: Request) {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("company_id")
+    .select("company_id, agency_id")
     .eq("id", user.id)
     .single();
 
@@ -79,6 +79,7 @@ export async function POST(req: Request) {
     const { data: matches, error: matchError } = await supabase.rpc("match_ai_documents", {
       query_embedding: queryEmbedding,
       match_company_id: profile.company_id,
+      match_agency_id: profile.agency_id,
       match_count: 8,
     });
 
