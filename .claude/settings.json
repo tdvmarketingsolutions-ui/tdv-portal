@@ -5,7 +5,9 @@
       "Bash(npm run lint)",
       "Bash(git fetch *)",
       "mcp__Vercel__list_deployments",
-      "mcp__Vercel__get_deployment"
+      "mcp__Vercel__get_deployment",
+      "mcp__Supabase__execute_sql",
+      "mcp__Supabase__apply_migration"
     ]
   }
 }
