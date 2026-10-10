@@ -44,14 +44,6 @@ create table agencies (
 
 alter table agencies enable row level security;
 
--- Minimal policy so staff can at least read their own agency's row once
--- agency_id resolution exists below. The agency-scoped RLS migration
--- replaces/extends this; nothing depends on more than this yet.
-create policy "agencies_select_own" on agencies for select
-  using (
-    exists (select 1 from profiles where id = auth.uid() and profiles.agency_id = agencies.id)
-  );
-
 -- A fixed, well-known id so later migrations/scripts can reference TDV's own
 -- agency row safely without looking it up by name.
 insert into agencies (id, name, slug, status)
@@ -71,6 +63,14 @@ update profiles set agency_id = '00000000-0000-0000-0000-000000000001';
 alter table profiles alter column agency_id set not null;
 
 alter table profiles add column is_platform_admin boolean not null default false;
+
+-- Minimal policy so staff can at least read their own agency's row — needs
+-- profiles.agency_id to exist first. The agency-scoped RLS migration
+-- replaces/extends this; nothing depends on more than this yet.
+create policy "agencies_select_own" on agencies for select
+  using (
+    exists (select 1 from profiles where id = auth.uid() and profiles.agency_id = agencies.id)
+  );
 
 alter table ai_documents add column agency_id uuid references agencies(id);
 update ai_documents set agency_id = '00000000-0000-0000-0000-000000000001';
