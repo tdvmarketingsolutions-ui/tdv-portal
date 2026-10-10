@@ -3,6 +3,11 @@
 import { createAdminClient } from "@/lib/supabase/server";
 import { registerSchema, type RegisterFormValues } from "./schema";
 
+// companies.agency_id and profiles.agency_id are not-null since migration 0025.
+// This form still only creates TDV's own clients (agency self-registration is
+// PR 4, not built yet) — new companies/profiles go under TDV's fixed agency id.
+const TDV_AGENCY_ID = "00000000-0000-0000-0000-000000000001";
+
 function slugify(value: string): string {
   return (
     value
@@ -58,7 +63,7 @@ export async function registerAction(input: RegisterFormValues): Promise<{ error
   const slug = await uniqueCompanySlug(admin, companyName);
   const { data: companyData, error: companyError } = await admin
     .from("companies")
-    .insert({ name: companyName, slug, onboarding_status: "pending_review" })
+    .insert({ name: companyName, slug, onboarding_status: "pending_review", agency_id: TDV_AGENCY_ID })
     .select("id")
     .single();
   if (companyError) {
@@ -69,7 +74,7 @@ export async function registerAction(input: RegisterFormValues): Promise<{ error
 
   const { error: profileError } = await admin
     .from("profiles")
-    .insert({ id: userData.user.id, role: "client_admin", company_id: companyId, full_name: fullName });
+    .insert({ id: userData.user.id, role: "client_admin", company_id: companyId, agency_id: TDV_AGENCY_ID, full_name: fullName });
   if (profileError) {
     await admin.auth.admin.deleteUser(userData.user.id);
     await admin.from("companies").delete().eq("id", companyId);
