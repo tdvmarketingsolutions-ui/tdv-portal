@@ -4,6 +4,7 @@ import { assertTdvStaff } from "@/lib/auth/assert-staff";
 import { resolveListFilterCompanyId, resolveWriteCompanyId, isStaffRole } from "@/lib/staff-view";
 import { getFileDownloadUrl } from "@/lib/data/files";
 import { createNotifications } from "@/lib/data/notifications";
+import { getStaffProfileIdsForAgency } from "@/lib/data/staff";
 import type { ContentChannel, ContentItem, ContentStatus } from "@/types/domain";
 
 export interface ContentVisual {
@@ -223,10 +224,10 @@ export async function addContentItemComment(contentItemId: string, body: string)
       }))
     );
   } else {
-    const { data: staff } = await supabase.from("profiles").select("id").in("role", ["agency_admin", "agency_staff"]);
+    const staffIds = await getStaffProfileIdsForAgency(item.company_id);
     await createNotifications(
-      ((staff ?? []) as { id: string }[]).map((s) => ({
-        recipientId: s.id,
+      staffIds.map((id) => ({
+        recipientId: id,
         type: "comment" as const,
         title: notificationTitle,
         body,

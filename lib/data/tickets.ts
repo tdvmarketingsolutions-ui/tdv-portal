@@ -1,6 +1,7 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { createNotifications } from "@/lib/data/notifications";
+import { getStaffProfileIdsForAgency } from "@/lib/data/staff";
 import { resolveListFilterCompanyId, resolveWriteCompanyId } from "@/lib/staff-view";
 import type { Ticket, TicketPriority, TicketWithMessages } from "@/types/domain";
 
@@ -63,12 +64,12 @@ export async function createTicket(input: {
   if (messageError) throw new Error(`Kon eerste bericht niet opslaan: ${messageError.message}`);
 
   // New requests have no assignee yet, so there's no single staff recipient
-  // to notify — tell everyone on TDV's side instead, same as an unassigned
-  // request showing up in /admin/aanvragen for anyone to pick up.
-  const { data: staff } = await supabase.from("profiles").select("id").in("role", ["agency_admin", "agency_staff"]);
+  // to notify — tell everyone on the client's own agency instead, same as an
+  // unassigned request showing up in /admin/aanvragen for anyone to pick up.
+  const staffIds = await getStaffProfileIdsForAgency(companyId);
   await createNotifications(
-    ((staff ?? []) as { id: string }[]).map((s) => ({
-      recipientId: s.id,
+    staffIds.map((id) => ({
+      recipientId: id,
       type: "ticket",
       title: `Nieuwe aanvraag: ${input.subject}`,
       body: input.firstMessage,

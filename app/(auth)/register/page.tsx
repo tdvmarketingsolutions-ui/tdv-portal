@@ -54,18 +54,18 @@ export default function RegisterPage() {
           <ChevronLeft size={16} strokeWidth={1.75} />
           Terug naar inloggen
         </Link>
-        <h1 className="mt-4 font-display text-2xl font-semibold">Account aanmaken</h1>
+        <h1 className="mt-4 font-display text-2xl font-semibold">Start je proefperiode</h1>
         <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
-          Maak een account aan voor jouw bedrijf. TDV neemt je aanvraag daarna door.
+          14 dagen gratis, geen creditcard nodig. Je eigen klantenportaal staat na deze stap meteen klaar.
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4" noValidate>
           <Input label="Jouw naam" autoComplete="name" error={errors.fullName?.message} {...register("fullName")} />
           <Input
-            label="Bedrijfsnaam"
+            label="Naam van je bureau"
             autoComplete="organization"
-            error={errors.companyName?.message}
-            {...register("companyName")}
+            error={errors.agencyName?.message}
+            {...register("agencyName")}
           />
           <Input label="E-mailadres" type="email" autoComplete="email" error={errors.email?.message} {...register("email")} />
           <PasswordInput
@@ -89,7 +89,7 @@ export default function RegisterPage() {
           )}
 
           <Button type="submit" loading={isSubmitting} className="w-full">
-            Account aanmaken
+            Start proefperiode
           </Button>
         </form>
       </div>
