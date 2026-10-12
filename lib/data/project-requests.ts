@@ -1,6 +1,7 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { createNotifications } from "@/lib/data/notifications";
+import { getStaffProfileIdsForAgency } from "@/lib/data/staff";
 import { generateIndicativePrice } from "@/lib/ai/indicative-price";
 import { resolveListFilterCompanyId, resolveWriteCompanyId } from "@/lib/staff-view";
 import { PROJECT_REQUEST_TYPE_LABEL, BUDGET_INDICATION_LABEL } from "@/lib/project-request-status";
@@ -72,10 +73,10 @@ export async function createProjectRequest(input: {
     .single();
   if (error || !inserted) throw new Error(`Kon projectaanvraag niet versturen: ${error?.message}`);
 
-  const { data: staff } = await supabase.from("profiles").select("id").in("role", ["agency_admin", "agency_staff"]);
+  const staffIds = await getStaffProfileIdsForAgency(companyId);
   await createNotifications(
-    ((staff ?? []) as { id: string }[]).map((s) => ({
-      recipientId: s.id,
+    staffIds.map((id) => ({
+      recipientId: id,
       type: "approval",
       title: `Nieuwe projectaanvraag: ${input.title}`,
       body: input.description,
@@ -108,13 +109,18 @@ export async function respondToProjectRequestPrice(requestId: string, accepted: 
   const { error } = await supabase.rpc("respond_to_project_request_price", { request_id: requestId, accepted });
   if (error) throw new Error(`Kon niet reageren op het prijsvoorstel: ${error.message}`);
 
-  const { data: requestData } = await supabase.from("project_requests").select("title").eq("id", requestId).single();
-  const title = (requestData as { title: string } | null)?.title ?? "een projectaanvraag";
+  const { data: requestData } = await supabase
+    .from("project_requests")
+    .select("title, company_id")
+    .eq("id", requestId)
+    .single();
+  const request = requestData as { title: string; company_id: string } | null;
+  const title = request?.title ?? "een projectaanvraag";
 
-  const { data: staff } = await supabase.from("profiles").select("id").in("role", ["agency_admin", "agency_staff"]);
+  const staffIds = request ? await getStaffProfileIdsForAgency(request.company_id) : [];
   await createNotifications(
-    ((staff ?? []) as { id: string }[]).map((s) => ({
-      recipientId: s.id,
+    staffIds.map((id) => ({
+      recipientId: id,
       type: "approval",
       title: `Prijsvoorstel ${accepted ? "aanvaard" : "geweigerd"}: ${title}`,
       body: accepted

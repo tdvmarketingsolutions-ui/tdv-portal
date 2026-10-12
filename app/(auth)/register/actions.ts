@@ -3,10 +3,7 @@
 import { createAdminClient } from "@/lib/supabase/server";
 import { registerSchema, type RegisterFormValues } from "./schema";
 
-// companies.agency_id and profiles.agency_id are not-null since migration 0025.
-// This form still only creates TDV's own clients (agency self-registration is
-// PR 4, not built yet) — new companies/profiles go under TDV's fixed agency id.
-const TDV_AGENCY_ID = "00000000-0000-0000-0000-000000000001";
+const TRIAL_DAYS = 14;
 
 function slugify(value: string): string {
   return (
@@ -14,36 +11,42 @@ function slugify(value: string): string {
       .toLowerCase()
       .trim()
       .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "") || "klant"
+      .replace(/(^-|-$)/g, "") || "bureau"
   );
 }
 
-async function uniqueCompanySlug(admin: ReturnType<typeof createAdminClient>, companyName: string): Promise<string> {
-  const base = slugify(companyName);
+async function uniqueAgencySlug(admin: ReturnType<typeof createAdminClient>, agencyName: string): Promise<string> {
+  const base = slugify(agencyName);
   let slug = base;
   let suffix = 2;
   for (;;) {
-    const { data } = await admin.from("companies").select("id").eq("slug", slug).maybeSingle();
+    const { data } = await admin.from("agencies").select("id").eq("slug", slug).maybeSingle();
     if (!data) return slug;
     slug = `${base}-${suffix++}`;
   }
 }
 
 /**
- * Public self-registration. Everything (auth user, company, profile) is
- * created here through the admin client rather than split across a
- * client-side supabase.auth.signUp() call plus a follow-up server action —
- * that would mean trusting a client-supplied user id when writing the
- * profile row, which is unnecessary risk. Doing it all in one trusted,
- * server-only step avoids that entirely. The new company starts out
- * 'pending_review' (see migration 0022) until TDV staff looks it over.
+ * Agency self-registration — the signup the landing page's "Start
+ * proefperiode" CTAs point to. Creates a brand-new `agencies` row, not a
+ * `companies` row: this account doesn't belong to one of an existing
+ * agency's clients, it *is* a new agency, isolated from every other one by
+ * RLS (migration 0028) the moment it exists. The new agency's own first
+ * client company gets added afterwards through /admin/clients, same flow
+ * TDV's own staff already use.
+ *
+ * Trial starts immediately, no card, no review step — matches what the
+ * landing page promises (see supabase/migrations/0025, `agencies.status`).
+ * Everything (auth user, agency, profile) goes through the admin client in
+ * one trusted server step, same reasoning as before: never trust a
+ * client-supplied user id when writing the profile row.
  */
 export async function registerAction(input: RegisterFormValues): Promise<{ error?: string }> {
   const parsed = registerSchema.safeParse(input);
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Ongeldige gegevens." };
   }
-  const { fullName, companyName, email, password } = parsed.data;
+  const { fullName, agencyName, email, password } = parsed.data;
 
   const admin = createAdminClient();
 
@@ -60,24 +63,25 @@ export async function registerAction(input: RegisterFormValues): Promise<{ error
     return { error: `Kon account niet aanmaken: ${userError.message}` };
   }
 
-  const slug = await uniqueCompanySlug(admin, companyName);
-  const { data: companyData, error: companyError } = await admin
-    .from("companies")
-    .insert({ name: companyName, slug, onboarding_status: "pending_review", agency_id: TDV_AGENCY_ID })
+  const slug = await uniqueAgencySlug(admin, agencyName);
+  const trialEndsAt = new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000).toISOString();
+  const { data: agencyData, error: agencyError } = await admin
+    .from("agencies")
+    .insert({ name: agencyName, slug, status: "trialing", trial_ends_at: trialEndsAt })
     .select("id")
     .single();
-  if (companyError) {
+  if (agencyError) {
     await admin.auth.admin.deleteUser(userData.user.id);
-    return { error: `Kon bedrijf niet aanmaken: ${companyError.message}` };
+    return { error: `Kon bureau niet aanmaken: ${agencyError.message}` };
   }
-  const companyId = (companyData as unknown as { id: string }).id;
+  const agencyId = (agencyData as unknown as { id: string }).id;
 
   const { error: profileError } = await admin
     .from("profiles")
-    .insert({ id: userData.user.id, role: "client_admin", company_id: companyId, agency_id: TDV_AGENCY_ID, full_name: fullName });
+    .insert({ id: userData.user.id, role: "agency_admin", agency_id: agencyId, company_id: null, full_name: fullName });
   if (profileError) {
     await admin.auth.admin.deleteUser(userData.user.id);
-    await admin.from("companies").delete().eq("id", companyId);
+    await admin.from("agencies").delete().eq("id", agencyId);
     return { error: `Kon profiel niet aanmaken: ${profileError.message}` };
   }
 

@@ -2,6 +2,7 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { resolveListFilterCompanyId, isStaffRole } from "@/lib/staff-view";
 import { createNotifications } from "@/lib/data/notifications";
+import { getStaffProfileIdsForAgency } from "@/lib/data/staff";
 import type { Deliverable, DeliverableVersion, DeliverableComment, FeedbackStatus } from "@/types/domain";
 
 export interface DeliverableSummary extends Deliverable {
@@ -121,10 +122,10 @@ export async function addDeliverableComment(input: {
       }))
     );
   } else {
-    const { data: staff } = await supabase.from("profiles").select("id").in("role", ["agency_admin", "agency_staff"]);
+    const staffIds = await getStaffProfileIdsForAgency(companyId);
     await createNotifications(
-      ((staff ?? []) as { id: string }[]).map((s) => ({
-        recipientId: s.id,
+      staffIds.map((id) => ({
+        recipientId: id,
         type: "comment" as const,
         title: notificationTitle,
         body: input.body,
