@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Menu, X, ShieldCheck, LayoutDashboard } from "lucide-react";
 import { AccountMenu } from "@/components/layout/AccountMenu";
+import { GlobalSearch } from "@/components/layout/GlobalSearch";
 import { NavLinks } from "@/components/layout/NavLinks";
 import { NotificationBell } from "@/components/layout/NotificationBell";
 import { StaffViewSwitcher } from "@/components/layout/StaffViewSwitcher";
@@ -117,6 +118,10 @@ export function MobileNav({
               >
                 <X size={18} strokeWidth={1.75} />
               </button>
+            </div>
+
+            <div className="mb-4 px-0">
+              <GlobalSearch />
             </div>
 
             <NavLinks variant={variant} onNavigate={() => setOpen(false)} />
