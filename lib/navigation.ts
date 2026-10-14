@@ -9,6 +9,7 @@ import {
   Building2,
   Users,
   Bot,
+  BarChart3,
 } from "lucide-react";
 
 export type NavItem = { href: string; label: string; icon: LucideIcon };
@@ -26,6 +27,7 @@ export const PORTAL_NAV_ITEMS: NavItem[] = [
   { href: "/projects", label: "Projecten", icon: FolderKanban },
   { href: "/content-planning", label: "Contentplanning", icon: CalendarDays },
   { href: "/files", label: "Bestanden", icon: FileStack },
+  { href: "/rapportage", label: "Rapportage", icon: BarChart3 },
   { href: "/ai-assistant", label: "AI Assistent", icon: Sparkles },
 ];
 
