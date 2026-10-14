@@ -30,7 +30,16 @@ export async function embedTexts(texts: string[]): Promise<number[][]> {
       "Content-Type": "application/json",
       Authorization: `Bearer ${process.env.EMBEDDINGS_API_KEY}`,
     },
-    body: JSON.stringify({ model: process.env.AI_EMBEDDINGS_MODEL ?? "text-embedding-3-large", input: texts }),
+    body: JSON.stringify({
+      model: process.env.AI_EMBEDDINGS_MODEL ?? "text-embedding-3-large",
+      input: texts,
+      // ai_documents.embedding is vector(1536) (migration 0002), but
+      // text-embedding-3-large's native output is 3072-dim — without this,
+      // every insert fails on a dimension mismatch. OpenAI's -3 models
+      // support truncating via `dimensions` (Matryoshka representation
+      // learning), so this is a safe truncation, not a hack.
+      dimensions: 1536,
+    }),
   });
 
   if (!res.ok) {

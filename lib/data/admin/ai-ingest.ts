@@ -49,6 +49,7 @@ const EMBED_BATCH_SIZE = 64;
 
 interface Chunk {
   companyId: string;
+  agencyId: string;
   sourceType: IngestedSourceType;
   sourceId: string;
   content: string;
@@ -63,11 +64,18 @@ function truncate(text: string): string {
   return text.length > MAX_CHUNK_CHARS ? `${text.slice(0, MAX_CHUNK_CHARS)}…` : text;
 }
 
-function push(chunks: Chunk[], companyId: string | null | undefined, sourceType: IngestedSourceType, sourceId: string, content: string) {
-  if (!companyId) return; // shouldn't happen for these tables, but never write an orphaned chunk
+function push(
+  chunks: Chunk[],
+  companyId: string | null | undefined,
+  agencyId: string | null | undefined,
+  sourceType: IngestedSourceType,
+  sourceId: string,
+  content: string
+) {
+  if (!companyId || !agencyId) return; // shouldn't happen for these tables, but never write an orphaned chunk
   const trimmed = content.trim();
   if (!trimmed) return;
-  chunks.push({ companyId, sourceType, sourceId, content: truncate(trimmed) });
+  chunks.push({ companyId, agencyId, sourceType, sourceId, content: truncate(trimmed) });
 }
 
 interface ProjectRow {
@@ -77,7 +85,7 @@ interface ProjectRow {
   description: string | null;
   status: string;
   deadline: string | null;
-  companies: { name: string } | null;
+  companies: { name: string; agency_id: string } | null;
   project_comments: { body: string }[];
   project_timeline_events: { title: string; description: string | null; occurred_at: string }[];
 }
@@ -88,14 +96,14 @@ interface TicketRow {
   subject: string;
   status: string;
   priority: string;
-  companies: { name: string } | null;
+  companies: { name: string; agency_id: string } | null;
   ticket_messages: { body: string }[];
 }
 
 interface DeliverableRow {
   id: string;
   title: string;
-  projects: { company_id: string; name: string } | null;
+  projects: { company_id: string; name: string; companies: { agency_id: string } | null } | null;
   deliverable_versions: {
     version_number: number;
     status: string;
@@ -111,7 +119,7 @@ interface ContentItemRow {
   channels: string[];
   status: string;
   scheduled_for: string | null;
-  companies: { name: string } | null;
+  companies: { name: string; agency_id: string } | null;
   content_item_comments: { body: string }[];
 }
 
@@ -125,9 +133,11 @@ function buildChunks(data: {
 
   for (const project of data.projects) {
     const companyName = project.companies?.name ?? "onbekende klant";
+    const agencyId = project.companies?.agency_id;
     push(
       chunks,
       project.company_id,
+      agencyId,
       "project",
       project.id,
       `Project "${project.name}" (klant: ${companyName}) — status: ${project.status}, deadline: ${
@@ -135,12 +145,13 @@ function buildChunks(data: {
       }.\n${project.description ?? ""}`
     );
     for (const comment of project.project_comments) {
-      push(chunks, project.company_id, "project", project.id, `Opmerking bij project "${project.name}": ${comment.body}`);
+      push(chunks, project.company_id, agencyId, "project", project.id, `Opmerking bij project "${project.name}": ${comment.body}`);
     }
     for (const event of project.project_timeline_events) {
       push(
         chunks,
         project.company_id,
+        agencyId,
         "project",
         project.id,
         `Tijdlijn — project "${project.name}", ${event.occurred_at}: ${event.title}. ${event.description ?? ""}`
@@ -150,24 +161,28 @@ function buildChunks(data: {
 
   for (const ticket of data.tickets) {
     const companyName = ticket.companies?.name ?? "onbekende klant";
+    const agencyId = ticket.companies?.agency_id;
     push(
       chunks,
       ticket.company_id,
+      agencyId,
       "ticket",
       ticket.id,
       `Aanvraag "${ticket.subject}" (klant: ${companyName}) — status: ${ticket.status}, prioriteit: ${ticket.priority}.`
     );
     for (const message of ticket.ticket_messages) {
-      push(chunks, ticket.company_id, "ticket", ticket.id, `Bericht bij aanvraag "${ticket.subject}": ${message.body}`);
+      push(chunks, ticket.company_id, agencyId, "ticket", ticket.id, `Bericht bij aanvraag "${ticket.subject}": ${message.body}`);
     }
   }
 
   for (const deliverable of data.deliverables) {
     const companyId = deliverable.projects?.company_id;
+    const agencyId = deliverable.projects?.companies?.agency_id;
     const projectName = deliverable.projects?.name ?? "onbekend project";
     push(
       chunks,
       companyId,
+      agencyId,
       "deliverable",
       deliverable.id,
       `Deliverable "${deliverable.title}" bij project "${projectName}".`
@@ -176,6 +191,7 @@ function buildChunks(data: {
       push(
         chunks,
         companyId,
+        agencyId,
         "deliverable",
         deliverable.id,
         `Deliverable "${deliverable.title}", versie ${version.version_number} — status: ${version.status}.`
@@ -184,6 +200,7 @@ function buildChunks(data: {
         push(
           chunks,
           companyId,
+          agencyId,
           "deliverable",
           deliverable.id,
           `Feedback op deliverable "${deliverable.title}" (versie ${version.version_number}): ${comment.body}`
@@ -194,9 +211,11 @@ function buildChunks(data: {
 
   for (const item of data.contentItems) {
     const companyName = item.companies?.name ?? "onbekende klant";
+    const agencyId = item.companies?.agency_id;
     push(
       chunks,
       item.company_id,
+      agencyId,
       "content_item",
       item.id,
       `Contentitem "${item.title}" (klant: ${companyName}, kanalen: ${item.channels.join(", ")}) — status: ${item.status}, gepland: ${
@@ -204,7 +223,7 @@ function buildChunks(data: {
       }.\n${item.caption ?? ""}`
     );
     for (const comment of item.content_item_comments) {
-      push(chunks, item.company_id, "content_item", item.id, `Opmerking bij contentitem "${item.title}": ${comment.body}`);
+      push(chunks, item.company_id, agencyId, "content_item", item.id, `Opmerking bij contentitem "${item.title}": ${comment.body}`);
     }
   }
 
@@ -329,26 +348,26 @@ async function runIngest(supabase: SupabaseRLSClient, options?: { fullResync?: b
   let projectsQuery = supabase
     .from("projects")
     .select(
-      "id, company_id, name, description, status, deadline, companies ( name ), project_comments ( body ), project_timeline_events ( title, description, occurred_at )"
+      "id, company_id, name, description, status, deadline, companies ( name, agency_id ), project_comments ( body ), project_timeline_events ( title, description, occurred_at )"
     );
   if (incremental) projectsQuery = projectsQuery.in("id", projectIds!);
 
   let ticketsQuery = supabase
     .from("tickets")
-    .select("id, company_id, subject, status, priority, companies ( name ), ticket_messages ( body )");
+    .select("id, company_id, subject, status, priority, companies ( name, agency_id ), ticket_messages ( body )");
   if (incremental) ticketsQuery = ticketsQuery.in("id", ticketIds!);
 
   let deliverablesQuery = supabase
     .from("deliverables")
     .select(
-      "id, title, projects ( company_id, name ), deliverable_versions ( version_number, status, deliverable_comments ( body ) )"
+      "id, title, projects ( company_id, name, companies ( agency_id ) ), deliverable_versions ( version_number, status, deliverable_comments ( body ) )"
     );
   if (incremental) deliverablesQuery = deliverablesQuery.in("id", deliverableIds!);
 
   let contentItemsQuery = supabase
     .from("content_items")
     .select(
-      "id, company_id, title, caption, channels, status, scheduled_for, companies ( name ), content_item_comments ( body )"
+      "id, company_id, title, caption, channels, status, scheduled_for, companies ( name, agency_id ), content_item_comments ( body )"
     );
   if (incremental) contentItemsQuery = contentItemsQuery.in("id", contentItemIds!);
 
@@ -376,7 +395,7 @@ async function runIngest(supabase: SupabaseRLSClient, options?: { fullResync?: b
   // Embed everything before touching the table: if the provider fails
   // partway through, the existing knowledge base is left untouched rather
   // than deleted-and-not-rebuilt.
-  const rows: { company_id: string; source_type: IngestedSourceType; source_id: string; content: string; embedding: number[] }[] = [];
+  const rows: { company_id: string; agency_id: string; source_type: IngestedSourceType; source_id: string; content: string; embedding: number[] }[] = [];
   for (let i = 0; i < chunks.length; i += EMBED_BATCH_SIZE) {
     const batch = chunks.slice(i, i + EMBED_BATCH_SIZE);
     const embeddings = await embedTexts(batch.map((c) => c.content));
@@ -384,7 +403,14 @@ async function runIngest(supabase: SupabaseRLSClient, options?: { fullResync?: b
       throw new Error("Embeddings provider returned a different number of embeddings than requested.");
     }
     batch.forEach((c, idx) => {
-      rows.push({ company_id: c.companyId, source_type: c.sourceType, source_id: c.sourceId, content: c.content, embedding: embeddings[idx]! });
+      rows.push({
+        company_id: c.companyId,
+        agency_id: c.agencyId,
+        source_type: c.sourceType,
+        source_id: c.sourceId,
+        content: c.content,
+        embedding: embeddings[idx]!,
+      });
     });
   }
 
