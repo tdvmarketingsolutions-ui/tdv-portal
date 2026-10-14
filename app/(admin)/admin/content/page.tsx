@@ -5,6 +5,8 @@ import { getAllCompaniesForSelect } from "@/lib/data/admin/projects";
 import { Table } from "@/components/ui/Table";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CONTENT_CHANNEL_LABEL } from "@/lib/content-status";
+import { Badge } from "@/components/ui/Badge";
+import { isContentOverdue } from "@/lib/content-schedule";
 import { NewContentItemDialog } from "./NewContentItemDialog";
 import { ContentStatusSelect } from "./ContentStatusSelect";
 import { EditContentItemDialog } from "./EditContentItemDialog";
@@ -58,9 +60,12 @@ export default async function AdminContentPage() {
                   )}
                 </Table.Cell>
                 <Table.Cell>
-                  {item.scheduled_for
-                    ? new Date(item.scheduled_for).toLocaleString("nl-BE", { dateStyle: "medium", timeStyle: "short" })
-                    : "—"}
+                  <div className="flex items-center gap-2">
+                    {item.scheduled_for
+                      ? new Date(item.scheduled_for).toLocaleString("nl-BE", { dateStyle: "medium", timeStyle: "short" })
+                      : "—"}
+                    {isContentOverdue(item.scheduled_for, item.status) && <Badge tone="red">Nog niet gepubliceerd</Badge>}
+                  </div>
                 </Table.Cell>
                 <Table.Cell>
                   <ContentStatusSelect contentItemId={item.id} status={item.status} />
