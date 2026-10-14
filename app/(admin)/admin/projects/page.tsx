@@ -8,6 +8,8 @@ import { NewProjectDialog } from "./NewProjectDialog";
 import { ProjectStatusSelect } from "./ProjectStatusSelect";
 import { ProjectRequestStatusSelect } from "./ProjectRequestStatusSelect";
 import { PROJECT_REQUEST_TYPE_LABEL, BUDGET_INDICATION_LABEL } from "@/lib/project-request-status";
+import { Badge } from "@/components/ui/Badge";
+import { getDeadlineUrgency, DEADLINE_URGENCY_LABEL } from "@/lib/project-deadline";
 
 export default async function AdminProjectsPage() {
   const [projects, companies, projectRequests] = await Promise.all([
@@ -97,20 +99,30 @@ export default async function AdminProjectsPage() {
               <Table.HeadCell>Status</Table.HeadCell>
             </Table.Head>
             <Table.Body>
-              {projects.map((p) => (
-                <Table.Row key={p.id}>
-                  <Table.Cell>
-                    <Link href={`/projects/${p.id}`} className="font-medium hover:underline">
-                      {p.name}
-                    </Link>
-                  </Table.Cell>
-                  <Table.Cell>{p.companies?.name ?? "—"}</Table.Cell>
-                  <Table.Cell>{p.deadline ? new Date(p.deadline).toLocaleDateString("nl-BE") : "—"}</Table.Cell>
-                  <Table.Cell>
-                    <ProjectStatusSelect projectId={p.id} status={p.status} />
-                  </Table.Cell>
-                </Table.Row>
-              ))}
+              {projects.map((p) => {
+                const urgency = getDeadlineUrgency(p.deadline, p.status);
+                return (
+                  <Table.Row key={p.id}>
+                    <Table.Cell>
+                      <Link href={`/projects/${p.id}`} className="font-medium hover:underline">
+                        {p.name}
+                      </Link>
+                    </Table.Cell>
+                    <Table.Cell>{p.companies?.name ?? "—"}</Table.Cell>
+                    <Table.Cell>
+                      <div className="flex items-center gap-2">
+                        {p.deadline ? new Date(p.deadline).toLocaleDateString("nl-BE") : "—"}
+                        {urgency && (
+                          <Badge tone={urgency === "overdue" ? "red" : "amber"}>{DEADLINE_URGENCY_LABEL[urgency]}</Badge>
+                        )}
+                      </div>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <ProjectStatusSelect projectId={p.id} status={p.status} />
+                    </Table.Cell>
+                  </Table.Row>
+                );
+              })}
             </Table.Body>
           </Table>
         )}

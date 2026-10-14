@@ -1,5 +1,7 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
+import { getDeadlineUrgency } from "@/lib/project-deadline";
+import type { ProjectStatus } from "@/types/domain";
 
 export interface AttentionItem {
   id: string;
@@ -83,7 +85,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     deliverableCommentsRes,
     contentCommentsRes,
   ] = await Promise.all([
-    supabase.from("projects").select("id"),
+    supabase.from("projects").select("id, name, deadline, status, companies ( name )"),
     supabase.from("tickets").select("id, status"),
     supabase.from("notifications").select("id", { count: "exact", head: true }).eq("recipient_id", user.id).is("read_at", null),
     // Client-relevant: things waiting on the client to act.
@@ -135,7 +137,13 @@ export async function getDashboardData(): Promise<DashboardData> {
       .limit(5),
   ]);
 
-  const projects = (projectsRes.data ?? []) as unknown as { id: string }[];
+  const projects = (projectsRes.data ?? []) as unknown as {
+    id: string;
+    name: string;
+    deadline: string | null;
+    status: ProjectStatus;
+    companies: { name: string } | null;
+  }[];
   const tickets = (ticketsRes.data ?? []) as unknown as { id: string; status: string }[];
   const openTicketCount = tickets.filter((t) => t.status !== "resolved").length;
 
@@ -206,6 +214,19 @@ export async function getDashboardData(): Promise<DashboardData> {
       meta: `Nieuwe projectaanvraag${r.companies?.name ? ` — ${r.companies.name}` : ""}`,
       href: "/admin/projects",
     });
+  }
+
+  if (isStaff) {
+    for (const p of projects) {
+      const urgency = getDeadlineUrgency(p.deadline, p.status);
+      if (!urgency) continue;
+      attentionItems.push({
+        id: `project-deadline-${p.id}`,
+        label: p.name,
+        meta: `${urgency === "overdue" ? "Deadline verstreken" : "Deadline binnenkort"}${p.companies?.name ? ` — ${p.companies.name}` : ""}`,
+        href: `/projects/${p.id}`,
+      });
+    }
   }
 
   const activityItems: ActivityItem[] = [];
