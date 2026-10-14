@@ -1,6 +1,7 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { getDeadlineUrgency } from "@/lib/project-deadline";
+import { isContentOverdue } from "@/lib/content-schedule";
 import type { ProjectStatus } from "@/types/domain";
 
 export interface AttentionItem {
@@ -79,6 +80,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     waitingTicketsRes,
     staffOpenTicketsRes,
     staffApprovedContentRes,
+    staffScheduledContentRes,
     staffNewProjectRequestsRes,
     projectCommentsRes,
     ticketMessagesRes,
@@ -107,6 +109,9 @@ export async function getDashboardData(): Promise<DashboardData> {
       : Promise.resolve({ data: [], error: null }),
     isStaff
       ? supabase.from("content_items").select("id, title, companies ( name )").eq("status", "approved")
+      : Promise.resolve({ data: [], error: null }),
+    isStaff
+      ? supabase.from("content_items").select("id, title, status, scheduled_for, companies ( name )").eq("status", "scheduled")
       : Promise.resolve({ data: [], error: null }),
     isStaff
       ? supabase.from("project_requests").select("id, title, companies ( name )").eq("status", "requested")
@@ -225,6 +230,22 @@ export async function getDashboardData(): Promise<DashboardData> {
         label: p.name,
         meta: `${urgency === "overdue" ? "Deadline verstreken" : "Deadline binnenkort"}${p.companies?.name ? ` — ${p.companies.name}` : ""}`,
         href: `/projects/${p.id}`,
+      });
+    }
+
+    for (const c of (staffScheduledContentRes.data ?? []) as unknown as {
+      id: string;
+      title: string;
+      status: "scheduled";
+      scheduled_for: string | null;
+      companies: { name: string } | null;
+    }[]) {
+      if (!isContentOverdue(c.scheduled_for, c.status)) continue;
+      attentionItems.push({
+        id: `content-overdue-${c.id}`,
+        label: c.title,
+        meta: `Nog niet gepubliceerd${c.companies?.name ? ` — ${c.companies.name}` : ""}`,
+        href: `/content-planning/${c.id}`,
       });
     }
   }

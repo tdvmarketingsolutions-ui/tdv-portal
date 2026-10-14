@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/ToastProvider";
 import { Badge, TONE_CLASS } from "@/components/ui/Badge";
 import { CONTENT_STATUS_LABEL, CONTENT_STATUS_TONE, CONTENT_CHANNEL_LABEL } from "@/lib/content-status";
+import { isContentOverdue } from "@/lib/content-schedule";
 import type { ContentItemWithThumbnail } from "@/lib/data/content";
 import type { ContentChannel, ContentStatus } from "@/types/domain";
 import { EditContentItemDialog } from "./EditContentItemDialog";
@@ -478,6 +479,7 @@ export function CalendarGrid({
                       </Badge>
                     ))}
                     <Badge tone={CONTENT_STATUS_TONE[item.status]}>{CONTENT_STATUS_LABEL[item.status]}</Badge>
+                    {isContentOverdue(item.scheduled_for, item.status) && <Badge tone="red">Nog niet gepubliceerd</Badge>}
                     {canManage && (
                       <>
                         <DuplicateContentItemButton contentItemId={item.id} title={item.title} />
