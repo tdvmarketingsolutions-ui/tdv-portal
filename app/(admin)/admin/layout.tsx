@@ -3,6 +3,7 @@ import Link from "next/link";
 import { LayoutDashboard } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { AccountMenu } from "@/components/layout/AccountMenu";
+import { GlobalSearch } from "@/components/layout/GlobalSearch";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { NavLinks } from "@/components/layout/NavLinks";
 import { RealtimeNotifications } from "@/components/layout/RealtimeNotifications";
@@ -34,6 +35,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <aside className="hidden w-56 shrink-0 flex-col overflow-y-auto border-r border-border bg-surface px-3 py-6 dark:border-border-dark dark:bg-surface-dark md:sticky md:top-0 md:flex md:h-screen">
         <div className="mb-8 px-3 text-sm font-medium text-ink-muted dark:text-ink-dark-muted">
           TDV — Adminportaal
+        </div>
+        <div className="mb-4">
+          <GlobalSearch />
         </div>
         <NavLinks variant="admin" />
         <div className="mt-4 border-t border-border pt-4 dark:border-border-dark">
