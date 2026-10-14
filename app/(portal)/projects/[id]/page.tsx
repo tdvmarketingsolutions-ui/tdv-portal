@@ -6,6 +6,7 @@ import { isStaffRole, getStaffViewCompanyId } from "@/lib/staff-view";
 import { getProjectById } from "@/lib/data/projects";
 import { Badge } from "@/components/ui/Badge";
 import { PROJECT_STATUS_LABEL, PROJECT_STATUS_TONE } from "@/lib/project-status";
+import { getDeadlineUrgency, DEADLINE_URGENCY_LABEL } from "@/lib/project-deadline";
 import { FEEDBACK_STATUS_LABEL, FEEDBACK_STATUS_TONE } from "@/lib/feedback-status";
 import { CommentForm } from "./CommentForm";
 import { NewDeliverableDialog } from "./NewDeliverableDialog";
@@ -26,6 +27,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
   const comments = [...(project.project_comments ?? [])].sort(
     (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
   );
+  const deadlineUrgency = getDeadlineUrgency(project.deadline, project.status);
 
   return (
     <div className="space-y-8">
@@ -33,7 +35,17 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="font-display text-2xl font-semibold">{project.name}</h1>
           <Badge tone={PROJECT_STATUS_TONE[project.status]}>{PROJECT_STATUS_LABEL[project.status]}</Badge>
+          {deadlineUrgency && (
+            <Badge tone={deadlineUrgency === "overdue" ? "red" : "amber"}>
+              {DEADLINE_URGENCY_LABEL[deadlineUrgency]}
+            </Badge>
+          )}
         </div>
+        {project.deadline && (
+          <p className="mt-2 text-sm text-ink-muted dark:text-ink-dark-muted">
+            Deadline: {new Date(project.deadline).toLocaleDateString("nl-BE")}
+          </p>
+        )}
         {project.description && (
           <p className="mt-2 max-w-2xl text-sm text-ink-muted dark:text-ink-dark-muted">
             {project.description}

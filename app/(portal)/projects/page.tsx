@@ -6,6 +6,7 @@ import { getProjectRequestsForCurrentUser } from "@/lib/data/project-requests";
 import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PROJECT_STATUS_LABEL, PROJECT_STATUS_TONE } from "@/lib/project-status";
+import { getDeadlineUrgency, DEADLINE_URGENCY_LABEL } from "@/lib/project-deadline";
 import {
   PROJECT_REQUEST_STATUS_LABEL,
   PROJECT_REQUEST_STATUS_TONE,
@@ -89,21 +90,29 @@ export default async function ProjectsPage() {
           />
         ) : (
           <ul className="space-y-3">
-            {projects.map((project) => (
-              <li key={project.id}>
-                <Link href={`/projects/${project.id}`} className="card flex items-center justify-between gap-4 p-5 hover:shadow-md">
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium">{project.name}</p>
-                    <p className="mt-0.5 truncate text-sm text-ink-muted dark:text-ink-dark-muted">
-                      {isStaff && project.companies?.name ? `${project.companies.name}` : ""}
-                      {isStaff && project.companies?.name && project.deadline ? " · " : ""}
-                      {project.deadline ? `Deadline: ${new Date(project.deadline).toLocaleDateString("nl-BE")}` : ""}
-                    </p>
-                  </div>
-                  <Badge tone={PROJECT_STATUS_TONE[project.status]}>{PROJECT_STATUS_LABEL[project.status]}</Badge>
-                </Link>
-              </li>
-            ))}
+            {projects.map((project) => {
+              const urgency = getDeadlineUrgency(project.deadline, project.status);
+              return (
+                <li key={project.id}>
+                  <Link href={`/projects/${project.id}`} className="card flex items-center justify-between gap-4 p-5 hover:shadow-md">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-medium">{project.name}</p>
+                      <p className="mt-0.5 truncate text-sm text-ink-muted dark:text-ink-dark-muted">
+                        {isStaff && project.companies?.name ? `${project.companies.name}` : ""}
+                        {isStaff && project.companies?.name && project.deadline ? " · " : ""}
+                        {project.deadline ? `Deadline: ${new Date(project.deadline).toLocaleDateString("nl-BE")}` : ""}
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      {urgency && (
+                        <Badge tone={urgency === "overdue" ? "red" : "amber"}>{DEADLINE_URGENCY_LABEL[urgency]}</Badge>
+                      )}
+                      <Badge tone={PROJECT_STATUS_TONE[project.status]}>{PROJECT_STATUS_LABEL[project.status]}</Badge>
+                    </div>
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>
