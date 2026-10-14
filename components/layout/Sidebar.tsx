@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 import { AccountMenu } from "@/components/layout/AccountMenu";
+import { GlobalSearch } from "@/components/layout/GlobalSearch";
 import { NavLinks } from "@/components/layout/NavLinks";
 import { NotificationBell } from "@/components/layout/NotificationBell";
 import { StaffViewSwitcher } from "@/components/layout/StaffViewSwitcher";
@@ -34,6 +35,10 @@ export function Sidebar({
           </Link>
         </div>
         <NotificationBell userId={userId} initialUnreadCount={unreadCount} />
+      </div>
+
+      <div className="mb-4 px-0">
+        <GlobalSearch />
       </div>
 
       <NavLinks variant="portal" />
