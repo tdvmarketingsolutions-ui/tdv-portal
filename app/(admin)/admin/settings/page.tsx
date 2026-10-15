@@ -2,6 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { EditProfileForm } from "@/app/(portal)/settings/EditProfileForm";
 import { ChangePasswordForm } from "@/app/(portal)/settings/ChangePasswordForm";
 import { NotificationPreferenceForm } from "@/app/(portal)/settings/NotificationPreferenceForm";
+import { getAgencyForSettings } from "@/lib/data/admin/agency-branding";
+import { BrandingForm } from "./BrandingForm";
+import { AgencyLogoUpload } from "./AgencyLogoUpload";
 
 const ROLE_LABEL: Record<string, string> = {
   agency_admin: "Bureau (beheerder)",
@@ -22,6 +25,7 @@ export default async function AdminSettingsPage() {
 
   const fullName = (profile?.full_name as string | null) ?? null;
   const emailNotifications = (profile?.email_notifications as boolean | null) ?? true;
+  const agency = await getAgencyForSettings();
 
   return (
     <div className="space-y-8">
@@ -29,6 +33,19 @@ export default async function AdminSettingsPage() {
         <h1 className="font-display text-2xl font-semibold">Instellingen</h1>
         <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">Jouw account binnen het adminportaal.</p>
       </header>
+
+      <section id="branding" className="card scroll-mt-8 space-y-5 p-6">
+        <div>
+          <h2 className="font-display text-lg font-medium">Branding</h2>
+          <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
+            Hoe jouw bureau zich toont in het portaal — logo, naam en accentkleur.
+          </p>
+        </div>
+        <AgencyLogoUpload agencyName={agency.brand_name ?? agency.name} logoUrl={agency.logo_url} />
+        <div className="border-t border-border pt-4 dark:border-border-dark">
+          <BrandingForm brandName={agency.brand_name} accentColor={agency.accent_color} supportEmail={agency.support_email} />
+        </div>
+      </section>
 
       <section id="account" className="card scroll-mt-8 space-y-5 p-6">
         <h2 className="font-display text-lg font-medium">Account</h2>

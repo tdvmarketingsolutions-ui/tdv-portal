@@ -20,6 +20,8 @@ export function MobileNav({
   unreadCount,
   settingsHref,
   staffView,
+  agencyLogoUrl,
+  agencyBrandName,
 }: {
   variant: "portal" | "admin";
   title: string;
@@ -30,6 +32,8 @@ export function MobileNav({
   unreadCount?: number;
   settingsHref?: string;
   staffView?: { companies: { id: string; name: string }[]; currentCompanyId: string | null } | null;
+  agencyLogoUrl?: string | null;
+  agencyBrandName?: string | null;
 }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -59,7 +63,11 @@ export function MobileNav({
         {variant === "portal" ? (
           <Link href="/dashboard">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-5 w-auto" />
+            <img
+              src={agencyLogoUrl || "/brand/logo.png"}
+              alt={agencyBrandName || "TDV Marketing Solutions"}
+              className="h-5 w-auto max-w-[8rem] object-contain"
+            />
           </Link>
         ) : (
           <div>
@@ -100,7 +108,11 @@ export function MobileNav({
               {variant === "portal" ? (
                 <Link href="/dashboard" onClick={() => setOpen(false)}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-6 w-auto" />
+                  <img
+                    src={agencyLogoUrl || "/brand/logo.png"}
+                    alt={agencyBrandName || "TDV Marketing Solutions"}
+                    className="h-6 w-auto max-w-[9rem] object-contain"
+                  />
                 </Link>
               ) : (
                 <div>

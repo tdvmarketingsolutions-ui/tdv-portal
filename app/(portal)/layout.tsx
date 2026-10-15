@@ -5,6 +5,8 @@ import { MobileNav } from "@/components/layout/MobileNav";
 import { RealtimeNotifications } from "@/components/layout/RealtimeNotifications";
 import { getUnreadNotificationCount } from "@/lib/data/notifications";
 import { getAllCompaniesForSelect } from "@/lib/data/admin/projects";
+import { getCurrentAgencyBranding } from "@/lib/data/agency-branding";
+import { agencyAccentStyle } from "@/lib/color";
 import { isStaffRole, getStaffViewCompanyId } from "@/lib/staff-view";
 
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
@@ -17,9 +19,10 @@ export default async function PortalLayout({ children }: { children: React.React
   // but Server Components should never assume that ran.
   if (!user) redirect("/login");
 
-  const [{ data: profile }, unreadCount] = await Promise.all([
+  const [{ data: profile }, unreadCount, branding] = await Promise.all([
     supabase.from("profiles").select("full_name, role, companies ( logo_url )").eq("id", user.id).single(),
     getUnreadNotificationCount(),
+    getCurrentAgencyBranding(),
   ]);
   const fullName = profile?.full_name as string | null;
   const isStaff = isStaffRole(profile?.role as string | null | undefined);
@@ -36,17 +39,19 @@ export default async function PortalLayout({ children }: { children: React.React
     : null;
 
   return (
-    <div className="flex min-h-screen flex-col md:flex-row">
+    <div className="flex min-h-screen flex-col md:flex-row" style={agencyAccentStyle(branding?.accent_color)}>
       <RealtimeNotifications userId={user.id} />
       <MobileNav
         variant="portal"
-        title="TDV"
+        title={branding?.brand_name || "TDV"}
         subtitle="Portaal"
         userId={user.id}
         userEmail={user.email!}
         fullName={fullName}
         unreadCount={unreadCount}
         staffView={staffView}
+        agencyLogoUrl={branding?.logo_url}
+        agencyBrandName={branding?.brand_name}
       />
       <Sidebar
         userId={user.id}
@@ -55,6 +60,8 @@ export default async function PortalLayout({ children }: { children: React.React
         unreadCount={unreadCount}
         staffView={staffView}
         companyLogoUrl={companyLogoUrl}
+        agencyLogoUrl={branding?.logo_url}
+        agencyBrandName={branding?.brand_name}
       />
       <div className="min-w-0 flex-1">
         <main className="mx-auto max-w-6xl px-4 py-8 md:px-8">{children}</main>

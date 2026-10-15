@@ -13,6 +13,8 @@ export function Sidebar({
   unreadCount,
   staffView,
   companyLogoUrl,
+  agencyLogoUrl,
+  agencyBrandName,
 }: {
   userId: string;
   userEmail: string;
@@ -20,6 +22,8 @@ export function Sidebar({
   unreadCount: number;
   staffView?: { companies: { id: string; name: string }[]; currentCompanyId: string | null } | null;
   companyLogoUrl?: string | null;
+  agencyLogoUrl?: string | null;
+  agencyBrandName?: string | null;
 }) {
   return (
     <aside className="hidden w-60 shrink-0 flex-col overflow-y-auto border-r border-border bg-surface px-3 py-6 dark:border-border-dark dark:bg-surface-dark md:sticky md:top-0 md:flex md:h-screen">
@@ -31,7 +35,11 @@ export function Sidebar({
           )}
           <Link href="/dashboard" className="shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-6 w-auto" />
+            <img
+              src={agencyLogoUrl || "/brand/logo.png"}
+              alt={agencyBrandName || "TDV Marketing Solutions"}
+              className="h-6 w-auto max-w-[9rem] object-contain"
+            />
           </Link>
         </div>
         {/* Staff previewing a specific client ("Bekijk als klant") shouldn't see

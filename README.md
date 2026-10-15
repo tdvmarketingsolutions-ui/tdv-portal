@@ -271,20 +271,31 @@ stap rechtgezet via 6 losse, elk apart geverifieerde PR's (plan:
 traject startte) — raakt "de belangrijkste invariant" hierboven beschreven,
 dus **expliciet niet voor de onbemande routine**, elke stap begeleid:
 
-1. [ ] `agencies`-tabel + backfill van bestaande data naar TDV als Agency #1
+1. [x] `agencies`-tabel + backfill van bestaande data naar TDV als Agency #1
        (migratie `0025`) — schema-only, geen gedragsverandering.
-2. [ ] Rolnaam-hernoeming `tdv_admin`/`tdv_staff` → `agency_admin`/`agency_staff`
+2. [x] Rolnaam-hernoeming `tdv_admin`/`tdv_staff` → `agency_admin`/`agency_staff`
        (migratie `0026` + ~15 bestanden, in dezelfde release).
-3. [ ] Agency-bewuste RLS-herschrijving (migratie `0027`) — `is_tdv_staff()`
+3. [x] Agency-bewuste RLS-herschrijving (migratie `0027`/`0028`) — `is_tdv_staff()`
        vervangen door `is_agency_staff()` + `current_agency_id()` in alle
-       ~38 policies, inclusief twee bestaande losstaande gaten
+       policies, inclusief twee bestaande losstaande gaten
        (`profiles_select_staff_public`, `social_accounts` hadden al géén
-       enkele scoping). Hoogste-risico stap van dit traject.
-4. [ ] Agency-zelfregistratie (`/register` maakt een `agencies`-rij, directe
+       enkele scoping).
+4. [x] Agency-zelfregistratie (`/register` maakt een `agencies`-rij, directe
        trial, geen betaalstap) + vijf onveilige "notificeer alle staff"-queries
        scopen op agency.
-5. [ ] Per-agency branding: DB-gedreven theming (logo/kleuren/naam per
-       agency) i.p.v. de hardcoded TDV-tokens in Sidebar/layout/manifest.
+5. [x] Per-agency branding: logo, weergavenaam en accentkleur zijn DB-gedreven
+       (`agencies.logo_url`/`brand_name`/`accent_color`, migratie `0032`),
+       instelbaar via `/admin/settings` → Branding. Sidebar/MobileNav/admin-
+       layout tonen het agency-logo i.p.v. het hardcoded TDV-logo;
+       `--color-accent` (CSS custom property, `lib/color.ts`) overschrijft
+       Tailwind's `accent`-token runtime, met TDV's terracotta als fallback.
+       Bewust **niet** meegenomen in deze stap (nog open, kleinere vervolg-PR):
+       `app/layout.tsx`'s statische `<title>`/OG-metadata en
+       `app/icon.png`/`apple-icon.png`/`opengraph-image.png` blijven TDV-vast
+       (zouden dynamische route handlers moeten worden die de ingelogde
+       agency herkennen) — en `accent-soft`/`accent-dark` (gebruikt voor
+       zachte achtergronden/dark-mode-varianten) blijven vaste TDV-afgeleiden,
+       nog niet per-agency afleidbaar uit één custom kleur.
 6. [ ] Facturatie via **Billit** (niet Stripe — bewuste keuze: geen
        betaalprovider/kaartincasso, agency's kiezen maand/kwartaal/jaar-ritme,
        het systeem maakt en verstuurt zelf facturen via de Billit API,

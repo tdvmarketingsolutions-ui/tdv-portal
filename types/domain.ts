@@ -8,6 +8,33 @@
 
 export type UserRole = "agency_admin" | "agency_staff" | "client_admin" | "client_member";
 
+export type AgencyStatus = "trialing" | "active" | "suspended" | "canceled";
+export type AgencyPlan = "starter" | "growth" | "agency";
+export type AgencyBillingCycle = "monthly" | "quarterly" | "yearly";
+
+export interface Agency {
+  id: string;
+  name: string;
+  slug: string;
+  status: AgencyStatus;
+  brand_name: string | null;
+  logo_url: string | null;
+  favicon_url: string | null;
+  primary_color: string | null;
+  accent_color: string | null;
+  support_email: string | null;
+  custom_domain: string | null;
+  plan: AgencyPlan | null;
+  billing_cycle: AgencyBillingCycle;
+  trial_ends_at: string | null;
+  next_invoice_due_at: string | null;
+  billit_contact_id: string | null;
+  billing_name: string | null;
+  billing_address: Record<string, unknown> | null;
+  billing_vat_number: string | null;
+  created_at: string;
+}
+
 export interface Profile {
   id: string;
   company_id: string | null;
