@@ -40,7 +40,15 @@ export function GlobalSearch() {
     function handleKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        setOpen((prev) => !prev);
+        // Closing via ⌘K has to reset state exactly like every other close
+        // path (Escape, overlay click, picking a result) — otherwise the
+        // previous query/results are still sitting there the next time this
+        // reopens, which looks like search is stuck showing old results.
+        if (open) {
+          close();
+        } else {
+          setOpen(true);
+        }
       } else if (e.key === "Escape" && open) {
         close();
       }
