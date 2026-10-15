@@ -68,7 +68,7 @@ export function MobileNav({
           </div>
         )}
         <div className="flex items-center gap-1">
-          {userId !== undefined && unreadCount !== undefined && (
+          {userId !== undefined && unreadCount !== undefined && !staffView?.currentCompanyId && (
             <NotificationBell userId={userId} initialUnreadCount={unreadCount} />
           )}
           <button
