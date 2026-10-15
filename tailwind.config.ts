@@ -32,9 +32,16 @@ const config: Config = {
           "dark-muted": "#AEA299",
         },
         accent: {
-          DEFAULT: "#AF4B2F", // TDV terracotta — from live site link/CTA color
-          soft: "#F1E1D8",
-          dark: "#D9855F",
+          // rgb(var(--x) / <alpha-value>) is Tailwind's documented pattern for
+          // a CSS-variable-backed color that still supports opacity modifiers
+          // (bg-accent/90, dark:bg-accent/10, …) — <alpha-value> is replaced
+          // at build time per utility class, --color-accent itself stays a
+          // live runtime lookup. Default triplets live in app/globals.css;
+          // --color-accent is the one overridden per-agency (inline style on
+          // the (portal)/(admin) layout wrapper, see lib/data/agency-branding.ts).
+          DEFAULT: "rgb(var(--color-accent) / <alpha-value>)",
+          soft: "rgb(var(--color-accent-soft) / <alpha-value>)",
+          dark: "rgb(var(--color-accent-dark) / <alpha-value>)",
         },
         status: {
           new: "#2563EB",

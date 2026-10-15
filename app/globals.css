@@ -5,6 +5,15 @@
 @layer base {
   :root {
     color-scheme: light;
+    /* TDV's own terracotta, as "R G B" triplets (not hex) so Tailwind's
+       rgb(var(--x) / <alpha-value>) pattern in tailwind.config.ts can still
+       apply opacity modifiers like bg-accent/90. Only --color-accent is
+       ever overridden per-agency (inline style on the (portal)/(admin)
+       layout wrapper, see lib/data/agency-branding.ts) — -soft/-dark stay
+       fixed derivatives of TDV's own color for now. */
+    --color-accent: 175 75 47; /* #AF4B2F */
+    --color-accent-soft: 241 225 216; /* #F1E1D8 */
+    --color-accent-dark: 217 133 95; /* #D9855F */
   }
   .dark {
     color-scheme: dark;
