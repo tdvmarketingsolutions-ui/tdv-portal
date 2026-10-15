@@ -162,7 +162,7 @@ export function CalendarGrid({
             </p>
           </Link>
           {canManage && (
-            <div className="absolute right-1 top-1 rounded-md bg-ink/70 text-white opacity-0 transition-opacity group-hover:opacity-100">
+            <div className="absolute right-1 top-1 rounded-md bg-ink/70 text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
               <EditContentItemDialog
                 contentItemId={item.id}
                 title={item.title}

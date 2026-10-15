@@ -244,11 +244,13 @@ afgebakende PR per punt, in deze volgorde:
       echt werkt" hierboven) — ontbrekende aria-labels, niet-focusbare
       focus-stijlen op secondary/ghost-knoppen en het wachtwoord-
       toon/verberg-veld, en een toetsenbordalternatief voor het
-      bestanden-slepen. Nog open: de contentplanningskalender
-      (`CalendarGrid.tsx`) herplant posts ook enkel via sleep-en-loslaten,
-      zonder toetsenbordalternatief (bv. een "Inplannen op..."-actie per
-      item) — zelfde gat, nog niet gedicht. Kleurcontrast is nog niet
-      systematisch gecheckt.
+      bestanden-slepen. De contentplanningskalender bleek al een
+      toetsenbord-bereikbare manier te hebben om te herplannen (de
+      "bewerken"-dialoog heeft een datumveld) — het echte gat was dat het
+      bewerkknopje op een kalendercel met visual alleen zichtbaar werd bij
+      `:hover`, niet bij focus, en dus onvindbaar was voor een
+      toetsenbordgebruiker (`group-focus-within:opacity-100` toegevoegd).
+      Nog open: kleurcontrast is nog niet systematisch gecheckt.
 - [ ] **Lege staten en foutafhandeling verfijnen**: een aantal oudere
       pagina's heeft nog een generieke of ontbrekende lege/foutstaat in
       plaats van de doordachte `EmptyState`-aanpak die de nieuwere
