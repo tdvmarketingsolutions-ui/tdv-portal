@@ -34,7 +34,10 @@ export function Sidebar({
             <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-6 w-auto" />
           </Link>
         </div>
-        <NotificationBell userId={userId} initialUnreadCount={unreadCount} />
+        {/* Staff previewing a specific client ("Bekijk als klant") shouldn't see
+            their own staff inbox here — those notifications (and where clicking
+            one takes you) belong to staff's own environment, not this preview. */}
+        {!staffView?.currentCompanyId && <NotificationBell userId={userId} initialUnreadCount={unreadCount} />}
       </div>
 
       <div className="mb-4 px-0">
