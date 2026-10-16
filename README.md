@@ -227,7 +227,22 @@ van het systeem.
   verplaatsen tussen mappen kon enkel via slepen (geen
   toetsenbord-/schermlezertoegankelijk alternatief) — `FileList.tsx`
   heeft er nu een `<select>` "Verplaatsen naar…" per bestand bij, met
-  dezelfde bestemmingen als het slepen toelaat.
+  dezelfde bestemmingen als het slepen toelaat. Kleurcontrast is
+  systematisch gecheckt: een berekende WCAG AA-audit (relatieve
+  luminantie + contrastratio, niet op het oog) vond en verhelpte
+  `ink-muted` (4.29:1 op canvas, nu 5.16:1) en alle vijf statuskleuren
+  (die nooit een apart dark-mode-tintje hadden en in licht én donker
+  onder 4.5:1 zaten) plus de "vandaag"-badge in de
+  contentplanningskalender (2.81:1 in dark mode).
+- **Foutafhandeling**: geen enkele route had een `error.tsx` of
+  `not-found.tsx` — een onverwachte fout (bv. een trage/haperende
+  Supabase-call) of een ongeldige/verwijderde `[id]` (zes plekken roepen
+  `notFound()` aan) viel terug op Next.js' eigen kale, onopgemaakte
+  scherm. Toegevoegd: `(portal)/error.tsx` + `not-found.tsx`,
+  `(admin)/admin/error.tsx` + `not-found.tsx` (zelfde `EmptyState`-look,
+  met een "Probeer opnieuw"-knop op de foutpagina's), en een root-niveau
+  `app/error.tsx` + `app/not-found.tsx` als laatste vangnet voor fouten
+  die van buiten de portal/admin-boom komen (bv. de root layout zelf).
 
 ## Wat nog moet worden bijgebouwd
 
@@ -240,26 +255,6 @@ afgebakende PR per punt, in deze volgorde:
       wordt in Vercel → Settings → Environment Variables — zie "Wat er
       echt werkt" hierboven voor details. Zonder die variabele faalt de
       job veilig (401), niet onveilig (open).
-- [ ] **Toegankelijkheidsaudit, vervolg**: eerste ronde gedaan (zie "Wat er
-      echt werkt" hierboven) — ontbrekende aria-labels, niet-focusbare
-      focus-stijlen op secondary/ghost-knoppen en het wachtwoord-
-      toon/verberg-veld, en een toetsenbordalternatief voor het
-      bestanden-slepen. De contentplanningskalender bleek al een
-      toetsenbord-bereikbare manier te hebben om te herplannen (de
-      "bewerken"-dialoog heeft een datumveld) — het echte gat was dat het
-      bewerkknopje op een kalendercel met visual alleen zichtbaar werd bij
-      `:hover`, niet bij focus, en dus onvindbaar was voor een
-      toetsenbordgebruiker (`group-focus-within:opacity-100` toegevoegd).
-      Kleurcontrast is inmiddels systematisch gecheckt: een berekende
-      WCAG AA-audit (relatieve luminantie + contrastratio, niet op het oog)
-      vond en verhelpte `ink-muted` (4.29:1 op canvas, nu 5.16:1) en alle vijf
-      statuskleuren (die nooit een apart dark-mode-tintje hadden en in licht
-      én donker onder 4.5:1 zaten) plus de "vandaag"-badge in de
-      contentplanningskalender (2.81:1 in dark mode).
-- [ ] **Lege staten en foutafhandeling verfijnen**: een aantal oudere
-      pagina's heeft nog een generieke of ontbrekende lege/foutstaat in
-      plaats van de doordachte `EmptyState`-aanpak die de nieuwere
-      modules (bestanden, deliverables) al hebben — gelijktrekken.
 - [ ] **Performance-audit op resterende trage interacties**: plekken waar
       een actie op een volledige `router.refresh()`-rondtrip wacht i.p.v.
       optimistic UI, en queries die sneller kunnen — vervolg op de
