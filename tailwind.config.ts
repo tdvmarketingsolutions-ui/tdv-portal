@@ -27,7 +27,12 @@ const config: Config = {
         },
         ink: {
           DEFAULT: "#282420", // primary text
-          muted: "#78706A",   // secondary text
+          // Darkened from the original #78706A: measured 4.29:1 on canvas
+          // (#F4F0EE), just under WCAG AA's 4.5:1 for normal text — this
+          // color is used everywhere as secondary/meta text, often directly
+          // on canvas rather than inside a card. #6B6459 clears 5.16:1 on
+          // canvas and stays well clear of AA on surface too.
+          muted: "#6B6459",
           dark: "#F5F1EE",
           "dark-muted": "#AEA299",
         },
@@ -43,12 +48,27 @@ const config: Config = {
           soft: "rgb(var(--color-accent-soft) / <alpha-value>)",
           dark: "rgb(var(--color-accent-dark) / <alpha-value>)",
         },
+        // Measured against each color's real rendering context (Badge.tsx's
+        // light tailwind-50 background in light mode, the equivalent
+        // X-500/10 overlay composited over surface-dark in dark mode):
+        // unlike ink/accent, these never had a separate dark-mode value, so
+        // every one of them fell under WCAG AA's 4.5:1 in at least one
+        // mode — progress and done even failed in their *own* light-mode
+        // badges (3.07:1 and 3.15:1). progress/done/danger are darkened for
+        // light mode; all five get a dedicated -dark variant (new/waiting
+        // especially needed one — 2.92:1 and 2.67:1 against their dark
+        // badge background). Apply as `text-status-x dark:text-status-x-dark`.
         status: {
           new: "#2563EB",
-          progress: "#D97706",
+          "new-dark": "#60A5FA",
+          progress: "#B45309",
+          "progress-dark": "#FBBF24",
           waiting: "#7C3AED",
-          done: "#16A34A",
-          danger: "#DC2626",
+          "waiting-dark": "#A78BFA",
+          done: "#15803D",
+          "done-dark": "#4ADE80",
+          danger: "#B91C1C",
+          "danger-dark": "#F87171",
         },
       },
       fontFamily: {

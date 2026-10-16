@@ -163,7 +163,7 @@ export function UploadDialog({ folderId = null }: { folderId?: string | null } =
           </Select>
 
           {error && (
-            <p role="alert" className="text-sm text-status-danger">
+            <p role="alert" className="text-sm text-status-danger dark:text-status-danger-dark">
               {error}
             </p>
           )}

@@ -43,9 +43,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             className="card toast-enter pointer-events-auto flex items-start gap-3 p-4 shadow-lg"
           >
             {toast.tone === "success" ? (
-              <CheckCircle2 size={18} strokeWidth={1.75} className="mt-0.5 shrink-0 text-status-done" />
+              <CheckCircle2 size={18} strokeWidth={1.75} className="mt-0.5 shrink-0 text-status-done dark:text-status-done-dark" />
             ) : (
-              <XCircle size={18} strokeWidth={1.75} className="mt-0.5 shrink-0 text-status-danger" />
+              <XCircle size={18} strokeWidth={1.75} className="mt-0.5 shrink-0 text-status-danger dark:text-status-danger-dark" />
             )}
             <p className="flex-1 text-sm">{toast.message}</p>
             <button

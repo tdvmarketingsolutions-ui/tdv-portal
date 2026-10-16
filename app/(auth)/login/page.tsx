@@ -77,7 +77,7 @@ export default function LoginPage() {
           </div>
 
           {errors.root && (
-            <p role="alert" className="text-sm text-status-danger">
+            <p role="alert" className="text-sm text-status-danger dark:text-status-danger-dark">
               {errors.root.message}
             </p>
           )}

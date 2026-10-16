@@ -81,7 +81,7 @@ export function AccountMenu({ email, fullName, settingsHref = "/settings" }: Acc
             role="menuitem"
             onClick={handleLogout}
             disabled={loggingOut}
-            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-status-danger transition-colors hover:bg-canvas disabled:opacity-60 dark:hover:bg-canvas-dark"
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-status-danger transition-colors hover:bg-canvas disabled:opacity-60 dark:text-status-danger-dark dark:hover:bg-canvas-dark"
           >
             <LogOut size={16} strokeWidth={1.75} />
             {loggingOut ? "Bezig met uitloggen…" : "Uitloggen"}

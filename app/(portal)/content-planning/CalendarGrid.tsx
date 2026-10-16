@@ -360,7 +360,7 @@ export function CalendarGrid({
                   className={cn(
                     "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs",
                     isSameDay(day, new Date())
-                      ? "bg-accent font-semibold text-white dark:bg-accent-dark"
+                      ? "bg-accent font-semibold text-white dark:bg-accent-dark dark:text-ink"
                       : "bg-canvas text-ink-muted dark:bg-canvas-dark dark:text-ink-dark-muted"
                   )}
                 >
@@ -406,7 +406,7 @@ export function CalendarGrid({
                   <span
                     className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] ${
                       isSameDay(day, new Date())
-                        ? "bg-accent font-semibold text-white dark:bg-accent-dark"
+                        ? "bg-accent font-semibold text-white dark:bg-accent-dark dark:text-ink"
                         : "text-ink-muted dark:text-ink-dark-muted"
                     }`}
                   >

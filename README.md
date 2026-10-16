@@ -250,7 +250,12 @@ afgebakende PR per punt, in deze volgorde:
       bewerkknopje op een kalendercel met visual alleen zichtbaar werd bij
       `:hover`, niet bij focus, en dus onvindbaar was voor een
       toetsenbordgebruiker (`group-focus-within:opacity-100` toegevoegd).
-      Nog open: kleurcontrast is nog niet systematisch gecheckt.
+      Kleurcontrast is inmiddels systematisch gecheckt: een berekende
+      WCAG AA-audit (relatieve luminantie + contrastratio, niet op het oog)
+      vond en verhelpte `ink-muted` (4.29:1 op canvas, nu 5.16:1) en alle vijf
+      statuskleuren (die nooit een apart dark-mode-tintje hadden en in licht
+      én donker onder 4.5:1 zaten) plus de "vandaag"-badge in de
+      contentplanningskalender (2.81:1 in dark mode).
 - [ ] **Lege staten en foutafhandeling verfijnen**: een aantal oudere
       pagina's heeft nog een generieke of ontbrekende lege/foutstaat in
       plaats van de doordachte `EmptyState`-aanpak die de nieuwere

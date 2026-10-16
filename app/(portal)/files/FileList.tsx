@@ -129,7 +129,7 @@ export function FileList({
               type="button"
               onClick={() => setPendingDelete(file)}
               aria-label={`${file.file_name} verwijderen`}
-              className="shrink-0 rounded-lg p-2 text-ink-muted transition-colors hover:bg-canvas hover:text-status-danger dark:text-ink-dark-muted dark:hover:bg-canvas-dark"
+              className="shrink-0 rounded-lg p-2 text-ink-muted transition-colors hover:bg-canvas hover:text-status-danger dark:text-ink-dark-muted dark:hover:bg-canvas-dark dark:hover:text-status-danger-dark"
             >
               <Trash2 size={16} strokeWidth={1.75} />
             </button>

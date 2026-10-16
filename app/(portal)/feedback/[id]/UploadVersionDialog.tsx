@@ -90,7 +90,7 @@ export function UploadVersionDialog({ deliverableId }: { deliverableId: string }
           </div>
 
           {error && (
-            <p role="alert" className="text-sm text-status-danger">
+            <p role="alert" className="text-sm text-status-danger dark:text-status-danger-dark">
               {error}
             </p>
           )}
