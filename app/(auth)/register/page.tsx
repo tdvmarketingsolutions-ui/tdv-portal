@@ -83,7 +83,7 @@ export default function RegisterPage() {
           />
 
           {errors.root && (
-            <p role="alert" className="text-sm text-status-danger">
+            <p role="alert" className="text-sm text-status-danger dark:text-status-danger-dark">
               {errors.root.message}
             </p>
           )}

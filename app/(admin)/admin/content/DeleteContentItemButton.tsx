@@ -34,7 +34,7 @@ export function DeleteContentItemButton({ contentItemId, title }: { contentItemI
         type="button"
         onClick={() => setOpen(true)}
         aria-label={`${title} verwijderen`}
-        className="rounded-lg p-1.5 text-ink-muted transition-colors hover:bg-canvas hover:text-status-danger dark:text-ink-dark-muted dark:hover:bg-canvas-dark"
+        className="rounded-lg p-1.5 text-ink-muted transition-colors hover:bg-canvas hover:text-status-danger dark:text-ink-dark-muted dark:hover:bg-canvas-dark dark:hover:text-status-danger-dark"
       >
         <Trash2 size={15} strokeWidth={1.75} />
       </button>

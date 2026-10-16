@@ -44,7 +44,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, InputProps>(
           </p>
         )}
         {error && (
-          <p id={errorId} role="alert" className="mt-1 text-xs text-status-danger">
+          <p id={errorId} role="alert" className="mt-1 text-xs text-status-danger dark:text-status-danger-dark">
             {error}
           </p>
         )}

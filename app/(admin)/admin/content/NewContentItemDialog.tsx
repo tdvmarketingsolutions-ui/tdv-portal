@@ -95,7 +95,7 @@ export function NewContentItemDialog({
                 </label>
               ))}
             </div>
-            {errors.channels && <p className="mt-1 text-xs text-status-danger">{errors.channels.message}</p>}
+            {errors.channels && <p className="mt-1 text-xs text-status-danger dark:text-status-danger-dark">{errors.channels.message}</p>}
           </fieldset>
           <Textarea label="Tekst (optioneel)" rows={3} error={errors.caption?.message} {...register("caption")} />
           <Input

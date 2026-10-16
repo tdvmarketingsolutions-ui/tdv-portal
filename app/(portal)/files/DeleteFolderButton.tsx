@@ -42,7 +42,7 @@ export function DeleteFolderButton({
         type="button"
         onClick={(e) => { e.preventDefault(); setConfirming(true); }}
         aria-label={`Map "${folderName}" verwijderen`}
-        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-ink-muted opacity-0 transition-opacity hover:bg-canvas hover:text-status-danger group-hover:opacity-100 dark:text-ink-dark-muted dark:hover:bg-canvas-dark"
+        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-ink-muted opacity-0 transition-opacity hover:bg-canvas hover:text-status-danger group-hover:opacity-100 dark:text-ink-dark-muted dark:hover:bg-canvas-dark dark:hover:text-status-danger-dark"
       >
         <Trash2 size={15} strokeWidth={1.75} />
       </button>
