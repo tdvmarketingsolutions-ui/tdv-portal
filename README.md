@@ -243,6 +243,15 @@ van het systeem.
   met een "Probeer opnieuw"-knop op de foutpagina's), en een root-niveau
   `app/error.tsx` + `app/not-found.tsx` als laatste vangnet voor fouten
   die van buiten de portal/admin-boom komen (bv. de root layout zelf).
+- **Performance**: de vier status-dropdowns (`ProjectStatusSelect`,
+  `ProjectRequestStatusSelect`, `ContentStatusSelect`, `TicketStatusSelect`
+  — alle vier staff z'n meest gebruikte, meest frequente actie) toonden de
+  nieuwe status pas na een volledige `router.refresh()`-rondtrip; nu
+  optimistic (de dropdown toont de keuze onmiddellijk, met een stille
+  terugrol + foutmelding als de server-call alsnog faalt). Andere
+  `router.refresh()`-plekken in de app zijn dialogs/formulieren met hun
+  eigen knop-laadstatus — daar is wachtfeedback al verwacht gedrag, geen
+  vergelijkbaar gat.
 
 ## Wat nog moet worden bijgebouwd
 
@@ -255,10 +264,10 @@ afgebakende PR per punt, in deze volgorde:
       wordt in Vercel → Settings → Environment Variables — zie "Wat er
       echt werkt" hierboven voor details. Zonder die variabele faalt de
       job veilig (401), niet onveilig (open).
-- [ ] **Performance-audit op resterende trage interacties**: plekken waar
-      een actie op een volledige `router.refresh()`-rondtrip wacht i.p.v.
-      optimistic UI, en queries die sneller kunnen — vervolg op de
-      regio-fix (zie "Performance" hieronder).
+- [ ] **Performance-audit, vervolg**: optimistic UI voor de status-dropdowns
+      is gedaan (zie "Wat er echt werkt" hierboven) — nog open: queries die
+      sneller kunnen (bv. N+1-patronen, ontbrekende indexen) — vervolg op
+      de regio-fix (zie "Performance" hieronder).
 
 ## Multi-tenant white-label architectuur (actief traject, niet voor de onbemande routine)
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/ToastProvider";
 import { PROJECT_REQUEST_STATUS_LABEL } from "@/lib/project-request-status";
@@ -10,15 +10,17 @@ import { updateProjectRequestStatusAction } from "./actions";
 export function ProjectRequestStatusSelect({ requestId, status }: { requestId: string; status: ProjectRequestStatus }) {
   const router = useRouter();
   const { push } = useToast();
-  const [loading, setLoading] = useState(false);
+  const [optimisticStatus, setOptimisticStatus] = useState(status);
+  useEffect(() => setOptimisticStatus(status), [status]);
 
   async function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const next = e.target.value as ProjectRequestStatus;
-    setLoading(true);
-    const result = await updateProjectRequestStatusAction(requestId, next);
-    setLoading(false);
+    const previous = optimisticStatus;
+    setOptimisticStatus(next);
 
+    const result = await updateProjectRequestStatusAction(requestId, next);
     if (result.error) {
+      setOptimisticStatus((current) => (current === next ? previous : current));
       push(result.error, "error");
       return;
     }
@@ -27,9 +29,8 @@ export function ProjectRequestStatusSelect({ requestId, status }: { requestId: s
 
   return (
     <select
-      value={status}
+      value={optimisticStatus}
       onChange={handleChange}
-      disabled={loading}
       className="rounded-lg border border-border bg-surface px-2 py-1 text-base outline-none focus:border-accent disabled:opacity-60 dark:border-border-dark dark:bg-surface-dark md:text-xs"
     >
       {(Object.keys(PROJECT_REQUEST_STATUS_LABEL) as ProjectRequestStatus[]).map((s) => (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/ToastProvider";
 import { CONTENT_STATUS_LABEL } from "@/lib/content-status";
@@ -10,15 +10,17 @@ import { updateContentItemStatusAction } from "./actions";
 export function ContentStatusSelect({ contentItemId, status }: { contentItemId: string; status: ContentStatus }) {
   const router = useRouter();
   const { push } = useToast();
-  const [loading, setLoading] = useState(false);
+  const [optimisticStatus, setOptimisticStatus] = useState(status);
+  useEffect(() => setOptimisticStatus(status), [status]);
 
   async function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const next = e.target.value as ContentStatus;
-    setLoading(true);
-    const result = await updateContentItemStatusAction(contentItemId, next);
-    setLoading(false);
+    const previous = optimisticStatus;
+    setOptimisticStatus(next);
 
+    const result = await updateContentItemStatusAction(contentItemId, next);
     if (result.error) {
+      setOptimisticStatus((current) => (current === next ? previous : current));
       push(result.error, "error");
       return;
     }
@@ -27,9 +29,8 @@ export function ContentStatusSelect({ contentItemId, status }: { contentItemId: 
 
   return (
     <select
-      value={status}
+      value={optimisticStatus}
       onChange={handleChange}
-      disabled={loading}
       className="rounded-lg border border-border bg-surface px-2 py-1 text-base outline-none focus:border-accent disabled:opacity-60 dark:border-border-dark dark:bg-surface-dark md:text-xs"
     >
       {(Object.keys(CONTENT_STATUS_LABEL) as ContentStatus[]).map((s) => (
