@@ -4,6 +4,7 @@ import type { ContentChannel, ContentItem, ContentStatus } from "@/types/domain"
 import type { FileCategory } from "@/lib/file-category";
 import { assertTdvStaff } from "@/lib/auth/assert-staff";
 import { createNotifications } from "@/lib/data/notifications";
+import { getFileDownloadUrls } from "@/lib/data/files";
 
 const STORAGE_BUCKET = "client-files";
 
@@ -30,17 +31,16 @@ export interface AdminContentItemWithThumbnail extends AdminContentItem {
 }
 
 export async function withVisualThumbnailsAdmin(items: AdminContentItem[]): Promise<AdminContentItemWithThumbnail[]> {
-  const supabase = createClient();
-  return Promise.all(
-    items.map(async (item) => {
-      if (!item.visual || !item.visual.mime_type?.startsWith("image/")) {
-        return { ...item, visualThumbnailUrl: null };
-      }
-      const { data, error } = await supabase.storage.from(STORAGE_BUCKET).createSignedUrl(item.visual.storage_path, 60 * 5);
-      if (error) console.error("Kon thumbnail niet laden:", error);
-      return { ...item, visualThumbnailUrl: data?.signedUrl ?? null };
-    })
-  );
+  const imagePaths = items
+    .filter((item) => item.visual?.mime_type?.startsWith("image/"))
+    .map((item) => item.visual!.storage_path);
+  const urlByPath = await getFileDownloadUrls(imagePaths);
+
+  return items.map((item) => ({
+    ...item,
+    visualThumbnailUrl:
+      item.visual?.mime_type?.startsWith("image/") ? (urlByPath.get(item.visual.storage_path) ?? null) : null,
+  }));
 }
 
 export async function updateContentItemAdmin(
