@@ -265,6 +265,13 @@ van het systeem.
   gedragswijziging. **Moet nog toegepast worden**: `npx supabase db push`
   (deze sessie had geen werkende directe Postgres-verbinding om 'm zelf toe
   te passen — zie de TODO hieronder).
+- **Performance, N+1-thumbnails**: de contentplanningskalender haalde een
+  signed thumbnail-URL op per item met een afbeelding — één aparte
+  Storage-call per item, dus een maand met 20 geplande posts deed 20
+  losse round trips naast de lijstquery zelf. `getFileDownloadUrls()`
+  (nieuw, `lib/data/files.ts`) batcht dat via Supabase Storage's
+  `createSignedUrls` (meervoud) in één call; `withVisualThumbnails` en
+  `withVisualThumbnailsAdmin` gebruiken 'm nu allebei.
 
 ## Wat nog moet worden bijgebouwd
 
@@ -282,11 +289,10 @@ afgebakende PR per punt, in deze volgorde:
       klaar maar moet nog toegepast worden met `npx supabase db push` —
       deze sessie had geen werkende directe Postgres-verbinding om dat
       zelf te doen.
-- [ ] **Performance-audit, vervolg**: optimistic UI voor de status-dropdowns
-      en de ontbrekende indexen zijn gedaan (zie "Wat er echt werkt"
-      hierboven) — nog open: N+1-queryplekken (content-planning haalt
-      thumbnail-URL's nog los op per item in plaats van gebatcht) —
-      vervolg op de regio-fix (zie "Performance" hieronder).
+- [ ] **Performance-audit, vervolg**: optimistic UI voor de status-dropdowns,
+      de ontbrekende indexen en de N+1-thumbnails zijn gedaan (zie "Wat er
+      echt werkt" hierboven) — vervolg op de regio-fix (zie "Performance"
+      hieronder) zodra er een nieuwe trage plek gevonden wordt.
 
 ## Multi-tenant white-label architectuur (actief traject, niet voor de onbemande routine)
 

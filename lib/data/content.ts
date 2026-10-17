@@ -2,7 +2,7 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { assertTdvStaff } from "@/lib/auth/assert-staff";
 import { resolveListFilterCompanyId, resolveWriteCompanyId, isStaffRole } from "@/lib/staff-view";
-import { getFileDownloadUrl } from "@/lib/data/files";
+import { getFileDownloadUrls } from "@/lib/data/files";
 import { createNotifications } from "@/lib/data/notifications";
 import { getStaffProfileIdsForAgency } from "@/lib/data/staff";
 import type { ContentChannel, ContentItem, ContentStatus } from "@/types/domain";
@@ -60,25 +60,21 @@ export interface ContentItemWithThumbnail extends ContentItemWithCompany {
 }
 
 /**
- * Best-effort: a signed-URL request failing (storage hiccup, rate limit
- * across many concurrent items, a stale/missing object) must never take the
- * whole calendar down over one thumbnail — fall back to null (the icon)
- * instead of throwing.
+ * Batches all image thumbnails into one Storage call instead of one per
+ * item (getFileDownloadUrls already fails soft — a signing hiccup never
+ * takes the whole calendar down, it just leaves thumbnails as null/icon).
  */
 export async function withVisualThumbnails(items: ContentItemWithCompany[]): Promise<ContentItemWithThumbnail[]> {
-  return Promise.all(
-    items.map(async (item) => {
-      if (!item.visual || !item.visual.mime_type?.startsWith("image/")) {
-        return { ...item, visualThumbnailUrl: null };
-      }
-      try {
-        return { ...item, visualThumbnailUrl: await getFileDownloadUrl(item.visual.storage_path) };
-      } catch (err) {
-        console.error("Kon thumbnail niet laden:", err);
-        return { ...item, visualThumbnailUrl: null };
-      }
-    })
-  );
+  const imagePaths = items
+    .filter((item) => item.visual?.mime_type?.startsWith("image/"))
+    .map((item) => item.visual!.storage_path);
+  const urlByPath = await getFileDownloadUrls(imagePaths);
+
+  return items.map((item) => ({
+    ...item,
+    visualThumbnailUrl:
+      item.visual?.mime_type?.startsWith("image/") ? (urlByPath.get(item.visual.storage_path) ?? null) : null,
+  }));
 }
 
 export async function getContentItemById(id: string): Promise<ContentItemWithComments | null> {

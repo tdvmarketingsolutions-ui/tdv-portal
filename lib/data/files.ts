@@ -92,6 +92,30 @@ export async function getFileDownloadUrl(storagePath: string): Promise<string> {
   return data.signedUrl;
 }
 
+/**
+ * Batched version of getFileDownloadUrl — one Storage call for N paths
+ * instead of N separate round trips. Used wherever a list renders a
+ * thumbnail per item (content-planning calendar); signing fails soft (logs
+ * and returns an empty map) rather than throwing, since one Storage hiccup
+ * must never take a whole list page down over its thumbnails.
+ */
+export async function getFileDownloadUrls(storagePaths: string[]): Promise<Map<string, string>> {
+  const urlByPath = new Map<string, string>();
+  if (storagePaths.length === 0) return urlByPath;
+
+  const supabase = createClient();
+  const { data, error } = await supabase.storage.from(STORAGE_BUCKET).createSignedUrls(storagePaths, 60 * 5);
+  if (error) {
+    console.error("Kon downloadlinks niet aanmaken:", error.message);
+    return urlByPath;
+  }
+
+  for (const result of data ?? []) {
+    if (result.signedUrl && !result.error && result.path) urlByPath.set(result.path, result.signedUrl);
+  }
+  return urlByPath;
+}
+
 export async function deleteFile(fileId: string): Promise<void> {
   const supabase = createClient();
 
