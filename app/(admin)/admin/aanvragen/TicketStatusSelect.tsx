@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/ToastProvider";
 import { TICKET_STATUS_LABEL } from "@/lib/ticket-status";
@@ -10,15 +10,17 @@ import { updateTicketStatusAction } from "./actions";
 export function TicketStatusSelect({ ticketId, status }: { ticketId: string; status: TicketStatus }) {
   const router = useRouter();
   const { push } = useToast();
-  const [loading, setLoading] = useState(false);
+  const [optimisticStatus, setOptimisticStatus] = useState(status);
+  useEffect(() => setOptimisticStatus(status), [status]);
 
   async function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const next = e.target.value as TicketStatus;
-    setLoading(true);
-    const result = await updateTicketStatusAction(ticketId, next);
-    setLoading(false);
+    const previous = optimisticStatus;
+    setOptimisticStatus(next);
 
+    const result = await updateTicketStatusAction(ticketId, next);
     if (result.error) {
+      setOptimisticStatus((current) => (current === next ? previous : current));
       push(result.error, "error");
       return;
     }
@@ -27,9 +29,8 @@ export function TicketStatusSelect({ ticketId, status }: { ticketId: string; sta
 
   return (
     <select
-      value={status}
+      value={optimisticStatus}
       onChange={handleChange}
-      disabled={loading}
       className="rounded-lg border border-border bg-surface px-2 py-1 text-base outline-none focus:border-accent disabled:opacity-60 dark:border-border-dark dark:bg-surface-dark md:text-xs"
     >
       {(Object.keys(TICKET_STATUS_LABEL) as TicketStatus[]).map((s) => (
