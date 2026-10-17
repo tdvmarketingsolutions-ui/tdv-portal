@@ -252,6 +252,19 @@ van het systeem.
   `router.refresh()`-plekken in de app zijn dialogs/formulieren met hun
   eigen knop-laadstatus — daar is wachtfeedback al verwacht gedrag, geen
   vergelijkbaar gat.
+- **Performance, ontbrekende indexen**: Postgres indexeert foreign keys niet
+  automatisch, en op de pgvector-index na (0001) had het hele schema er
+  nul. Elke RLS-policy sinds 0001 draait op `company_id = current_company_id()`
+  of een EXISTS-join via `companies.agency_id` — dat liep op elke select
+  tegen projecten, tickets, content, bestanden, mappen, aanvragen en
+  meldingen (dus elke dashboard-/project-/ticket-/content-planning-/
+  bestanden-/meldingen-paginalaad) via een sequential scan om tenantisolatie
+  af te dwingen. Migratie `0033_fk_indexes.sql` voegt een index toe op elke
+  foreign key die daadwerkelijk gefilterd/gejoind wordt (geverifieerd via
+  de live schema-introspectie, niet gegokt) — puur additief, geen
+  gedragswijziging. **Moet nog toegepast worden**: `npx supabase db push`
+  (deze sessie had geen werkende directe Postgres-verbinding om 'm zelf toe
+  te passen — zie de TODO hieronder).
 
 ## Wat nog moet worden bijgebouwd
 
@@ -264,10 +277,16 @@ afgebakende PR per punt, in deze volgorde:
       wordt in Vercel → Settings → Environment Variables — zie "Wat er
       echt werkt" hierboven voor details. Zonder die variabele faalt de
       job veilig (401), niet onveilig (open).
+- [ ] **Actie vereist**: migratie `0033_fk_indexes.sql` (ontbrekende
+      indexen op foreign keys, zie "Wat er echt werkt" hierboven) staat
+      klaar maar moet nog toegepast worden met `npx supabase db push` —
+      deze sessie had geen werkende directe Postgres-verbinding om dat
+      zelf te doen.
 - [ ] **Performance-audit, vervolg**: optimistic UI voor de status-dropdowns
-      is gedaan (zie "Wat er echt werkt" hierboven) — nog open: queries die
-      sneller kunnen (bv. N+1-patronen, ontbrekende indexen) — vervolg op
-      de regio-fix (zie "Performance" hieronder).
+      en de ontbrekende indexen zijn gedaan (zie "Wat er echt werkt"
+      hierboven) — nog open: N+1-queryplekken (content-planning haalt
+      thumbnail-URL's nog los op per item in plaats van gebatcht) —
+      vervolg op de regio-fix (zie "Performance" hieronder).
 
 ## Multi-tenant white-label architectuur (actief traject, niet voor de onbemande routine)
 
