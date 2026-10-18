@@ -272,6 +272,14 @@ van het systeem.
   (nieuw, `lib/data/files.ts`) batcht dat via Supabase Storage's
   `createSignedUrls` (meervoud) in één call; `withVisualThumbnails` en
   `withVisualThumbnailsAdmin` gebruiken 'm nu allebei.
+- **Laadstatussen**: de hele `/admin`-sectie (8 routes: aanvragen, AI,
+  klanten, klantdetail, content, projecten, instellingen, gebruikers) had
+  géén `loading.tsx` — een paginawissel toonde tot de data binnen was
+  gewoon niets, in plaats van de skeleton-laadstaat die de rest van het
+  portaal al had. Plus `dashboard` (meerdere parallelle queries, vaak de
+  eerste pagina na inloggen) en `files/[folderId]` (had 'm wel op
+  `/files` maar niet op een submap). Allemaal met dezelfde
+  `Skeleton`-aanpak als de bestaande routes.
 
 ## Wat nog moet worden bijgebouwd
 
