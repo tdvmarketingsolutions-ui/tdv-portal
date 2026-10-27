@@ -323,12 +323,13 @@ dus **expliciet niet voor de onbemande routine**, elke stap begeleid:
        ook per agency (`lib/branding-metadata.ts`, `generateMetadata`/
        `generateViewport` in de (portal)/(admin)-layouts); TDV blijft de
        fallback en is wat /login, /register en de landingspagina tonen.
-       Bewust TDV-vast gebleven: `opengraph-image.png`/OG-tags en
-       `app/manifest.ts` — crawlers en de manifest-fetch komen zonder
-       sessie binnen, dus per-agency kan daar pas met een eigen domein per
-       agency (`agencies.custom_domain`). Ook nog open: `accent-soft`/
-       `accent-dark` blijven vaste TDV-afgeleiden, en er is nog geen
-       upload-veld voor `favicon_url` in `/admin/settings`.
+       Bewust TDV-vast gebleven: `opengraph-image.png`/OG-tags — crawlers
+       komen zonder sessie binnen, dus per-agency kan daar pas met een eigen
+       domein per agency (`agencies.custom_domain`). Nog open: `app/manifest.ts`
+       (PWA-naam/-iconen) is TDV-vast maar kan wél per agency, want de
+       manifest-fetch draagt de sessie mee (`crossorigin="use-credentials"`);
+       `accent-soft`/`accent-dark` blijven vaste TDV-afgeleiden; en er is nog
+       geen upload-veld voor `favicon_url` in `/admin/settings`.
 6. [ ] Facturatie via **Billit** (niet Stripe — bewuste keuze: geen
        betaalprovider/kaartincasso, agency's kiezen maand/kwartaal/jaar-ritme,
        het systeem maakt en verstuurt zelf facturen via de Billit API,
