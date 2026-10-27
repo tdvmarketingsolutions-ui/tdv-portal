@@ -31,10 +31,17 @@ export const metadata: Metadata = {
     title,
     description,
   },
-  // app/icon.png + app/apple-icon.png (TDV-brandmark) and
-  // app/opengraph-image.png (link-preview card) are picked up automatically
-  // by Next's file-based metadata convention — no explicit `icons`/`images`
-  // entry needed here. Same for app/manifest.ts (PWA/Android icons).
+  // TDV-brandmark as config-based icons (public/brand/), not as file-based
+  // app/icon.png: Next gives file-based icons priority over metadata
+  // objects, which would stop the (portal)/(admin) layouts from swapping in
+  // an agency's own favicon (see lib/branding-metadata.ts).
+  // app/opengraph-image.png (link-preview card) and app/manifest.ts stay
+  // file-based — crawlers and the manifest fetch carry no session, so they
+  // only ever see TDV anyway.
+  icons: {
+    icon: { url: "/brand/icon.png", type: "image/png", sizes: "512x512" },
+    apple: { url: "/brand/apple-icon.png", sizes: "180x180" },
+  },
 };
 
 export const viewport: Viewport = {

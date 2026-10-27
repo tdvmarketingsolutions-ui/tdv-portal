@@ -318,13 +318,17 @@ dus **expliciet niet voor de onbemande routine**, elke stap begeleid:
        layout tonen het agency-logo i.p.v. het hardcoded TDV-logo;
        `--color-accent` (CSS custom property, `lib/color.ts`) overschrijft
        Tailwind's `accent`-token runtime, met TDV's terracotta als fallback.
-       Bewust **niet** meegenomen in deze stap (nog open, kleinere vervolg-PR):
-       `app/layout.tsx`'s statische `<title>`/OG-metadata en
-       `app/icon.png`/`apple-icon.png`/`opengraph-image.png` blijven TDV-vast
-       (zouden dynamische route handlers moeten worden die de ingelogde
-       agency herkennen) — en `accent-soft`/`accent-dark` (gebruikt voor
-       zachte achtergronden/dark-mode-varianten) blijven vaste TDV-afgeleiden,
-       nog niet per-agency afleidbaar uit één custom kleur.
+       Vervolg: achter de login zijn `<title>`, favicon/Apple-touch-icon
+       (`favicon_url`, anders `logo_url`) en `theme-color` (`accent_color`)
+       ook per agency (`lib/branding-metadata.ts`, `generateMetadata`/
+       `generateViewport` in de (portal)/(admin)-layouts); TDV blijft de
+       fallback en is wat /login, /register en de landingspagina tonen.
+       Bewust TDV-vast gebleven: `opengraph-image.png`/OG-tags en
+       `app/manifest.ts` — crawlers en de manifest-fetch komen zonder
+       sessie binnen, dus per-agency kan daar pas met een eigen domein per
+       agency (`agencies.custom_domain`). Ook nog open: `accent-soft`/
+       `accent-dark` blijven vaste TDV-afgeleiden, en er is nog geen
+       upload-veld voor `favicon_url` in `/admin/settings`.
 6. [ ] Facturatie via **Billit** (niet Stripe — bewuste keuze: geen
        betaalprovider/kaartincasso, agency's kiezen maand/kwartaal/jaar-ritme,
        het systeem maakt en verstuurt zelf facturen via de Billit API,

@@ -1,8 +1,9 @@
 import "server-only";
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type { Agency } from "@/types/domain";
 
-export type AgencyBranding = Pick<Agency, "id" | "brand_name" | "logo_url" | "accent_color">;
+export type AgencyBranding = Pick<Agency, "id" | "brand_name" | "logo_url" | "favicon_url" | "accent_color">;
 
 /**
  * Resolves the signed-in user's own agency branding — client or staff, both
@@ -14,8 +15,12 @@ export type AgencyBranding = Pick<Agency, "id" | "brand_name" | "logo_url" | "ac
  * Returns null for a signed-out request (layouts call this after already
  * redirecting unauthenticated users, but this file has no way to assume
  * that) so callers can fall back to TDV's own hardcoded chrome.
+ *
+ * Wrapped in React's cache(): the (portal)/(admin) layouts call this from
+ * both generateMetadata/generateViewport and the layout body itself, and
+ * that should stay one round-trip per request, not three.
  */
-export async function getCurrentAgencyBranding(): Promise<AgencyBranding | null> {
+export const getCurrentAgencyBranding = cache(async (): Promise<AgencyBranding | null> => {
   const supabase = createClient();
   const {
     data: { user },
@@ -28,10 +33,10 @@ export async function getCurrentAgencyBranding(): Promise<AgencyBranding | null>
 
   const { data, error } = await supabase
     .from("agencies")
-    .select("id, brand_name, logo_url, accent_color")
+    .select("id, brand_name, logo_url, favicon_url, accent_color")
     .eq("id", agencyId)
     .maybeSingle();
 
   if (error) throw new Error(`Kon agency-branding niet laden: ${error.message}`);
   return data as AgencyBranding | null;
-}
+});
