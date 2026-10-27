@@ -204,8 +204,8 @@ van het systeem.
   cron-aanroep heeft geen staff-sessie om `is_tdv_staff()` tegen te
   laten gelden. Geauthenticeerd via een `CRON_SECRET`-omgevingsvariabele
   die Vercel zelf als bearer-header meestuurt bij geplande aanroepen —
-  **moet nog toegevoegd worden in Vercel**, zie de TODO hieronder. Tot
-  dan 401't de job gewoon (fail closed), geen beveiligingsrisico.
+  door Thomas toegevoegd in Vercel → Settings → Environment Variables,
+  dus de job draait nu daadwerkelijk i.p.v. veilig te falen (401).
 - **Admin**: layout met dubbele rolcheck (middleware + layout zelf), en CRUD
   voor klanten, projecten, aanvragen, content en gebruikers, plus
   AI-activiteit en instellingen.
@@ -286,12 +286,6 @@ van het systeem.
 Backlog voor de doorlopende 5-uurlijkse routine (zie onder) — één
 afgebakende PR per punt, in deze volgorde:
 
-- [ ] **Actie vereist**: de Vercel Cron-job voor kennisbank-ingest
-      (`/api/cron/ai-ingest`, dagelijks 03:00 UTC) staat klaar in de code
-      maar faalt tot er een `CRON_SECRET`-omgevingsvariabele toegevoegd
-      wordt in Vercel → Settings → Environment Variables — zie "Wat er
-      echt werkt" hierboven voor details. Zonder die variabele faalt de
-      job veilig (401), niet onveilig (open).
 - [ ] **Actie vereist**: migratie `0033_fk_indexes.sql` (ontbrekende
       indexen op foreign keys, zie "Wat er echt werkt" hierboven) staat
       klaar maar moet nog toegepast worden met `npx supabase db push` —
