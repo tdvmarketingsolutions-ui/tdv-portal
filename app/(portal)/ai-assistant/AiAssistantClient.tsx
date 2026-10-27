@@ -127,7 +127,7 @@ export function AiAssistantClient({ initialConversations }: { initialConversatio
                 className={cn(
                   "flex w-full items-start gap-2 rounded-xl px-3 py-2 text-left text-sm transition-colors",
                   c.id === activeConversationId
-                    ? "bg-accent-soft text-accent dark:bg-accent/15 dark:text-accent-dark"
+                    ? "bg-accent-soft text-accent-text dark:bg-accent/15"
                     : "text-ink-muted hover:bg-canvas hover:text-ink dark:text-ink-dark-muted dark:hover:bg-canvas-dark dark:hover:text-ink-dark"
                 )}
               >
@@ -142,7 +142,7 @@ export function AiAssistantClient({ initialConversations }: { initialConversatio
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between gap-2 pb-4">
           <div className="flex items-center gap-2">
-            <Sparkles size={20} className="text-accent dark:text-accent-dark" />
+            <Sparkles size={20} className="text-accent-text" />
             <h1 className="font-display text-xl font-semibold">AI Assistent</h1>
           </div>
           <button
@@ -168,7 +168,7 @@ export function AiAssistantClient({ initialConversations }: { initialConversatio
                 key={m.id ?? i}
                 className={cn(
                   "max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-3 text-sm",
-                  m.role === "user" ? "ml-auto bg-accent text-white" : "card"
+                  m.role === "user" ? "ml-auto bg-accent text-accent-fg" : "card"
                 )}
               >
                 {m.content}

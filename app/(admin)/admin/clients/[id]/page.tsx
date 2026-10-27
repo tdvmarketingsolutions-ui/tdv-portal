@@ -39,7 +39,7 @@ export default async function AdminClientDetailPage({ params }: { params: { id: 
           <div>
             <div className="flex items-center gap-2">
               <h1 className="font-display text-2xl font-semibold">{company.name}</h1>
-              {company.onboarding_status === "pending_review" && <Badge tone="amber">Nog te beoordelen</Badge>}
+              {company.onboarding_status === "pending_review" && <Badge tone="waiting">Nog te beoordelen</Badge>}
             </div>
             <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">/{company.slug}</p>
           </div>
@@ -82,7 +82,7 @@ export default async function AdminClientDetailPage({ params }: { params: { id: 
               {company.profiles.map((p) => (
                 <li key={p.id} className="flex items-center justify-between text-sm">
                   <span>{p.full_name ?? "Naamloos"}</span>
-                  <Badge tone="gray">{ROLE_LABEL[p.role] ?? p.role}</Badge>
+                  <Badge tone="neutral">{ROLE_LABEL[p.role] ?? p.role}</Badge>
                 </li>
               ))}
             </ul>

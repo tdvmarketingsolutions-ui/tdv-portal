@@ -1,6 +1,10 @@
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
+import { brandTitle } from "@/lib/utils";
 
+// Huisstijl v1.1: rustig lijnicoon van 32px, titel in Epilogue 600 (kleine
+// letters, punt), één zin uitleg, hooguit één knop. Geen accentkleur: een
+// lege staat is geen actie.
 export function EmptyState({
   icon: Icon,
   title,
@@ -14,11 +18,9 @@ export function EmptyState({
 }) {
   return (
     <div className="card flex flex-col items-center gap-3 p-10 text-center">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent-soft dark:bg-accent/10">
-        <Icon size={22} strokeWidth={1.75} className="text-accent dark:text-accent-dark" />
-      </div>
-      <div>
-        <p className="font-medium">{title}</p>
+      <Icon size={32} strokeWidth={1.75} className="text-ink-subtle dark:text-ink-subtle-dark" aria-hidden="true" />
+      <div className="max-w-[40ch]">
+        <p className="font-display text-h3 font-semibold">{brandTitle(title)}</p>
         {description && (
           <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">{description}</p>
         )}

@@ -35,7 +35,7 @@ export default async function ContentItemDetailPage({ params }: { params: { id: 
         <div className="flex flex-wrap gap-2">
           <Badge tone={CONTENT_STATUS_TONE[item.status]}>{CONTENT_STATUS_LABEL[item.status]}</Badge>
           {item.channels.map((c) => (
-            <Badge key={c} tone="gray">
+            <Badge key={c} tone="neutral">
               {CONTENT_CHANNEL_LABEL[c]}
             </Badge>
           ))}

@@ -103,7 +103,7 @@ export function EditContentItemDialog({
                       type="checkbox"
                       value={value}
                       {...register("channels")}
-                      className="h-4 w-4 rounded border-border text-accent focus:ring-accent dark:border-border-dark"
+                      className="h-4 w-4 rounded border-border accent-accent focus:ring-accent dark:border-border-dark"
                     />
                     {label}
                   </label>

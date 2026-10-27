@@ -24,10 +24,14 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const push = useCallback((message: string, tone: ToastTone = "success") => {
     const id = ++idRef.current;
-    setToasts((current) => [...current, { id, tone, message }]);
-    setTimeout(() => {
-      setToasts((current) => current.filter((t) => t.id !== id));
-    }, 5000);
+    // Huisstijl v1.1: max. 3 tegelijk; een fout blijft 8s staan, de rest 5s.
+    setToasts((current) => [...current, { id, tone, message }].slice(-3));
+    setTimeout(
+      () => {
+        setToasts((current) => current.filter((t) => t.id !== id));
+      },
+      tone === "error" ? 8000 : 5000
+    );
   }, []);
 
   const dismiss = (id: number) => setToasts((current) => current.filter((t) => t.id !== id));
@@ -35,12 +39,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={{ push }}>
       {children}
-      <div className="pointer-events-none fixed bottom-4 right-4 z-50 flex w-full max-w-sm flex-col gap-2">
+      <div className="pointer-events-none fixed inset-x-4 bottom-4 z-50 flex flex-col gap-2 sm:inset-x-auto sm:right-4 sm:w-full sm:max-w-sm">
         {toasts.map((toast) => (
           <div
             key={toast.id}
             role="status"
-            className="card toast-enter pointer-events-auto flex items-start gap-3 p-4 shadow-lg"
+            className="toast-enter pointer-events-auto flex items-start gap-3 rounded-xl border border-border bg-surface-raised p-4 shadow-lg dark:border-border-dark dark:bg-surface-raised-dark"
           >
             {toast.tone === "success" ? (
               <CheckCircle2 size={18} strokeWidth={1.75} className="mt-0.5 shrink-0 text-status-done dark:text-status-done-dark" />

@@ -16,7 +16,7 @@ export function Table({ children }: { children: ReactNode }) {
 
 function Head({ children }: { children: ReactNode }) {
   return (
-    <thead className="border-b border-border text-xs text-ink-muted dark:border-border-dark dark:text-ink-dark-muted">
+    <thead className="border-b border-border-strong text-label uppercase text-ink-muted dark:border-border-strong-dark dark:text-ink-dark-muted">
       <tr>{children}</tr>
     </thead>
   );
@@ -36,7 +36,7 @@ function Body({ children }: { children: ReactNode }) {
 
 function Row({ children, className, ...props }: React.HTMLAttributes<HTMLTableRowElement>) {
   return (
-    <tr className={cn("transition-colors hover:bg-canvas dark:hover:bg-canvas-dark", className)} {...props}>
+    <tr className={cn("h-[52px] transition-colors hover:bg-canvas/60 dark:hover:bg-canvas-dark/60", className)} {...props}>
       {children}
     </tr>
   );

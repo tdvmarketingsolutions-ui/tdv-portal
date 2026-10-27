@@ -9,10 +9,10 @@ export const PROJECT_REQUEST_STATUS_LABEL: Record<ProjectRequestStatus, string> 
 };
 
 export const PROJECT_REQUEST_STATUS_TONE: Record<ProjectRequestStatus, BadgeTone> = {
-  requested: "blue",
-  awaiting_quote: "amber",
-  project_active: "green",
-  declined: "red",
+  requested: "new",
+  awaiting_quote: "progress",
+  project_active: "done",
+  declined: "danger",
 };
 
 export const PROJECT_REQUEST_TYPE_LABEL: Record<ProjectRequestType, string> = {

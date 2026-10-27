@@ -395,8 +395,25 @@ types/
 
 ## Design tokens
 
-`tailwind.config.ts` bevat een **placeholder** premium/minimalistisch
-kleurenpalet (donker bosgroen accent, veel witruimte) dat de sfeer van
-Notion/Linear/Stripe volgt zoals de brief vraagt. Vervang de hex-waarden door
-TDV's echte huisstijlkleuren zodra beschikbaar — elke component leest kleur
-via deze tokens, dus dat is een aanpassing in één bestand.
+De huisstijl volgt de **huisstijlrichtlijnen van tdv. marketing (v1.1)**,
+opgesteld door de design-sessie:
+
+- `tailwind.config.ts`: alle kleurrollen (`canvas`, `surface` + `-sunken`/
+  `-raised`, `border` + `-strong`, `ink` #282828 + `-muted`/`-subtle`), de
+  statuskleuren `new`/`progress`/`waiting`/`done`/`danger` (elk met `soft` en
+  `on` voor pills), titelgroottes (`text-display`/`h1`/`h2`/`h3`/`label`),
+  radius en schaduwen. Componenten gebruiken nooit hex-codes.
+- `lib/brand/accent.ts`: leidt uit één accentkleur (`agencies.accent_color`,
+  anders TDV-terracotta) alle accent-tokens af — `accent`, `accent-fg` (wit of
+  #282828 volgens luminantie), `accent-dark` (hover), `accent-soft`,
+  `accent-text` — volgens de HSL-regel uit de richtlijnen, met gegarandeerd
+  WCAG AA. Te lichte kleuren worden automatisch verdonkerd.
+- `app/globals.css`: de basisklassen `.btn-*`, `.input`, `.card`,
+  `.focus-ring`, `.link`.
+- `components/brand/`: het woordmerk en monogram als React-component (letters
+  in `currentColor`, punt altijd terracotta) en `AgencyLogo` (agency-logo →
+  agency-naam → TDV-woordmerk).
+- Titels: Epilogue 600, kleine letters met punt (`brandTitle()` in
+  `lib/utils.ts` doet dat voor dialog- en lege-staat-titels).
+- Dark mode is voorbereid (alle `dark:`-varianten en dark-accenttokens) maar
+  **nog niet geactiveerd** — dat is een aparte beslissing.

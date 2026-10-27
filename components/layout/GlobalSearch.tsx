@@ -175,7 +175,7 @@ export function GlobalSearch() {
                       className={cn(
                         "flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm transition-colors",
                         index === activeIndex
-                          ? "bg-accent-soft text-accent dark:bg-accent/15 dark:text-accent-dark"
+                          ? "bg-accent-soft text-accent-text dark:bg-accent/15"
                           : "text-ink hover:bg-canvas dark:text-ink-dark dark:hover:bg-canvas-dark"
                       )}
                     >

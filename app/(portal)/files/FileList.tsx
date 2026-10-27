@@ -98,7 +98,7 @@ export function FileList({
               </p>
             </div>
             {file.category && (
-              <Badge tone="gray">{FILE_CATEGORY_LABEL[file.category as FileCategory] ?? file.category}</Badge>
+              <Badge tone="neutral">{FILE_CATEGORY_LABEL[file.category as FileCategory] ?? file.category}</Badge>
             )}
             {destinations.length > 0 && (
               <select

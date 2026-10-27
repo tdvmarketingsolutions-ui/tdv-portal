@@ -69,7 +69,7 @@ export default function LoginPage() {
           <div>
             <div className="mb-1 flex items-center justify-between">
               <span className="block text-sm font-medium">Wachtwoord</span>
-              <Link href="/forgot-password" className="text-xs text-accent hover:underline dark:text-accent-dark">
+              <Link href="/forgot-password" className="text-xs text-accent-text hover:underline">
                 Wachtwoord vergeten?
               </Link>
             </div>
@@ -89,7 +89,7 @@ export default function LoginPage() {
 
         <p className="mt-6 text-center text-sm text-ink-muted dark:text-ink-dark-muted">
           Nog geen account?{" "}
-          <Link href="/register" className="text-accent hover:underline dark:text-accent-dark">
+          <Link href="/register" className="text-accent-text hover:underline">
             Account aanmaken
           </Link>
         </p>

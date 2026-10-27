@@ -6,7 +6,7 @@ import { RealtimeNotifications } from "@/components/layout/RealtimeNotifications
 import { getUnreadNotificationCount } from "@/lib/data/notifications";
 import { getAllCompaniesForSelect } from "@/lib/data/admin/projects";
 import { getCurrentAgencyBranding } from "@/lib/data/agency-branding";
-import { agencyAccentStyle } from "@/lib/color";
+import { agencyAccentStyle } from "@/lib/brand/accent";
 import { generateAgencyMetadata, generateAgencyViewport } from "@/lib/branding-metadata";
 import { isStaffRole, getStaffViewCompanyId } from "@/lib/staff-view";
 
@@ -43,7 +43,7 @@ export default async function PortalLayout({ children }: { children: React.React
     : null;
 
   return (
-    <div className="flex min-h-screen flex-col md:flex-row" style={agencyAccentStyle(branding?.accent_color)}>
+    <div className="accent-scope flex min-h-screen flex-col md:flex-row" style={agencyAccentStyle(branding?.accent_color)}>
       <RealtimeNotifications userId={user.id} />
       <MobileNav
         variant="portal"

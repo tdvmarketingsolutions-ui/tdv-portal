@@ -64,7 +64,7 @@ export default async function AdminContentPage() {
                     {item.scheduled_for
                       ? new Date(item.scheduled_for).toLocaleString("nl-BE", { dateStyle: "medium", timeStyle: "short" })
                       : "—"}
-                    {isContentOverdue(item.scheduled_for, item.status) && <Badge tone="red">Nog niet gepubliceerd</Badge>}
+                    {isContentOverdue(item.scheduled_for, item.status) && <Badge tone="danger">Nog niet gepubliceerd</Badge>}
                   </div>
                 </Table.Cell>
                 <Table.Cell>

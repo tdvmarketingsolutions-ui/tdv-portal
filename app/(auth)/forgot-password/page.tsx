@@ -38,13 +38,13 @@ export default function ForgotPasswordPage() {
         {sent ? (
           <div className="text-center">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent-soft dark:bg-accent/10">
-              <MailCheck size={22} strokeWidth={1.75} className="text-accent dark:text-accent-dark" />
+              <MailCheck size={22} strokeWidth={1.75} className="text-accent-text" />
             </div>
             <h1 className="mt-4 font-display text-xl font-semibold">Check je e-mail</h1>
             <p className="mt-2 text-sm text-ink-muted dark:text-ink-dark-muted">
               Als dit e-mailadres bij ons bekend is, ontvang je een link om je wachtwoord opnieuw in te stellen.
             </p>
-            <Link href="/login" className="mt-6 inline-block text-sm text-accent hover:underline dark:text-accent-dark">
+            <Link href="/login" className="mt-6 inline-block text-sm text-accent-text hover:underline">
               Terug naar inloggen
             </Link>
           </div>

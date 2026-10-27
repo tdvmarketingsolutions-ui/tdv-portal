@@ -41,7 +41,7 @@ export default async function AdminClientsPage() {
                       </span>
                     )}
                     {c.name}
-                    {c.onboarding_status === "pending_review" && <Badge tone="amber">Nog te beoordelen</Badge>}
+                    {c.onboarding_status === "pending_review" && <Badge tone="waiting">Nog te beoordelen</Badge>}
                   </Link>
                 </Table.Cell>
                 <Table.Cell>{c.projects?.[0]?.count ?? 0}</Table.Cell>

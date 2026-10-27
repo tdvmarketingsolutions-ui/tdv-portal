@@ -41,7 +41,7 @@ export default async function AdminUsersPage() {
                 <Table.Cell>{u.full_name ?? "Naamloos"}</Table.Cell>
                 <Table.Cell>{u.companies?.name ?? "—"}</Table.Cell>
                 <Table.Cell>
-                  <Badge tone="gray">{ROLE_LABEL[u.role] ?? u.role}</Badge>
+                  <Badge tone="neutral">{ROLE_LABEL[u.role] ?? u.role}</Badge>
                 </Table.Cell>
                 <Table.Cell>
                   <EditUserDialog

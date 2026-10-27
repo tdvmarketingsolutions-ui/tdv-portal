@@ -36,7 +36,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
           <h1 className="font-display text-2xl font-semibold">{project.name}</h1>
           <Badge tone={PROJECT_STATUS_TONE[project.status]}>{PROJECT_STATUS_LABEL[project.status]}</Badge>
           {deadlineUrgency && (
-            <Badge tone={deadlineUrgency === "overdue" ? "red" : "amber"}>
+            <Badge tone={deadlineUrgency === "overdue" ? "danger" : "waiting"}>
               {DEADLINE_URGENCY_LABEL[deadlineUrgency]}
             </Badge>
           )}
@@ -146,7 +146,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
               {project.tickets?.length
                 ? project.tickets.map((t) => (
                     <li key={t.id}>
-                      <Link href={`/aanvragen/${t.id}`} className="text-accent hover:underline dark:text-accent-dark">
+                      <Link href={`/aanvragen/${t.id}`} className="text-accent-text hover:underline">
                         {t.subject}
                       </Link>
                     </li>

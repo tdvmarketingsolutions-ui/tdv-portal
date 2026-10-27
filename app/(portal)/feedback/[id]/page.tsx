@@ -77,7 +77,7 @@ export default async function DeliverableDetailPage({
               className={cn(
                 "rounded-full px-3 py-1 text-xs font-medium transition-colors",
                 v.id === version.id
-                  ? "bg-accent text-white"
+                  ? "bg-accent text-accent-fg"
                   : "bg-canvas text-ink-muted hover:text-ink dark:bg-canvas-dark dark:text-ink-dark-muted dark:hover:text-ink-dark"
               )}
             >
@@ -142,7 +142,7 @@ export default async function DeliverableDetailPage({
           <div className="space-y-2">
             {pinComments.map((comment, i) => (
               <div key={comment.id} className="card flex gap-3 p-4">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent text-[11px] font-semibold text-white">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent text-[11px] font-semibold text-accent-fg">
                   {i + 1}
                 </span>
                 <div>

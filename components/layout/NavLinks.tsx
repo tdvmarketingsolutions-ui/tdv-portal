@@ -25,13 +25,15 @@ export function NavLinks({ variant, onNavigate }: { variant: "portal" | "admin";
             onClick={onNavigate}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors",
+              // Huisstijl v1.1: het accent zit alleen in het icoon van het
+              // actieve item — geen gekleurde balk of vlak.
+              "focus-ring flex h-10 items-center gap-3 rounded-xl px-3 text-sm transition-colors duration-150 ease-brand",
               active
-                ? "bg-accent-soft font-medium text-accent dark:bg-accent/15 dark:text-accent-dark"
-                : "text-ink-muted hover:bg-canvas hover:text-ink dark:text-ink-dark-muted dark:hover:bg-canvas-dark dark:hover:text-ink-dark"
+                ? "bg-surface font-medium text-ink shadow-card dark:bg-surface-dark dark:text-ink-dark"
+                : "text-ink-muted hover:bg-ink/5 hover:text-ink dark:text-ink-dark-muted dark:hover:bg-ink-dark/5 dark:hover:text-ink-dark"
             )}
           >
-            <Icon size={18} strokeWidth={1.75} />
+            <Icon size={18} strokeWidth={1.75} className={active ? "text-accent-text" : undefined} />
             {label}
           </Link>
         );

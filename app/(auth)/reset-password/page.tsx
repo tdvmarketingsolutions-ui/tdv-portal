@@ -74,7 +74,7 @@ export default function ResetPasswordPage() {
           <p className="mt-2 text-sm text-ink-muted dark:text-ink-dark-muted">
             Vraag een nieuwe reset-link aan om je wachtwoord in te stellen.
           </p>
-          <Link href="/forgot-password" className="mt-6 inline-block text-sm text-accent hover:underline dark:text-accent-dark">
+          <Link href="/forgot-password" className="mt-6 inline-block text-sm text-accent-text hover:underline">
             Nieuwe link aanvragen
           </Link>
         </div>
