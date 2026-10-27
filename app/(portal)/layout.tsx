@@ -7,7 +7,11 @@ import { getUnreadNotificationCount } from "@/lib/data/notifications";
 import { getAllCompaniesForSelect } from "@/lib/data/admin/projects";
 import { getCurrentAgencyBranding } from "@/lib/data/agency-branding";
 import { agencyAccentStyle } from "@/lib/color";
+import { generateAgencyMetadata, generateAgencyViewport } from "@/lib/branding-metadata";
 import { isStaffRole, getStaffViewCompanyId } from "@/lib/staff-view";
+
+export const generateMetadata = generateAgencyMetadata;
+export const generateViewport = generateAgencyViewport;
 
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient();

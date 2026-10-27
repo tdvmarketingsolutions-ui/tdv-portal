@@ -9,6 +9,10 @@ import { NavLinks } from "@/components/layout/NavLinks";
 import { RealtimeNotifications } from "@/components/layout/RealtimeNotifications";
 import { getCurrentAgencyBranding } from "@/lib/data/agency-branding";
 import { agencyAccentStyle } from "@/lib/color";
+import { generateAgencyMetadata, generateAgencyViewport } from "@/lib/branding-metadata";
+
+export const generateMetadata = generateAgencyMetadata;
+export const generateViewport = generateAgencyViewport;
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient();

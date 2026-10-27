@@ -1,0 +1,41 @@
+import "server-only";
+import type { Metadata, Viewport } from "next";
+import { getCurrentAgencyBranding } from "@/lib/data/agency-branding";
+import { hexToRgbTriplet } from "@/lib/color";
+
+/**
+ * Per-agency <title>/favicon/theme-color for everything behind login. The
+ * root layout (app/layout.tsx) keeps TDV's own values as the default: that
+ * is what /login, /register and link-preview crawlers see, and what any
+ * agency without its own branding falls back to.
+ *
+ * Bewust niet per-agency: og:image/opengraph-image.png en app/manifest.ts.
+ * Crawlers (WhatsApp, Slack, …) en de PWA-manifest-fetch komen zonder
+ * sessie-cookie binnen, dus er is daar geen ingelogde agency om te
+ * herkennen — dat zou een eigen domein per agency vereisen
+ * (agencies.custom_domain), wat bij de bredere SaaS-architectuur hoort.
+ */
+export async function generateAgencyMetadata(): Promise<Metadata> {
+  const branding = await getCurrentAgencyBranding();
+  if (!branding) return {};
+
+  const metadata: Metadata = {};
+  if (branding.brand_name) {
+    metadata.title = `${branding.brand_name} Klantenportaal`;
+  }
+  // A dedicated favicon wins; otherwise the uploaded logo is the closest
+  // thing the agency has set — better than showing TDV's mark on their portal.
+  const icon = branding.favicon_url || branding.logo_url;
+  if (icon) {
+    metadata.icons = { icon, apple: icon };
+  }
+  return metadata;
+}
+
+export async function generateAgencyViewport(): Promise<Viewport> {
+  const branding = await getCurrentAgencyBranding();
+  // Same validation as agencyAccentStyle(): an invalid stored value falls
+  // back to the root layout's TDV terracotta instead of a broken meta tag.
+  const accent = branding?.accent_color?.trim();
+  return accent && hexToRgbTriplet(accent) ? { themeColor: accent } : {};
+}

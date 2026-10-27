@@ -55,8 +55,6 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/_next") ||
     request.nextUrl.pathname.startsWith("/favicon") ||
     request.nextUrl.pathname.startsWith("/brand") ||
-    request.nextUrl.pathname === "/icon.png" ||
-    request.nextUrl.pathname === "/apple-icon.png" ||
     request.nextUrl.pathname === "/opengraph-image.png" ||
     request.nextUrl.pathname === "/manifest.webmanifest";
 
