@@ -284,6 +284,13 @@ van het systeem.
 Backlog voor de doorlopende 5-uurlijkse routine (zie onder) — één
 afgebakende PR per punt, in deze volgorde:
 
+- [ ] **Manifest per agency**: `app/manifest.ts` (PWA-naam, -iconen,
+      theme_color) leest de agency-branding van de ingelogde gebruiker,
+      met TDV als fallback — kan, want de manifest-fetch draagt de sessie
+      mee (`crossorigin="use-credentials"`), zie `lib/branding-metadata.ts`.
+- [ ] **Uploadveld voor `favicon_url`** in `/admin/settings` → Branding,
+      naar analogie van de bestaande logo-upload (bucket `agency-logos`).
+      Tot dan valt het favicon terug op `logo_url`.
 - [ ] **Performance-audit, vervolg**: optimistic UI voor de status-dropdowns,
       de ontbrekende indexen en de N+1-thumbnails zijn gedaan (zie "Wat er
       echt werkt" hierboven) — vervolg op de regio-fix (zie "Performance"
