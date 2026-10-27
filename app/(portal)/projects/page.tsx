@@ -105,7 +105,7 @@ export default async function ProjectsPage() {
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
                       {urgency && (
-                        <Badge tone={urgency === "overdue" ? "red" : "amber"}>{DEADLINE_URGENCY_LABEL[urgency]}</Badge>
+                        <Badge tone={urgency === "overdue" ? "danger" : "waiting"}>{DEADLINE_URGENCY_LABEL[urgency]}</Badge>
                       )}
                       <Badge tone={PROJECT_STATUS_TONE[project.status]}>{PROJECT_STATUS_LABEL[project.status]}</Badge>
                     </div>

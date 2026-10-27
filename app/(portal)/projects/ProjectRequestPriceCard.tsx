@@ -33,9 +33,9 @@ export function ProjectRequestPriceCard({ request }: { request: ProjectRequest }
       <div>
         <p className="font-medium">{request.title}</p>
         <div className="mt-1 flex flex-wrap gap-1.5">
-          {request.project_type && <Badge tone="gray">{PROJECT_REQUEST_TYPE_LABEL[request.project_type]}</Badge>}
+          {request.project_type && <Badge tone="neutral">{PROJECT_REQUEST_TYPE_LABEL[request.project_type]}</Badge>}
           {request.desired_deadline && (
-            <Badge tone="gray">Gewenst tegen {new Date(request.desired_deadline).toLocaleDateString("nl-BE")}</Badge>
+            <Badge tone="neutral">Gewenst tegen {new Date(request.desired_deadline).toLocaleDateString("nl-BE")}</Badge>
           )}
         </div>
         {request.description && (
@@ -43,7 +43,7 @@ export function ProjectRequestPriceCard({ request }: { request: ProjectRequest }
         )}
       </div>
       <div className="flex items-start gap-2 rounded-lg bg-canvas p-3 text-sm dark:bg-canvas-dark">
-        <Sparkles size={16} strokeWidth={1.75} className="mt-0.5 shrink-0 text-accent" />
+        <Sparkles size={16} strokeWidth={1.75} className="mt-0.5 shrink-0 text-accent-text" />
         <div>
           <p className="font-medium">Prijsvoorstel: {request.indicative_price_range}</p>
           <p className="mt-0.5 text-ink-muted dark:text-ink-dark-muted">{request.indicative_price_note}</p>

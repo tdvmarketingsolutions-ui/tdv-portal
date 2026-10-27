@@ -8,17 +8,18 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   loading?: boolean;
 }
 
+// Huisstijl v1.1, sectie 0.5/2: hooguit één primaire knop per scherm; danger
+// is een secundaire knop in de foutkleur (het definitieve bevestigen gebeurt
+// met danger-solid in een dialog). Het accent wordt nooit voor fouten gebruikt.
 const VARIANT_CLASS: Record<NonNullable<ButtonProps["variant"]>, string> = {
   primary: "btn-primary",
   secondary: "btn-secondary",
-  danger:
-    "inline-flex items-center justify-center rounded-xl bg-status-danger px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-status-danger/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-status-danger",
-  ghost:
-    "inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium text-ink-muted transition-colors hover:bg-canvas hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent dark:text-ink-dark-muted dark:hover:bg-canvas-dark dark:hover:text-ink-dark",
+  danger: "btn-danger-solid",
+  ghost: "btn-ghost",
 };
 
 const SIZE_CLASS: Record<NonNullable<ButtonProps["size"]>, string> = {
-  sm: "px-3 py-1.5 text-xs",
+  sm: "h-8 px-3 text-xs",
   md: "",
 };
 
@@ -28,7 +29,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         disabled={disabled || loading}
-        className={cn(VARIANT_CLASS[variant], SIZE_CLASS[size], "gap-2 disabled:cursor-not-allowed disabled:opacity-60", className)}
+        className={cn(VARIANT_CLASS[variant], SIZE_CLASS[size], className)}
         {...props}
       >
         {loading && <Loader2 size={16} strokeWidth={2} className="animate-spin" />}

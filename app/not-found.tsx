@@ -8,7 +8,7 @@ export default function RootNotFound() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-8 text-center">
       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent-soft dark:bg-accent/10">
-        <SearchX size={22} strokeWidth={1.75} className="text-accent dark:text-accent-dark" />
+        <SearchX size={22} strokeWidth={1.75} className="text-accent-text" />
       </div>
       <div>
         <p className="font-medium">Pagina niet gevonden</p>

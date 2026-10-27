@@ -3,26 +3,51 @@
 @tailwind utilities;
 
 @layer base {
+  /* Accent-tokens als "R G B"-tripletten (geen hex), zodat Tailwind's
+     rgb(var(--x) / <alpha-value>) ook opacity-modifiers kan toepassen
+     (bg-accent/10). --accent-l-* (licht) en --accent-d-* (dark mode) zijn de
+     ruwe waarden: hier de TDV-standaard, voor een agency met een eigen kleur
+     overschreven door lib/brand/accent.ts via een inline style op de
+     (portal)/(admin)-layoutwrapper. De --color-accent-* die Tailwind leest
+     worden per scope afgeleid, zodat dark mode ook binnen die wrapper werkt. */
   :root {
     color-scheme: light;
-    /* TDV's own terracotta, as "R G B" triplets (not hex) so Tailwind's
-       rgb(var(--x) / <alpha-value>) pattern in tailwind.config.ts can still
-       apply opacity modifiers like bg-accent/90. Only --color-accent is
-       ever overridden per-agency (inline style on the (portal)/(admin)
-       layout wrapper, see lib/data/agency-branding.ts) — -soft/-dark stay
-       fixed derivatives of TDV's own color for now. */
-    --color-accent: 175 75 47; /* #AF4B2F */
-    --color-accent-soft: 241 225 216; /* #F1E1D8 */
-    --color-accent-dark: 217 133 95; /* #D9855F */
+    --accent-l: 175 75 47; /* #AF4B2F */
+    --accent-l-fg: 255 255 255;
+    --accent-l-dark: 135 58 36;
+    --accent-l-soft: 247 236 233;
+    --accent-l-text: 175 75 47;
+    --accent-d: 211 118 92;
+    --accent-d-fg: 40 40 40;
+    --accent-d-dark: 218 139 116;
+    --accent-d-soft: 69 41 33;
   }
-  .dark {
+  :root,
+  .accent-scope {
+    --color-accent: var(--accent-l);
+    --color-accent-fg: var(--accent-l-fg);
+    --color-accent-dark: var(--accent-l-dark); /* hover/pressed */
+    --color-accent-soft: var(--accent-l-soft);
+    --color-accent-text: var(--accent-l-text);
+  }
+  /* Dark mode is voorbereid maar nog niet actief: niets zet deze class. */
+  .dark,
+  .dark .accent-scope {
     color-scheme: dark;
+    --color-accent: var(--accent-d);
+    --color-accent-fg: var(--accent-d-fg);
+    --color-accent-dark: var(--accent-d-dark);
+    --color-accent-soft: var(--accent-d-soft);
+    --color-accent-text: var(--accent-d);
   }
   * {
     @apply border-border dark:border-border-dark;
   }
   body {
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  ::selection {
+    background: rgb(var(--color-accent) / 0.2);
   }
   /* Respect reduced-motion preferences site-wide */
   @media (prefers-reduced-motion: reduce) {
@@ -39,11 +64,29 @@
   .card {
     @apply rounded-2xl border border-border bg-surface shadow-card dark:border-border-dark dark:bg-surface-dark;
   }
+  /* Focusring: 2px accent met 2px offset in de paginakleur (sectie 2). */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas dark:focus-visible:ring-offset-canvas-dark;
+  }
+  /* Knoppen: 40px hoog, 10px radius, Inter 500. Ingedrukt zakt de knop 1px. */
+  .btn {
+    @apply focus-ring inline-flex h-10 items-center justify-center gap-2 rounded-xl px-4 text-sm font-medium transition-colors duration-150 ease-brand active:translate-y-px disabled:cursor-not-allowed disabled:opacity-40 disabled:active:translate-y-0;
+  }
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
+    @apply btn bg-accent text-accent-fg hover:bg-accent-dark;
   }
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark;
+    @apply btn border border-border-strong bg-surface text-ink hover:bg-surface-sunken dark:border-border-strong-dark dark:bg-surface-dark dark:text-ink-dark dark:hover:bg-surface-sunken-dark;
+  }
+  .btn-ghost {
+    @apply btn text-ink hover:bg-ink/5 dark:text-ink-dark dark:hover:bg-ink-dark/5;
+  }
+  .btn-danger {
+    @apply btn border border-danger/40 bg-surface text-danger hover:bg-danger-soft dark:border-danger-dark/40 dark:bg-surface-dark dark:text-danger-dark dark:hover:bg-danger-soft-dark;
+  }
+  /* Definitief bevestigen van een destructieve actie (in een dialog). */
+  .btn-danger-solid {
+    @apply btn bg-danger text-white hover:bg-danger-on;
   }
   .input {
     /* text-base (16px) below sm: iOS Safari auto-zooms on focus for any
@@ -51,10 +94,13 @@
        jarring enough to read as "the app doesn't feel finished" even though
        nothing is actually broken. text-sm from sm: up keeps the tighter
        desktop density. */
-    @apply w-full rounded-xl border border-border bg-surface px-3 py-2 text-base text-ink outline-none transition-colors placeholder:text-ink-muted focus:border-accent disabled:cursor-not-allowed disabled:opacity-60 dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark dark:placeholder:text-ink-dark-muted sm:text-sm;
+    @apply w-full rounded-xl border border-border-strong bg-surface px-3 py-2 text-base text-ink outline-none transition-colors duration-150 ease-brand placeholder:text-ink-subtle hover:border-ink-subtle focus:border-accent focus:ring-2 focus:ring-accent/25 disabled:cursor-not-allowed disabled:opacity-40 dark:border-border-strong-dark dark:bg-surface-dark dark:text-ink-dark dark:placeholder:text-ink-subtle-dark sm:text-sm;
   }
   .input-error {
-    @apply border-status-danger focus:border-status-danger;
+    @apply border-danger hover:border-danger focus:border-danger focus:ring-danger/25 dark:border-danger-dark;
+  }
+  .link {
+    @apply text-accent-text underline-offset-4 hover:underline;
   }
   .toast-enter {
     animation: toast-enter 0.2s ease-out;

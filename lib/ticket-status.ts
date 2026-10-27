@@ -9,10 +9,10 @@ export const TICKET_STATUS_LABEL: Record<TicketStatus, string> = {
 };
 
 export const TICKET_STATUS_TONE: Record<TicketStatus, BadgeTone> = {
-  new: "blue",
-  in_progress: "amber",
-  waiting_on_client: "violet",
-  resolved: "green",
+  new: "new",
+  in_progress: "progress",
+  waiting_on_client: "waiting",
+  resolved: "done",
 };
 
 export const TICKET_PRIORITY_LABEL: Record<TicketPriority, string> = {
@@ -23,8 +23,8 @@ export const TICKET_PRIORITY_LABEL: Record<TicketPriority, string> = {
 };
 
 export const TICKET_PRIORITY_TONE: Record<TicketPriority, BadgeTone> = {
-  low: "gray",
-  normal: "blue",
-  high: "amber",
-  urgent: "red",
+  low: "neutral",
+  normal: "new",
+  high: "waiting",
+  urgent: "danger",
 };

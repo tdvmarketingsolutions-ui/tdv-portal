@@ -8,7 +8,7 @@ import { nl } from "date-fns/locale";
 import { ImageIcon, List, LayoutGrid } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/ToastProvider";
-import { Badge, TONE_CLASS } from "@/components/ui/Badge";
+import { Badge, DOT_CLASS, TONE_CLASS } from "@/components/ui/Badge";
 import { CONTENT_STATUS_LABEL, CONTENT_STATUS_TONE, CONTENT_CHANNEL_LABEL } from "@/lib/content-status";
 import { isContentOverdue } from "@/lib/content-schedule";
 import type { ContentItemWithThumbnail } from "@/lib/data/content";
@@ -209,7 +209,7 @@ export function CalendarGrid({
   function AgendaCard({ item }: { item: ContentItemWithThumbnail }) {
     return (
       <li className="card flex items-center gap-3 p-3">
-        <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full", TONE_CLASS[CONTENT_STATUS_TONE[item.status]])} />
+        <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full", DOT_CLASS[CONTENT_STATUS_TONE[item.status]])} />
         {item.visualThumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -360,7 +360,7 @@ export function CalendarGrid({
                   className={cn(
                     "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs",
                     isSameDay(day, new Date())
-                      ? "bg-accent font-semibold text-white dark:bg-accent-dark dark:text-ink"
+                      ? "bg-accent font-semibold text-accent-fg"
                       : "bg-canvas text-ink-muted dark:bg-canvas-dark dark:text-ink-dark-muted"
                   )}
                 >
@@ -406,7 +406,7 @@ export function CalendarGrid({
                   <span
                     className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] ${
                       isSameDay(day, new Date())
-                        ? "bg-accent font-semibold text-white dark:bg-accent-dark dark:text-ink"
+                        ? "bg-accent font-semibold text-accent-fg"
                         : "text-ink-muted dark:text-ink-dark-muted"
                     }`}
                   >
@@ -474,12 +474,12 @@ export function CalendarGrid({
                   </div>
                   <div className="flex shrink-0 flex-wrap items-center gap-2">
                     {item.channels.map((c) => (
-                      <Badge key={c} tone="gray">
+                      <Badge key={c} tone="neutral">
                         {CONTENT_CHANNEL_LABEL[c]}
                       </Badge>
                     ))}
                     <Badge tone={CONTENT_STATUS_TONE[item.status]}>{CONTENT_STATUS_LABEL[item.status]}</Badge>
-                    {isContentOverdue(item.scheduled_for, item.status) && <Badge tone="red">Nog niet gepubliceerd</Badge>}
+                    {isContentOverdue(item.scheduled_for, item.status) && <Badge tone="danger">Nog niet gepubliceerd</Badge>}
                     {canManage && (
                       <>
                         <DuplicateContentItemButton contentItemId={item.id} title={item.title} />

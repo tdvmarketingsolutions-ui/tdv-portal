@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { X } from "lucide-react";
+import { brandTitle } from "@/lib/utils";
 
 export function Dialog({
   open,
@@ -55,7 +56,7 @@ export function Dialog({
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:items-center">
       <div
-        className="fixed inset-0 bg-ink/40 backdrop-blur-[2px] dark:bg-black/60"
+        className="fixed inset-0 bg-ink/40 dark:bg-black/60"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -65,12 +66,12 @@ export function Dialog({
         aria-modal="true"
         aria-labelledby="dialog-title"
         tabIndex={-1}
-        className="card toast-enter relative my-8 w-full max-w-md p-6 outline-none sm:my-0"
+        className="toast-enter relative my-8 w-full max-w-md rounded-2xl border border-border bg-surface-raised p-6 shadow-lg outline-none dark:border-border-dark dark:bg-surface-raised-dark sm:my-0"
       >
         <div className="mb-4 flex items-start justify-between gap-4">
           <div>
-            <h2 id="dialog-title" className="font-display text-lg font-semibold">
-              {title}
+            <h2 id="dialog-title" className="font-display text-h3 font-semibold">
+              {brandTitle(title)}
             </h2>
             {description && (
               <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">{description}</p>
@@ -80,7 +81,7 @@ export function Dialog({
             type="button"
             onClick={onClose}
             aria-label="Sluiten"
-            className="shrink-0 rounded-lg p-1 text-ink-muted transition-colors hover:bg-canvas hover:text-ink dark:text-ink-dark-muted dark:hover:bg-canvas-dark dark:hover:text-ink-dark"
+            className="focus-ring shrink-0 rounded-lg p-1 text-ink-muted transition-colors hover:bg-ink/5 hover:text-ink dark:text-ink-dark-muted dark:hover:bg-ink-dark/5 dark:hover:text-ink-dark"
           >
             <X size={18} strokeWidth={1.75} />
           </button>

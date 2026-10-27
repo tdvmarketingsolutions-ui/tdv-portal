@@ -3,11 +3,13 @@ import { Inter, Epilogue, JetBrains_Mono } from "next/font/google";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import "./globals.css";
 
-// Matches the type pairing used on TDV's own marketing site
-// (thomasdevoldere.be): Inter for body copy, Epilogue for headings.
-const sans = Inter({ subsets: ["latin"], variable: "--font-sans" });
-const display = Epilogue({ subsets: ["latin"], variable: "--font-display", weight: ["500", "600", "700"] });
-const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
+// Same pairing as tdvmarketing.be: Inter for body copy, Epilogue for
+// headings. Huisstijl v1.1: titles use one weight only (Epilogue 600), Inter
+// 300 (large intros) / 400 (UI) / 500 (labels, buttons); JetBrains Mono is
+// only for IDs and invoice/order numbers.
+const sans = Inter({ subsets: ["latin"], variable: "--font-sans", weight: ["300", "400", "500"] });
+const display = Epilogue({ subsets: ["latin"], variable: "--font-display", weight: ["600"] });
+const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", weight: ["400"] });
 
 const title = "TDV Klantenportaal";
 const description = "Volg je projecten, content en communicatie met TDV Marketing Solutions op één plek.";
@@ -39,7 +41,12 @@ export const metadata: Metadata = {
   // carry no session, so they only ever see TDV anyway. app/manifest.ts is
   // still TDV-only too (see lib/branding-metadata.ts for why it needn't be).
   icons: {
-    icon: { url: "/brand/icon.png", type: "image/png", sizes: "512x512" },
+    // tdv-favicon.svg (huisstijl v1.1: "tdv." op donker, ontworpen voor
+    // 16px); de PNG blijft als fallback voor browsers zonder SVG-favicon.
+    icon: [
+      { url: "/brand/tdv-favicon.svg", type: "image/svg+xml" },
+      { url: "/brand/icon.png", type: "image/png", sizes: "512x512" },
+    ],
     apple: { url: "/brand/apple-icon.png", sizes: "180x180" },
   },
 };

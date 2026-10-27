@@ -57,7 +57,7 @@ export default async function AdminAiPage() {
               <li key={message.id} className="card p-4">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-2">
-                    <Badge tone={message.role === "user" ? "blue" : "gray"}>{message.role === "user" ? "Klant" : "AI"}</Badge>
+                    <Badge tone={message.role === "user" ? "new" : "neutral"}>{message.role === "user" ? "Klant" : "AI"}</Badge>
                     <span className="text-sm text-ink-muted dark:text-ink-dark-muted">{message.companies?.name ?? "—"}</span>
                   </div>
                   <span className="text-xs text-ink-muted dark:text-ink-dark-muted">

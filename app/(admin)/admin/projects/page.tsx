@@ -113,7 +113,7 @@ export default async function AdminProjectsPage() {
                       <div className="flex items-center gap-2">
                         {p.deadline ? new Date(p.deadline).toLocaleDateString("nl-BE") : "—"}
                         {urgency && (
-                          <Badge tone={urgency === "overdue" ? "red" : "amber"}>{DEADLINE_URGENCY_LABEL[urgency]}</Badge>
+                          <Badge tone={urgency === "overdue" ? "danger" : "waiting"}>{DEADLINE_URGENCY_LABEL[urgency]}</Badge>
                         )}
                       </div>
                     </Table.Cell>

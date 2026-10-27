@@ -62,7 +62,7 @@ function Crumb({ crumb, currentFolderId }: { crumb: BreadcrumbEntry; currentFold
       onDrop={handleDrop}
       className={cn(
         "rounded px-1 text-ink-muted hover:text-ink dark:text-ink-dark-muted dark:hover:text-ink-dark",
-        dragOver && "bg-accent-soft text-accent dark:bg-accent/15 dark:text-accent-dark"
+        dragOver && "bg-accent-soft text-accent-text dark:bg-accent/15"
       )}
     >
       {crumb.name}

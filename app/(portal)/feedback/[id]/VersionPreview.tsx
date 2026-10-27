@@ -92,7 +92,7 @@ export function VersionPreview({
             key={pin.id}
             title={pin.body}
             style={{ left: `${pin.anchorX}%`, top: `${pin.anchorY}%` }}
-            className="absolute flex h-6 w-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white bg-accent text-[11px] font-semibold text-white shadow-md"
+            className="absolute flex h-6 w-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white bg-accent text-[11px] font-semibold text-accent-fg shadow-md"
           >
             {i + 1}
           </div>

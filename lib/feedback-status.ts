@@ -8,7 +8,7 @@ export const FEEDBACK_STATUS_LABEL: Record<FeedbackStatus, string> = {
 };
 
 export const FEEDBACK_STATUS_TONE: Record<FeedbackStatus, BadgeTone> = {
-  pending: "amber",
-  approved: "green",
-  revision_requested: "red",
+  pending: "waiting",
+  approved: "done",
+  revision_requested: "danger",
 };

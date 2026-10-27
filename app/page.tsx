@@ -14,8 +14,8 @@ const serif = Playfair_Display({ subsets: ["latin"], weight: ["500", "600"], sty
 
 const pillBase =
   "inline-flex items-center justify-center rounded-full px-5 py-2.5 text-xs font-medium uppercase tracking-[0.12em] transition-colors";
-const pillPrimary = `${pillBase} bg-accent text-white hover:bg-accent/90 dark:bg-accent-dark dark:text-ink-dark dark:hover:bg-accent-dark/90`;
-const pillOnDark = `${pillBase} bg-accent text-white hover:bg-accent/90`;
+const pillPrimary = `${pillBase} bg-accent text-accent-fg hover:bg-accent-dark`;
+const pillOnDark = `${pillBase} bg-accent text-accent-fg hover:bg-accent-dark`;
 const textLink = "text-sm font-medium text-ink underline decoration-ink/25 underline-offset-4 transition-colors hover:decoration-ink dark:text-ink-dark dark:decoration-ink-dark/25 dark:hover:decoration-ink-dark";
 
 export const metadata: Metadata = {
@@ -124,7 +124,7 @@ export default async function LandingPage() {
         <h1
           className={`${serif.className} max-w-3xl text-4xl leading-[1.15] tracking-tight text-ink sm:text-6xl sm:leading-[1.1] lg:text-7xl dark:text-ink-dark`}
         >
-          Een klantenportaal dat oogt alsof je het <span className="text-accent dark:text-accent-dark">zelf</span>{" "}
+          Een klantenportaal dat oogt alsof je het <span className="text-accent-text">zelf</span>{" "}
           liet bouwen
         </h1>
         <p className="mt-7 max-w-xl text-lg leading-relaxed text-ink-muted dark:text-ink-dark-muted">
@@ -190,7 +190,7 @@ export default async function LandingPage() {
                 <ul className="mt-6 flex-1 space-y-2.5 text-sm text-ink dark:text-ink-dark">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-start gap-2">
-                      <Check size={15} strokeWidth={2} className="mt-0.5 shrink-0 text-accent dark:text-accent-dark" />
+                      <Check size={15} strokeWidth={2} className="mt-0.5 shrink-0 text-accent-text" />
                       <span>{feature}</span>
                     </li>
                   ))}

@@ -1,7 +1,7 @@
 import "server-only";
 import type { Metadata, Viewport } from "next";
 import { getCurrentAgencyBranding } from "@/lib/data/agency-branding";
-import { hexToRgbTriplet } from "@/lib/color";
+import { accentTokens, parseHex } from "@/lib/brand/accent";
 
 /**
  * Per-agency <title>/favicon/theme-color for everything behind login. The
@@ -36,8 +36,9 @@ export async function generateAgencyMetadata(): Promise<Metadata> {
 
 export async function generateAgencyViewport(): Promise<Viewport> {
   const branding = await getCurrentAgencyBranding();
-  // Same validation as agencyAccentStyle(): an invalid stored value falls
-  // back to the root layout's TDV terracotta instead of a broken meta tag.
-  const accent = branding?.accent_color?.trim();
-  return accent && hexToRgbTriplet(accent) ? { themeColor: accent } : {};
+  // Same derivation as agencyAccentStyle(): an invalid stored value falls
+  // back to the root layout's TDV terracotta instead of a broken meta tag,
+  // and a too-light color gets the same AA-adjusted value the UI shows.
+  const accent = branding?.accent_color;
+  return parseHex(accent) ? { themeColor: accentTokens(accent).accent } : {};
 }

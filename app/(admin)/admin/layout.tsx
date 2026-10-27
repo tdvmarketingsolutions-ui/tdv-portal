@@ -8,7 +8,7 @@ import { MobileNav } from "@/components/layout/MobileNav";
 import { NavLinks } from "@/components/layout/NavLinks";
 import { RealtimeNotifications } from "@/components/layout/RealtimeNotifications";
 import { getCurrentAgencyBranding } from "@/lib/data/agency-branding";
-import { agencyAccentStyle } from "@/lib/color";
+import { agencyAccentStyle } from "@/lib/brand/accent";
 import { generateAgencyMetadata, generateAgencyViewport } from "@/lib/branding-metadata";
 
 export const generateMetadata = generateAgencyMetadata;
@@ -30,7 +30,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const brandName = branding?.brand_name || "TDV";
 
   return (
-    <div className="flex min-h-screen flex-col md:flex-row" style={agencyAccentStyle(branding?.accent_color)}>
+    <div className="accent-scope flex min-h-screen flex-col md:flex-row" style={agencyAccentStyle(branding?.accent_color)}>
       <RealtimeNotifications userId={user.id} />
       <MobileNav
         variant="admin"

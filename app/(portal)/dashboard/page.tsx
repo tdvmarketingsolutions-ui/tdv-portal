@@ -14,7 +14,7 @@ export default async function DashboardPage() {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent-soft dark:bg-accent/10">
-          <Clock size={26} strokeWidth={1.75} className="text-accent dark:text-accent-dark" />
+          <Clock size={26} strokeWidth={1.75} className="text-accent-text" />
         </div>
         <h1 className="mt-4 font-display text-2xl font-semibold">Bedankt voor je registratie</h1>
         <p className="mt-2 max-w-md text-sm text-ink-muted dark:text-ink-dark-muted">

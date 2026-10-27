@@ -10,11 +10,11 @@ export const CONTENT_STATUS_LABEL: Record<ContentStatus, string> = {
 };
 
 export const CONTENT_STATUS_TONE: Record<ContentStatus, BadgeTone> = {
-  draft: "gray",
-  pending_approval: "amber",
-  approved: "green",
-  scheduled: "blue",
-  published: "violet",
+  draft: "neutral",
+  pending_approval: "waiting",
+  approved: "new",
+  scheduled: "progress",
+  published: "done",
 };
 
 export const CONTENT_CHANNEL_LABEL: Record<ContentChannel, string> = {
@@ -41,7 +41,7 @@ export const SOCIAL_ACCOUNT_STATUS_LABEL: Record<SocialAccountStatus, string> = 
 };
 
 export const SOCIAL_ACCOUNT_STATUS_TONE: Record<SocialAccountStatus, BadgeTone> = {
-  not_connected: "gray",
-  connected: "green",
-  error: "red",
+  not_connected: "neutral",
+  connected: "done",
+  error: "danger",
 };

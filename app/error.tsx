@@ -23,8 +23,8 @@ export default function RootError({
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-8 text-center">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent-soft dark:bg-accent/10">
-        <AlertTriangle size={22} strokeWidth={1.75} className="text-accent dark:text-accent-dark" />
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-danger-soft dark:bg-danger-soft-dark">
+        <AlertTriangle size={22} strokeWidth={1.75} className="text-danger dark:text-danger-dark" />
       </div>
       <div>
         <p className="font-medium">Er ging iets mis</p>

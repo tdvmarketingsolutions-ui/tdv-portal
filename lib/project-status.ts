@@ -10,9 +10,9 @@ export const PROJECT_STATUS_LABEL: Record<ProjectStatus, string> = {
 };
 
 export const PROJECT_STATUS_TONE: Record<ProjectStatus, BadgeTone> = {
-  planning: "gray",
-  in_progress: "blue",
-  in_review: "amber",
-  on_hold: "violet",
-  completed: "green",
+  planning: "new",
+  in_progress: "progress",
+  in_review: "waiting",
+  on_hold: "neutral",
+  completed: "done",
 };

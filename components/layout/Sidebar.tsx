@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AgencyLogo } from "@/components/brand/AgencyLogo";
 import { ShieldCheck } from "lucide-react";
 import { AccountMenu } from "@/components/layout/AccountMenu";
 import { GlobalSearch } from "@/components/layout/GlobalSearch";
@@ -26,7 +27,7 @@ export function Sidebar({
   agencyBrandName?: string | null;
 }) {
   return (
-    <aside className="hidden w-60 shrink-0 flex-col overflow-y-auto border-r border-border bg-surface px-3 py-6 dark:border-border-dark dark:bg-surface-dark md:sticky md:top-0 md:flex md:h-screen">
+    <aside className="hidden w-60 shrink-0 flex-col overflow-y-auto border-r border-border bg-surface-sunken px-3 py-6 dark:border-border-dark dark:bg-surface-sunken-dark md:sticky md:top-0 md:flex md:h-screen">
       <div className="mb-8 flex items-center justify-between px-3">
         <div className="flex min-w-0 items-center gap-2">
           {companyLogoUrl && (
@@ -34,12 +35,7 @@ export function Sidebar({
             <img src={companyLogoUrl} alt="" className="h-6 w-6 shrink-0 rounded object-cover" />
           )}
           <Link href="/dashboard" className="shrink-0">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={agencyLogoUrl || "/brand/logo.png"}
-              alt={agencyBrandName || "TDV Marketing Solutions"}
-              className="h-6 w-auto max-w-[9rem] object-contain"
-            />
+            <AgencyLogo logoUrl={agencyLogoUrl} brandName={agencyBrandName} />
           </Link>
         </div>
         {/* Staff previewing a specific client ("Bekijk als klant") shouldn't see
@@ -58,7 +54,7 @@ export function Sidebar({
         <div className="mt-4 space-y-3 border-t border-border pt-4 dark:border-border-dark">
           <Link
             href="/admin/clients"
-            className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-ink-muted transition-colors hover:bg-canvas hover:text-ink dark:text-ink-dark-muted dark:hover:bg-canvas-dark dark:hover:text-ink-dark"
+            className="focus-ring flex h-10 items-center gap-2 rounded-xl px-3 text-sm text-ink-muted transition-colors hover:bg-ink/5 hover:text-ink dark:text-ink-dark-muted dark:hover:bg-ink-dark/5 dark:hover:text-ink-dark"
           >
             <ShieldCheck size={18} strokeWidth={1.75} />
             Naar adminportaal

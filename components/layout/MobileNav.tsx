@@ -1,5 +1,6 @@
 "use client";
 
+import { AgencyLogo } from "@/components/brand/AgencyLogo";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -62,12 +63,7 @@ export function MobileNav({
       <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-surface px-4 dark:border-border-dark dark:bg-surface-dark md:hidden">
         {variant === "portal" ? (
           <Link href="/dashboard">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={agencyLogoUrl || "/brand/logo.png"}
-              alt={agencyBrandName || "TDV Marketing Solutions"}
-              className="h-5 w-auto max-w-[8rem] object-contain"
-            />
+            <AgencyLogo logoUrl={agencyLogoUrl} brandName={agencyBrandName} className="h-6 w-[120px]" />
           </Link>
         ) : (
           <div>
@@ -94,7 +90,7 @@ export function MobileNav({
       {open && (
         <div className="fixed inset-0 z-40 md:hidden">
           <div
-            className="fixed inset-0 bg-ink/40 backdrop-blur-[2px] dark:bg-black/60"
+            className="fixed inset-0 bg-ink/40 dark:bg-black/60"
             onClick={() => setOpen(false)}
             aria-hidden="true"
           />
@@ -107,12 +103,7 @@ export function MobileNav({
             <div className="mb-8 flex items-center justify-between px-3">
               {variant === "portal" ? (
                 <Link href="/dashboard" onClick={() => setOpen(false)}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={agencyLogoUrl || "/brand/logo.png"}
-                    alt={agencyBrandName || "TDV Marketing Solutions"}
-                    className="h-6 w-auto max-w-[9rem] object-contain"
-                  />
+                  <AgencyLogo logoUrl={agencyLogoUrl} brandName={agencyBrandName} />
                 </Link>
               ) : (
                 <div>

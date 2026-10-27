@@ -33,7 +33,7 @@ export function NotificationPreferenceForm({ emailNotifications }: { emailNotifi
         checked={checked}
         onChange={handleChange}
         disabled={loading}
-        className="h-4 w-4 rounded border-border text-accent focus:ring-accent disabled:opacity-60 dark:border-border-dark"
+        className="h-4 w-4 rounded border-border accent-accent focus:ring-accent disabled:opacity-60 dark:border-border-dark"
       />
       E-mail me bij nieuwe meldingen (nieuwe berichten bij aanvragen, content die goedkeuring nodig heeft)
     </label>
