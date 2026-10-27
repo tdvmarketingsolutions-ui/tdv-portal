@@ -262,9 +262,7 @@ van het systeem.
   af te dwingen. Migratie `0033_fk_indexes.sql` voegt een index toe op elke
   foreign key die daadwerkelijk gefilterd/gejoind wordt (geverifieerd via
   de live schema-introspectie, niet gegokt) — puur additief, geen
-  gedragswijziging. **Moet nog toegepast worden**: `npx supabase db push`
-  (deze sessie had geen werkende directe Postgres-verbinding om 'm zelf toe
-  te passen — zie de TODO hieronder).
+  gedragswijziging. Toegepast op de live database.
 - **Performance, N+1-thumbnails**: de contentplanningskalender haalde een
   signed thumbnail-URL op per item met een afbeelding — één aparte
   Storage-call per item, dus een maand met 20 geplande posts deed 20
@@ -286,11 +284,6 @@ van het systeem.
 Backlog voor de doorlopende 5-uurlijkse routine (zie onder) — één
 afgebakende PR per punt, in deze volgorde:
 
-- [ ] **Actie vereist**: migratie `0033_fk_indexes.sql` (ontbrekende
-      indexen op foreign keys, zie "Wat er echt werkt" hierboven) staat
-      klaar maar moet nog toegepast worden met `npx supabase db push` —
-      deze sessie had geen werkende directe Postgres-verbinding om dat
-      zelf te doen.
 - [ ] **Performance-audit, vervolg**: optimistic UI voor de status-dropdowns,
       de ontbrekende indexen en de N+1-thumbnails zijn gedaan (zie "Wat er
       echt werkt" hierboven) — vervolg op de regio-fix (zie "Performance"
