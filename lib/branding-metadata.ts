@@ -9,11 +9,13 @@ import { hexToRgbTriplet } from "@/lib/color";
  * is what /login, /register and link-preview crawlers see, and what any
  * agency without its own branding falls back to.
  *
- * Bewust niet per-agency: og:image/opengraph-image.png en app/manifest.ts.
- * Crawlers (WhatsApp, Slack, …) en de PWA-manifest-fetch komen zonder
- * sessie-cookie binnen, dus er is daar geen ingelogde agency om te
- * herkennen — dat zou een eigen domein per agency vereisen
- * (agencies.custom_domain), wat bij de bredere SaaS-architectuur hoort.
+ * Bewust niet per-agency: og:image/opengraph-image.png. Crawlers (WhatsApp,
+ * Slack, …) komen zonder sessie-cookie binnen, dus er is daar geen
+ * ingelogde agency om te herkennen — dat zou een eigen domein per agency
+ * vereisen (agencies.custom_domain), wat bij de bredere SaaS-architectuur
+ * hoort. app/manifest.ts is nog TDV-vast maar zou wél per agency kunnen:
+ * Next zet crossorigin="use-credentials" op de manifest-link, dus die
+ * fetch draagt de sessie mee.
  */
 export async function generateAgencyMetadata(): Promise<Metadata> {
   const branding = await getCurrentAgencyBranding();

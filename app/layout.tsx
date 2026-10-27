@@ -35,9 +35,9 @@ export const metadata: Metadata = {
   // app/icon.png: Next gives file-based icons priority over metadata
   // objects, which would stop the (portal)/(admin) layouts from swapping in
   // an agency's own favicon (see lib/branding-metadata.ts).
-  // app/opengraph-image.png (link-preview card) and app/manifest.ts stay
-  // file-based — crawlers and the manifest fetch carry no session, so they
-  // only ever see TDV anyway.
+  // app/opengraph-image.png (link-preview card) stays file-based — crawlers
+  // carry no session, so they only ever see TDV anyway. app/manifest.ts is
+  // still TDV-only too (see lib/branding-metadata.ts for why it needn't be).
   icons: {
     icon: { url: "/brand/icon.png", type: "image/png", sizes: "512x512" },
     apple: { url: "/brand/apple-icon.png", sizes: "180x180" },
