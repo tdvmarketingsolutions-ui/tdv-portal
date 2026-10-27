@@ -104,6 +104,7 @@ const config: Config = {
         raised: "0 2px 8px rgb(40 40 40 / 0.07), 0 1px 2px rgb(40 40 40 / 0.05)",
         lg: "0 12px 32px rgb(40 40 40 / 0.12), 0 2px 6px rgb(40 40 40 / 0.06)",
       },
+      spacing: { 4.5: "1.125rem", 18: "4.5rem", 22: "5.5rem" },
       maxWidth: { prose: "65ch", page: "72rem" },
       transitionTimingFunction: { brand: "cubic-bezier(.2,.7,.2,1)" },
     },
