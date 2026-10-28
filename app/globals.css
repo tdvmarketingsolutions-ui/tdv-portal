@@ -30,7 +30,8 @@
     --color-accent-soft: var(--accent-l-soft);
     --color-accent-text: var(--accent-l-text);
   }
-  /* Dark mode is voorbereid maar nog niet actief: niets zet deze class. */
+  /* Dark mode: expliciet (.dark) of volgens de systeemvoorkeur
+     (.theme-system), gezet door de (portal)/(admin)-layout. */
   .dark,
   .dark .accent-scope {
     color-scheme: dark;
@@ -39,6 +40,17 @@
     --color-accent-dark: var(--accent-d-dark);
     --color-accent-soft: var(--accent-d-soft);
     --color-accent-text: var(--accent-d);
+  }
+  @media (prefers-color-scheme: dark) {
+    .theme-system,
+    .theme-system .accent-scope {
+      color-scheme: dark;
+      --color-accent: var(--accent-d);
+      --color-accent-fg: var(--accent-d-fg);
+      --color-accent-dark: var(--accent-d-dark);
+      --color-accent-soft: var(--accent-d-soft);
+      --color-accent-text: var(--accent-d);
+    }
   }
   * {
     @apply border-border dark:border-border-dark;

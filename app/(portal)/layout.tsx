@@ -7,6 +7,10 @@ import { getUnreadNotificationCount } from "@/lib/data/notifications";
 import { getAllCompaniesForSelect } from "@/lib/data/admin/projects";
 import { getCurrentAgencyBranding } from "@/lib/data/agency-branding";
 import { agencyAccentStyle } from "@/lib/brand/accent";
+import { themeClass } from "@/lib/theme";
+import { getThemePreference } from "@/lib/theme-server";
+import { cn } from "@/lib/utils";
+import { ToastProvider } from "@/components/ui/ToastProvider";
 import { generateAgencyMetadata, generateAgencyViewport } from "@/lib/branding-metadata";
 import { isStaffRole, getStaffViewCompanyId } from "@/lib/staff-view";
 
@@ -43,33 +47,43 @@ export default async function PortalLayout({ children }: { children: React.React
     : null;
 
   return (
-    <div className="accent-scope flex min-h-screen flex-col md:flex-row" style={agencyAccentStyle(branding?.accent_color)}>
-      <RealtimeNotifications userId={user.id} />
-      <MobileNav
-        variant="portal"
-        title={branding?.brand_name || "TDV"}
-        subtitle="Portaal"
-        userId={user.id}
-        userEmail={user.email!}
-        fullName={fullName}
-        unreadCount={unreadCount}
-        staffView={staffView}
-        agencyLogoUrl={branding?.logo_url}
-        agencyBrandName={branding?.brand_name}
-      />
-      <Sidebar
-        userId={user.id}
-        userEmail={user.email!}
-        fullName={fullName}
-        unreadCount={unreadCount}
-        staffView={staffView}
-        companyLogoUrl={companyLogoUrl}
-        agencyLogoUrl={branding?.logo_url}
-        agencyBrandName={branding?.brand_name}
-      />
-      <div className="min-w-0 flex-1">
-        <main className="mx-auto max-w-6xl px-4 py-8 md:px-8">{children}</main>
-      </div>
+    <div
+      className={cn(
+        "accent-scope flex min-h-screen flex-col bg-canvas text-ink dark:bg-canvas-dark dark:text-ink-dark md:flex-row",
+        themeClass(getThemePreference())
+      )}
+      style={agencyAccentStyle(branding?.accent_color)}
+    >
+      {/* Eigen ToastProvider binnen de wrapper: zo erven toasts het thema en
+          de agency-accentkleur (de root-provider staat erbuiten). */}
+      <ToastProvider>
+        <RealtimeNotifications userId={user.id} />
+        <MobileNav
+          variant="portal"
+          title={branding?.brand_name || "TDV"}
+          subtitle="Portaal"
+          userId={user.id}
+          userEmail={user.email!}
+          fullName={fullName}
+          unreadCount={unreadCount}
+          staffView={staffView}
+          agencyLogoUrl={branding?.logo_url}
+          agencyBrandName={branding?.brand_name}
+        />
+        <Sidebar
+          userId={user.id}
+          userEmail={user.email!}
+          fullName={fullName}
+          unreadCount={unreadCount}
+          staffView={staffView}
+          companyLogoUrl={companyLogoUrl}
+          agencyLogoUrl={branding?.logo_url}
+          agencyBrandName={branding?.brand_name}
+        />
+        <div className="min-w-0 flex-1">
+          <main className="mx-auto max-w-6xl px-4 py-8 md:px-8">{children}</main>
+        </div>
+      </ToastProvider>
     </div>
   );
 }

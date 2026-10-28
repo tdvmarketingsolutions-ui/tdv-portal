@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { EditProfileForm } from "./EditProfileForm";
 import { ChangePasswordForm } from "./ChangePasswordForm";
 import { NotificationPreferenceForm } from "./NotificationPreferenceForm";
+import { ThemePreferenceForm } from "./ThemePreferenceForm";
+import { getThemePreference } from "@/lib/theme-server";
 
 export default async function SettingsPage() {
   const supabase = createClient();
@@ -55,6 +57,16 @@ export default async function SettingsPage() {
           <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">Kies een nieuw wachtwoord voor je account.</p>
         </div>
         <ChangePasswordForm />
+      </section>
+
+      <section className="card space-y-3 p-6">
+        <div>
+          <h2 className="font-display text-lg font-medium">Weergave</h2>
+          <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
+            Systeem volgt de instelling van je toestel. De keuze geldt voor dit toestel.
+          </p>
+        </div>
+        <ThemePreferenceForm preference={getThemePreference()} />
       </section>
 
       <section className="card space-y-3 p-6">

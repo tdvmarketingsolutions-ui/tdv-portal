@@ -66,7 +66,7 @@ export function Dialog({
         aria-modal="true"
         aria-labelledby="dialog-title"
         tabIndex={-1}
-        className="toast-enter relative my-8 w-full max-w-md rounded-2xl border border-border bg-surface-raised p-6 shadow-lg outline-none dark:border-border-dark dark:bg-surface-raised-dark sm:my-0"
+        className="toast-enter relative my-8 w-full max-w-md rounded-2xl border border-border bg-surface-raised p-6 shadow-lg outline-none dark:border-border-dark dark:bg-surface-dark sm:my-0"
       >
         <div className="mb-4 flex items-start justify-between gap-4">
           <div>
