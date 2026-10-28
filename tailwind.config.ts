@@ -4,7 +4,14 @@ import type { Config } from "tailwindcss";
 // #282828 ink, terracotta accent. Every component reads color through these
 // tokens, so a future refresh of the brand guide is still a one-file change.
 const config: Config = {
-  darkMode: "class",
+  // Dark mode (huisstijl v1.1, sectie 0.1): de (portal)/(admin)-layouts zetten
+  // server-side "dark" (expliciet donker) of "theme-system" (volg de
+  // systeemvoorkeur) op hun wrapper, uit de cookie van lib/theme.ts. De
+  // publieke pagina's hebben geen van beide en blijven dus altijd licht.
+  darkMode: [
+    "variant",
+    ["&:is(.dark, .dark *)", "@media (prefers-color-scheme: dark) { &:is(.theme-system, .theme-system *) }"],
+  ],
   content: [
     "./app/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -26,6 +33,8 @@ const config: Config = {
           sunken: "#E8E1D8", // zand: sidebar, afwisselende secties
           "sunken-dark": "#181716",
           raised: "#FFFFFF", // dropdowns, popovers, toasts (+ schaduw)
+          // Niet gebruiken onder tekst in accent- of foutkleur: die halen op
+          // #333130 geen 4,5:1. Dialogen en toasts gebruiken daarom surface-dark.
           "raised-dark": "#333130",
         },
         border: {

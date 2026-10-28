@@ -415,5 +415,9 @@ opgesteld door de design-sessie:
   agency-naam → TDV-woordmerk).
 - Titels: Epilogue 600, kleine letters met punt (`brandTitle()` in
   `lib/utils.ts` doet dat voor dialog- en lege-staat-titels).
-- Dark mode is voorbereid (alle `dark:`-varianten en dark-accenttokens) maar
-  **nog niet geactiveerd** — dat is een aparte beslissing.
+- Dark mode: standaard volgt het portaal de systeeminstelling; in
+  `/settings` → Weergave kiest de gebruiker Systeem, Licht of Donker. De
+  keuze staat in de cookie `tdv-theme` (`lib/theme.ts`) en de
+  (portal)/(admin)-layout zet de class server-side op haar wrapper (`dark`
+  of `theme-system`), dus geen lichte flits bij het laden. De publieke
+  pagina's (landing, /login, /register) blijven altijd licht.
