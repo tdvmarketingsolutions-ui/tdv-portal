@@ -60,22 +60,25 @@ const FEATURES = [
   },
 ] as const;
 
+// Plannamen gekozen door Thomas (28/10). De interne codes in de database
+// (agencies.plan: starter/growth/agency) blijven ongewijzigd; dit zijn enkel
+// de getoonde namen.
 const PLANS = [
   {
-    name: "Starter",
+    name: "Essentieel",
     price: "129",
     description: "Voor freelancers en kleine bureaus die starten met een eigen klantenportaal.",
     features: ["Tot 5 klanten", "2 teamleden", "Projecten, aanvragen en bestanden", "Contentplanning"],
     featured: false,
   },
   {
-    name: "Growth",
+    name: "Professioneel",
     price: "349",
     description: "Voor groeiende bureaus die feedback, goedkeuring en AI-ondersteuning willen meenemen.",
     features: [
       "Tot 20 klanten",
       "6 teamleden",
-      "Alles uit Starter",
+      "Alles uit Essentieel",
       "Feedback en opleveringen met versiehistoriek",
       "AI-assistent voor je klanten",
     ],
@@ -88,7 +91,7 @@ const PLANS = [
     features: [
       "Onbeperkt klanten",
       "Onbeperkt teamleden",
-      "Alles uit Growth",
+      "Alles uit Professioneel",
       "Prioritaire ondersteuning",
       "Vroege toegang tot nieuwe functies",
     ],
