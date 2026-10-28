@@ -296,6 +296,12 @@ afgebakende PR per punt, in deze volgorde:
       echt werkt" hierboven) — vervolg op de regio-fix (zie "Performance"
       hieronder) zodra er een nieuwe trage plek gevonden wordt.
 
+### Begeleide punten (niet voor de routine, met Thomas uitwerken)
+
+- [ ] **Eigen privacybeleid en voorwaarden voor het portaal**
+      (SaaS/verwerkersovereenkomst). Tot dan linkt de footer van de
+      landingspagina naar de algemene teksten op tdvmarketing.be.
+
 ## Multi-tenant white-label architectuur (actief traject, niet voor de onbemande routine)
 
 De landingspagina belooft een white-label SaaS (andere agency's/freelancers
