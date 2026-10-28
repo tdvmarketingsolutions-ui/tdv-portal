@@ -13,9 +13,9 @@ import { accentTokens, parseHex } from "@/lib/brand/accent";
  * Slack, …) komen zonder sessie-cookie binnen, dus er is daar geen
  * ingelogde agency om te herkennen — dat zou een eigen domein per agency
  * vereisen (agencies.custom_domain), wat bij de bredere SaaS-architectuur
- * hoort. app/manifest.ts is nog TDV-vast maar zou wél per agency kunnen:
- * Next zet crossorigin="use-credentials" op de manifest-link, dus die
- * fetch draagt de sessie mee.
+ * hoort. app/manifest.ts volgt wél per agency: Next zet
+ * crossorigin="use-credentials" op de manifest-link, dus die fetch draagt
+ * de sessie mee.
  */
 export async function generateAgencyMetadata(): Promise<Metadata> {
   const branding = await getCurrentAgencyBranding();
