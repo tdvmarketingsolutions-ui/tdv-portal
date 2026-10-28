@@ -296,6 +296,18 @@ afgebakende PR per punt, in deze volgorde:
       echt werkt" hierboven) — vervolg op de regio-fix (zie "Performance"
       hieronder) zodra er een nieuwe trage plek gevonden wordt.
 
+### Testaccounts
+
+Aangemaakt met akkoord van Thomas (28/10), om op te ruimen zodra ze niet meer
+nodig zijn. Wachtwoorden staan nergens in de repo of in berichten.
+
+- **Test – Claude** — `tdvmarketingsolutions+claude-test@gmail.com`, rol
+  `client_member`, in het fictieve bedrijf **Demo – Atelier Noord (fictief)**
+  (slug `demo-atelier-noord`) onder de TDV-agency. Bevat fictieve demo-inhoud
+  (3 projecten, 4 content-items, 1 aanvraag) voor screenshots; de hero op de
+  landingspagina (`public/brand/portaal-demo-projecten.png`) komt hiervan.
+  Opruimen: het bedrijf met die slug en zijn rijen, en de auth-gebruiker.
+
 ### Begeleide punten (niet voor de routine, met Thomas uitwerken)
 
 - [ ] **Eigen privacybeleid en voorwaarden voor het portaal**
