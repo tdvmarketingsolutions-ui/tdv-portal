@@ -38,8 +38,8 @@ export const metadata: Metadata = {
   // objects, which would stop the (portal)/(admin) layouts from swapping in
   // an agency's own favicon (see lib/branding-metadata.ts).
   // app/opengraph-image.png (link-preview card) stays file-based — crawlers
-  // carry no session, so they only ever see TDV anyway. app/manifest.ts is
-  // still TDV-only too (see lib/branding-metadata.ts for why it needn't be).
+  // carry no session, so they only ever see TDV anyway. app/manifest.ts
+  // does follow the signed-in agency (its fetch carries the session).
   icons: {
     // tdv-favicon.svg (huisstijl v1.1: "tdv." op donker, ontworpen voor
     // 16px); de PNG blijft als fallback voor browsers zonder SVG-favicon.

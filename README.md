@@ -285,10 +285,6 @@ van het systeem.
 Backlog voor de doorlopende 5-uurlijkse routine (zie onder) — één
 afgebakende PR per punt, in deze volgorde:
 
-- [ ] **Manifest per agency**: `app/manifest.ts` (PWA-naam, -iconen,
-      theme_color) leest de agency-branding van de ingelogde gebruiker,
-      met TDV als fallback — kan, want de manifest-fetch draagt de sessie
-      mee (`crossorigin="use-credentials"`), zie `lib/branding-metadata.ts`.
 - [ ] **Uploadveld voor `favicon_url`** in `/admin/settings` → Branding,
       naar analogie van de bestaande logo-upload (bucket `agency-logos`).
       Tot dan valt het favicon terug op `logo_url`.
@@ -351,11 +347,12 @@ dus **expliciet niet voor de onbemande routine**, elke stap begeleid:
        fallback en is wat /login, /register en de landingspagina tonen.
        Bewust TDV-vast gebleven: `opengraph-image.png`/OG-tags — crawlers
        komen zonder sessie binnen, dus per-agency kan daar pas met een eigen
-       domein per agency (`agencies.custom_domain`). Nog open: `app/manifest.ts`
-       (PWA-naam/-iconen) is TDV-vast maar kan wél per agency, want de
-       manifest-fetch draagt de sessie mee (`crossorigin="use-credentials"`);
-       `accent-soft`/`accent-dark` blijven vaste TDV-afgeleiden; en er is nog
-       geen upload-veld voor `favicon_url` in `/admin/settings`.
+       domein per agency (`agencies.custom_domain`). Ook het PWA-manifest
+       (`app/manifest.ts`: naam, icoon, `theme_color`) volgt de agency van
+       de ingelogde gebruiker, want de manifest-fetch draagt de sessie mee
+       (`crossorigin="use-credentials"`); anoniem of zonder eigen branding
+       blijft het TDV. Nog open: een upload-veld voor `favicon_url` in
+       `/admin/settings`.
 6. [ ] Facturatie via **Billit** (niet Stripe — bewuste keuze: geen
        betaalprovider/kaartincasso, agency's kiezen maand/kwartaal/jaar-ritme,
        het systeem maakt en verstuurt zelf facturen via de Billit API,
