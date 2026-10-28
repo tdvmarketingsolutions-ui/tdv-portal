@@ -102,6 +102,10 @@ const FAQ = [
     a: "14 dagen. Je hebt geen creditcard nodig om te starten.",
   },
   {
+    q: "Zijn de prijzen inclusief btw?",
+    a: "Nee. Alle prijzen zijn exclusief btw.",
+  },
+  {
     q: "Kan ik maandelijks opzeggen?",
     a: "Ja. Je zit niet vast aan een langere looptijd.",
   },
@@ -227,8 +231,7 @@ export default async function LandingPage() {
                 </div>
                 <p className="mt-5 font-display text-[2.5rem] font-semibold leading-none tabular-nums tracking-[-0.04em]">
                   € {plan.price}
-                  {/* TODO (Thomas): bevestigen of de prijzen incl. of excl. btw zijn, dan "excl. btw" toevoegen. */}
-                  <span className="ml-1 font-sans text-[15px] font-normal tracking-normal text-ink-muted">/maand</span>
+                  <span className="ml-1 font-sans text-[15px] font-normal tracking-normal text-ink-muted">/maand excl. btw</span>
                 </p>
                 <p className="mt-4 text-sm text-ink-muted">{plan.description}</p>
                 <ul className="mt-6 flex-1 space-y-2.5 text-sm">
@@ -245,7 +248,7 @@ export default async function LandingPage() {
               </div>
             ))}
           </div>
-          <p className="mt-6 text-sm text-ink-muted">Maandelijks opzegbaar.</p>
+          <p className="mt-6 text-sm text-ink-muted">Alle prijzen excl. btw. Maandelijks opzegbaar.</p>
         </div>
       </section>
 
@@ -293,13 +296,20 @@ export default async function LandingPage() {
             <Link href="/login" className="transition-colors hover:text-tdv-beige">
               Inloggen
             </Link>
+            {/* Tijdelijk de algemene teksten van tdv. marketing; eigen
+                portaalteksten (SaaS/verwerkersovereenkomst) staan op de
+                README-backlog als begeleid punt. */}
+            <a href="https://tdvmarketing.be/privacybeleid/" className="transition-colors hover:text-tdv-beige">
+              Privacybeleid
+            </a>
+            <a href="https://tdvmarketing.be/algemene-voorwaarden/" className="transition-colors hover:text-tdv-beige">
+              Algemene voorwaarden
+            </a>
             <a href="https://tdvmarketing.be" className="transition-colors hover:text-tdv-beige">
               Een product van tdv. marketing
             </a>
           </div>
         </div>
-        {/* TODO (Thomas): links naar privacybeleid en algemene voorwaarden
-            zodra die pagina's bestaan. */}
         <p className="mx-auto mt-6 max-w-page text-xs text-tdv-beige/50">
           © {new Date().getFullYear()} TDV Marketing Solutions · BE0745.686.114 · Halfuurdreef 89, 8210 Zedelgem
         </p>
