@@ -49,7 +49,8 @@ van het systeem.
   bezoekers worden meteen doorgestuurd naar `/dashboard` (zelfde route,
   gewoon een `redirect()` in de page in plaats van middleware — middleware
   laat `/` nu als enige uitzondering door zonder sessie). Drie
-  prijstiers (Starter €129, Growth €349, Agency €899), door de klant
+  prijstiers (Essentieel €129, Professioneel €349, Agency €899 per maand excl.
+  btw; interne codes starter/growth/agency), door de klant
   bevestigd. "Start gratis proefperiode" linkt naar het bestaande
   `/register` (14 dagen),
   "Inloggen" naar `/login`. Bewust puur presentationeel: geen Stripe, geen
