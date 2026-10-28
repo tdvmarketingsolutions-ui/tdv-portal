@@ -4,6 +4,7 @@ import { nl } from "date-fns/locale";
 import { CheckCircle2, Clock, MessageSquare, Sparkles } from "lucide-react";
 import { getDashboardData } from "@/lib/data/dashboard";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Badge } from "@/components/ui/Badge";
 
 export const dynamic = "force-dynamic"; // always fresh — this is a live status view
 
@@ -16,7 +17,7 @@ export default async function DashboardPage() {
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent-soft dark:bg-accent/10">
           <Clock size={26} strokeWidth={1.75} className="text-accent-text" />
         </div>
-        <h1 className="mt-4 font-display text-2xl font-semibold">Bedankt voor je registratie</h1>
+        <h1 className="mt-4 font-display text-h2 font-semibold sm:text-h1">bedankt voor je registratie.</h1>
         <p className="mt-2 max-w-md text-sm text-ink-muted dark:text-ink-dark-muted">
           TDV neemt je account door. Zodra dat is gebeurd, krijg je hier toegang tot projecten, contentplanning en de
           rest van het portaal.
@@ -28,7 +29,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="font-display text-2xl font-semibold">Dashboard</h1>
+        <h1 className="font-display text-h2 font-semibold sm:text-h1">dashboard.</h1>
         <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
           Een overzicht van je lopende projecten, aanvragen en wat je aandacht vraagt.
         </p>
@@ -42,7 +43,7 @@ export default async function DashboardPage() {
       </section>
 
       <section id="aandacht" className="scroll-mt-8 space-y-3">
-        <h2 className="font-display text-lg font-medium">Vraagt je aandacht</h2>
+        <h2 className="font-display text-h3 font-semibold">vraagt je aandacht.</h2>
         {data.attentionItems.length === 0 ? (
           <EmptyState icon={CheckCircle2} title="Niets dat om actie vraagt" description="Je bent helemaal bij." />
         ) : (
@@ -51,12 +52,15 @@ export default async function DashboardPage() {
               <li key={item.id}>
                 <Link
                   href={item.href}
-                  className="card flex items-center justify-between gap-4 border-l-4 border-l-status-progress p-4 transition-shadow hover:shadow-md"
+                  className="card focus-ring flex items-center justify-between gap-4 p-4 transition-[box-shadow,border-color] duration-150 ease-brand hover:border-border-strong hover:shadow-raised dark:hover:border-border-strong-dark"
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium">{item.label}</p>
                     <p className="mt-0.5 text-xs text-ink-muted dark:text-ink-dark-muted">{item.meta}</p>
                   </div>
+                  <Badge tone="waiting" className="shrink-0">
+                    Actie nodig
+                  </Badge>
                 </Link>
               </li>
             ))}
@@ -65,7 +69,7 @@ export default async function DashboardPage() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-display text-lg font-medium">Recente activiteit</h2>
+        <h2 className="font-display text-h3 font-semibold">recente activiteit.</h2>
         {data.activityItems.length === 0 ? (
           <EmptyState icon={MessageSquare} title="Nog geen activiteit" description="Reacties en updates verschijnen hier." />
         ) : (
@@ -92,7 +96,7 @@ export default async function DashboardPage() {
       </section>
 
       <section className="card p-6">
-        <h2 className="font-display text-lg font-medium">Snelle acties</h2>
+        <h2 className="font-display text-h3 font-semibold">snelle acties.</h2>
         <div className="mt-4 flex flex-wrap gap-3">
           {data.isStaff ? (
             <>

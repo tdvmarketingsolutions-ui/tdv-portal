@@ -433,7 +433,12 @@ opgesteld door de design-sessie:
   in `currentColor`, punt altijd terracotta) en `AgencyLogo` (agency-logo →
   agency-naam → TDV-woordmerk).
 - Titels: Epilogue 600, kleine letters met punt (`brandTitle()` in
-  `lib/utils.ts` doet dat voor dialog- en lege-staat-titels).
+  `lib/utils.ts` doet dat voor dialog- en lege-staat-titels). Pagina- en
+  sectietitels in de app staan rechtstreeks zo in de code ("dashboard.",
+  "vraagt je aandacht."): paginatitel `font-display text-h2 sm:text-h1`,
+  sectietitel `font-display text-h3`. Dynamische titels (een projectnaam,
+  klantnaam, …) blijven zoals ingevoerd.
+- Kaarten krijgen geen gekleurde zijbalk; status toont een `Badge`.
 - Dark mode: standaard volgt het portaal de systeeminstelling; in
   `/settings` → Weergave kiest de gebruiker Systeem, Licht of Donker. De
   keuze staat in de cookie `tdv-theme` (`lib/theme.ts`) en de

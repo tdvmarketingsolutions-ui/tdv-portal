@@ -22,7 +22,7 @@ export default async function TicketDetailPage({ params }: { params: { id: strin
       </Link>
 
       <header className="space-y-2">
-        <h1 className="font-display text-2xl font-semibold">{ticket.subject}</h1>
+        <h1 className="font-display text-h2 font-semibold sm:text-h1">{ticket.subject}</h1>
         <div className="flex gap-2">
           <Badge tone={TICKET_STATUS_TONE[ticket.status]}>{TICKET_STATUS_LABEL[ticket.status]}</Badge>
           <Badge tone={TICKET_PRIORITY_TONE[ticket.priority]}>{TICKET_PRIORITY_LABEL[ticket.priority]}</Badge>
@@ -44,7 +44,7 @@ export default async function TicketDetailPage({ params }: { params: { id: strin
       </section>
 
       <section className="card p-6">
-        <h2 className="mb-3 font-display text-base font-medium">Reageren</h2>
+        <h2 className="mb-3 font-display text-h3 font-semibold">reageren.</h2>
         <ReplyForm ticketId={ticket.id} />
       </section>
     </div>

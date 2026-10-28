@@ -20,7 +20,7 @@ export default async function AdminContentPage() {
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-display text-2xl font-semibold">Content</h1>
+        <h1 className="font-display text-h2 font-semibold sm:text-h1">content.</h1>
         <NewContentItemDialog companies={companies} />
       </header>
 

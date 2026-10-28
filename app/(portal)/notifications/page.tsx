@@ -12,7 +12,7 @@ export default async function NotificationsPage() {
     <div className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="font-display text-2xl font-semibold">Meldingen</h1>
+          <h1 className="font-display text-h2 font-semibold sm:text-h1">meldingen.</h1>
           <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
             Updates over aanvragen, opmerkingen, goedkeuringen en meer.
           </p>

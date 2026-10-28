@@ -21,7 +21,7 @@ export default async function AdminProjectsPage() {
   return (
     <div className="space-y-10">
       <section className="space-y-3">
-        <h1 className="font-display text-2xl font-semibold">Projectaanvragen</h1>
+        <h1 className="font-display text-h2 font-semibold sm:text-h1">projectaanvragen.</h1>
         <p className="text-sm text-ink-muted dark:text-ink-dark-muted">
           Klanten vragen hier nieuwe projecten aan; de AI stelt meteen een prijs voor die de klant aanvaardt of
           weigert. Maak hieronder het echte project aan wanneer de klant akkoord gaat.
@@ -84,7 +84,7 @@ export default async function AdminProjectsPage() {
 
       <section className="space-y-3">
         <header className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-display text-2xl font-semibold">Projecten</h2>
+          <h2 className="font-display text-h3 font-semibold">projecten.</h2>
           <NewProjectDialog companies={companies} />
         </header>
 

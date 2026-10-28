@@ -38,7 +38,7 @@ export default async function AdminClientDetailPage({ params }: { params: { id: 
           <CompanyLogoUpload companyId={company.id} companyName={company.name} logoUrl={company.logo_url} />
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-display text-2xl font-semibold">{company.name}</h1>
+              <h1 className="font-display text-h2 font-semibold sm:text-h1">{company.name}</h1>
               {company.onboarding_status === "pending_review" && <Badge tone="waiting">Nog te beoordelen</Badge>}
             </div>
             <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">/{company.slug}</p>
@@ -49,7 +49,7 @@ export default async function AdminClientDetailPage({ params }: { params: { id: 
 
       <div className="grid gap-6 md:grid-cols-2">
         <section className="card p-6">
-          <h2 className="font-display text-base font-medium">Projecten</h2>
+          <h2 className="font-display text-h3 font-semibold">projecten.</h2>
           {company.projects.length === 0 ? (
             <p className="mt-3 text-sm text-ink-muted dark:text-ink-dark-muted">Nog geen projecten.</p>
           ) : (
@@ -68,7 +68,7 @@ export default async function AdminClientDetailPage({ params }: { params: { id: 
 
         <section className="card p-6">
           <div className="flex items-center justify-between gap-2">
-            <h2 className="font-display text-base font-medium">Gebruikers</h2>
+            <h2 className="font-display text-h3 font-semibold">gebruikers.</h2>
             <InviteUserDialog
               companies={[]}
               serviceRoleConfigured={isServiceRoleConfigured()}
@@ -90,7 +90,7 @@ export default async function AdminClientDetailPage({ params }: { params: { id: 
         </section>
 
         <section className="card p-6 md:col-span-2">
-          <h2 className="font-display text-base font-medium">Social kanalen</h2>
+          <h2 className="font-display text-h3 font-semibold">social kanalen.</h2>
           <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
             Rechtstreeks posten vanuit het portaal vereist goedkeuring van Meta (Instagram/Facebook) en LinkedIn —
             die aanvragen lopen nog. Zodra een kanaal verbonden is, verschijnt dat hier.

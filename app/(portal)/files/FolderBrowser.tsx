@@ -53,7 +53,7 @@ export async function FolderBrowser({ folderId }: { folderId: string | null }) {
 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="font-display text-2xl font-semibold">{folder ? folder.name : "Bestanden"}</h1>
+            <h1 className="font-display text-h2 font-semibold sm:text-h1">{folder ? folder.name : "bestanden."}</h1>
             {!folder && (
               <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
                 Logo&apos;s, huisstijl, foto&apos;s en andere bestanden die je met TDV deelt.

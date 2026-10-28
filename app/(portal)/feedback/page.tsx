@@ -17,7 +17,7 @@ export default async function FeedbackPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="font-display text-2xl font-semibold">Feedback</h1>
+        <h1 className="font-display text-h2 font-semibold sm:text-h1">feedback.</h1>
         <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
           Bekijk opgeleverd werk, laat opmerkingen achter en keur versies goed.
         </p>
@@ -32,7 +32,7 @@ export default async function FeedbackPage() {
       ) : (
         Array.from(groups.entries()).map(([projectName, items]) => (
           <section key={projectName} className="space-y-3">
-            <h2 className="font-display text-base font-medium text-ink-muted dark:text-ink-dark-muted">{projectName}</h2>
+            <h2 className="font-display text-h3 font-semibold text-ink-muted dark:text-ink-dark-muted">{projectName}</h2>
             <ul className="space-y-3">
               {items.map((d) => {
                 const latest = [...d.deliverable_versions].sort((a, b) => b.version_number - a.version_number)[0];

@@ -143,7 +143,7 @@ export function AiAssistantClient({ initialConversations }: { initialConversatio
         <header className="flex items-center justify-between gap-2 pb-4">
           <div className="flex items-center gap-2">
             <Sparkles size={20} className="text-accent-text" />
-            <h1 className="font-display text-xl font-semibold">AI Assistent</h1>
+            <h1 className="font-display text-h2 font-semibold sm:text-h1">ai-assistent.</h1>
           </div>
           <button
             type="button"
