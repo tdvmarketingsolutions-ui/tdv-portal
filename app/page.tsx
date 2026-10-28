@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
@@ -181,9 +182,22 @@ export default async function LandingPage() {
             </a>
           </div>
           <p className="mt-4 text-sm text-ink-muted">14 dagen gratis uitproberen, geen creditcard nodig.</p>
-          {/* TODO (Thomas): echte screenshot van het portaal hier, in een kader
-              met rounded-2xl en shadow-lg (richtlijnen sectie 4.2). Geen
-              stockbeeld als vervanger. */}
+          {/* Echte screenshot van het portaal (richtlijnen sectie 4.2), van het
+              testaccount met fictieve demo-inhoud — zie README "Testaccounts". */}
+          <figure className="mt-12">
+            <div className="overflow-hidden rounded-2xl border border-border shadow-lg">
+              <Image
+                src="/brand/portaal-demo-projecten.png"
+                alt="Het klantenportaal: projectoverzicht met aanvragen en projectstatussen"
+                width={2560}
+                height={1600}
+                sizes="(min-width: 1152px) 1152px, 100vw"
+                priority
+                className="h-auto w-full"
+              />
+            </div>
+            <figcaption className="mt-3 text-sm text-ink-muted">Demo met fictieve gegevens.</figcaption>
+          </figure>
         </div>
       </section>
 
