@@ -24,14 +24,14 @@ export default async function SettingsPage() {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="font-display text-2xl font-semibold">Instellingen</h1>
+        <h1 className="font-display text-h2 font-semibold sm:text-h1">instellingen.</h1>
         <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
           Beheer je account en voorkeuren.
         </p>
       </header>
 
       <section id="account" className="card scroll-mt-8 space-y-5 p-6">
-        <h2 className="font-display text-lg font-medium">Account</h2>
+        <h2 className="font-display text-h3 font-semibold">account.</h2>
         <EditProfileForm fullName={fullName} />
         <dl className="space-y-3 border-t border-border pt-4 text-sm dark:border-border-dark">
           <div className="flex justify-between gap-4">
@@ -53,7 +53,7 @@ export default async function SettingsPage() {
 
       <section id="instellingen" className="card scroll-mt-8 space-y-5 p-6">
         <div>
-          <h2 className="font-display text-lg font-medium">Wachtwoord</h2>
+          <h2 className="font-display text-h3 font-semibold">wachtwoord.</h2>
           <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">Kies een nieuw wachtwoord voor je account.</p>
         </div>
         <ChangePasswordForm />
@@ -61,7 +61,7 @@ export default async function SettingsPage() {
 
       <section className="card space-y-3 p-6">
         <div>
-          <h2 className="font-display text-lg font-medium">Weergave</h2>
+          <h2 className="font-display text-h3 font-semibold">weergave.</h2>
           <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
             Systeem volgt de instelling van je toestel. De keuze geldt voor dit toestel.
           </p>
@@ -70,7 +70,7 @@ export default async function SettingsPage() {
       </section>
 
       <section className="card space-y-3 p-6">
-        <h2 className="font-display text-lg font-medium">Meldingsvoorkeuren</h2>
+        <h2 className="font-display text-h3 font-semibold">meldingsvoorkeuren.</h2>
         <NotificationPreferenceForm emailNotifications={emailNotifications} />
       </section>
     </div>

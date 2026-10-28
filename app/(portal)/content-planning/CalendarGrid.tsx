@@ -430,7 +430,7 @@ export function CalendarGrid({
           className={`card p-6 ${dragOverKey === UNSCHEDULED ? "bg-accent-soft dark:bg-accent/10" : ""}`}
         >
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="font-display text-base font-medium">Nog niet ingepland</h2>
+            <h2 className="font-display text-h3 font-semibold">nog niet ingepland.</h2>
             {canManage && (
               <p className="hidden text-xs text-ink-muted dark:text-ink-dark-muted sm:block">
                 Sleep hierheen om te ontplannen

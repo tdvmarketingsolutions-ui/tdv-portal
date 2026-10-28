@@ -31,7 +31,7 @@ export default async function ContentItemDetailPage({ params }: { params: { id: 
       </Link>
 
       <header className="space-y-2">
-        <h1 className="font-display text-2xl font-semibold">{item.title}</h1>
+        <h1 className="font-display text-h2 font-semibold sm:text-h1">{item.title}</h1>
         <div className="flex flex-wrap gap-2">
           <Badge tone={CONTENT_STATUS_TONE[item.status]}>{CONTENT_STATUS_LABEL[item.status]}</Badge>
           {item.channels.map((c) => (
@@ -73,14 +73,14 @@ export default async function ContentItemDetailPage({ params }: { params: { id: 
 
       {item.caption && (
         <section className="card p-6">
-          <h2 className="mb-2 font-display text-base font-medium">Tekst</h2>
+          <h2 className="mb-2 font-display text-h3 font-semibold">tekst.</h2>
           <p className="whitespace-pre-wrap text-sm">{item.caption}</p>
         </section>
       )}
 
       {item.status === "pending_approval" && (
         <section className="card p-6">
-          <h2 className="mb-3 font-display text-base font-medium">Actie vereist</h2>
+          <h2 className="mb-3 font-display text-h3 font-semibold">actie vereist.</h2>
           <p className="mb-4 text-sm text-ink-muted dark:text-ink-dark-muted">
             Keur deze content goed, of vraag een revisie aan met een opmerking hieronder.
           </p>
@@ -103,7 +103,7 @@ export default async function ContentItemDetailPage({ params }: { params: { id: 
       </section>
 
       <section className="card p-6">
-        <h2 className="mb-3 font-display text-base font-medium">Reageren</h2>
+        <h2 className="mb-3 font-display text-h3 font-semibold">reageren.</h2>
         <CommentForm contentItemId={item.id} />
       </section>
     </div>

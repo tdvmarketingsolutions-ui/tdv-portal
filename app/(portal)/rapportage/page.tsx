@@ -26,7 +26,7 @@ export default async function RapportagePage() {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="font-display text-2xl font-semibold">Rapportage</h1>
+        <h1 className="font-display text-h2 font-semibold sm:text-h1">rapportage.</h1>
         <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
           {isStaff && !viewingAsClient
             ? `Wat er over alle klanten heen is afgerond, afgelopen 30 dagen (${periodLabel}).`
@@ -51,7 +51,7 @@ export default async function RapportagePage() {
 
           {report.recentPublishedContent.length > 0 && (
             <section className="space-y-3">
-              <h2 className="font-display text-lg font-medium">Recent gepubliceerde content</h2>
+              <h2 className="font-display text-h3 font-semibold">recent gepubliceerde content.</h2>
               <ul className="space-y-2">
                 {report.recentPublishedContent.map((item) => (
                   <li key={item.id} className="card flex items-center justify-between gap-4 p-4">

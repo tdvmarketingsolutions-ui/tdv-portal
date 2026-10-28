@@ -58,7 +58,7 @@ export default async function DeliverableDetailPage({
       <header className="space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="font-display text-2xl font-semibold">{deliverable.title}</h1>
+            <h1 className="font-display text-h2 font-semibold sm:text-h1">{deliverable.title}</h1>
             <Badge tone={FEEDBACK_STATUS_TONE[version.status]}>{FEEDBACK_STATUS_LABEL[version.status]}</Badge>
           </div>
           {canManage && <UploadVersionDialog deliverableId={deliverable.id} />}
@@ -113,7 +113,7 @@ export default async function DeliverableDetailPage({
 
       {version.status === "pending" && (
         <section className="card p-6">
-          <h2 className="mb-3 font-display text-base font-medium">Actie vereist</h2>
+          <h2 className="mb-3 font-display text-h3 font-semibold">actie vereist.</h2>
           <p className="mb-4 text-sm text-ink-muted dark:text-ink-dark-muted">
             Keur deze versie goed, of vraag een revisie aan met een opmerking.
           </p>
@@ -122,7 +122,7 @@ export default async function DeliverableDetailPage({
       )}
 
       <section className="space-y-3">
-        <h2 className="font-display text-base font-medium">Opmerkingen</h2>
+        <h2 className="font-display text-h3 font-semibold">opmerkingen.</h2>
         {allComments.length === 0 ? (
           <p className="text-sm text-ink-muted dark:text-ink-dark-muted">Nog geen opmerkingen op deze versie.</p>
         ) : (

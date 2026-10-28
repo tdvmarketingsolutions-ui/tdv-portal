@@ -39,7 +39,7 @@ export default async function ProjectsPage() {
     <div className="space-y-10">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="font-display text-2xl font-semibold">Projecten</h1>
+          <h1 className="font-display text-h2 font-semibold sm:text-h1">projecten.</h1>
           <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
             {isStaff
               ? "Alle projecten, per klant."
@@ -58,7 +58,7 @@ export default async function ProjectsPage() {
 
       {projectRequests.length > 0 && (
         <section className="space-y-3">
-          <h2 className="font-display text-base font-medium">Jouw aanvragen</h2>
+          <h2 className="font-display text-h3 font-semibold">jouw aanvragen.</h2>
           <ul className="space-y-3">
             {projectRequests.map((r) =>
               r.price_response === "pending" && r.indicative_price_range ? (

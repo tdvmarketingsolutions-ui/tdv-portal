@@ -13,7 +13,7 @@ export default async function AdminTicketsPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="font-display text-2xl font-semibold">Aanvragen</h1>
+        <h1 className="font-display text-h2 font-semibold sm:text-h1">aanvragen.</h1>
         <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">Alle aanvragen, over alle klanten heen.</p>
       </header>
 

@@ -33,7 +33,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
     <div className="space-y-8">
       <header>
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="font-display text-2xl font-semibold">{project.name}</h1>
+          <h1 className="font-display text-h2 font-semibold sm:text-h1">{project.name}</h1>
           <Badge tone={PROJECT_STATUS_TONE[project.status]}>{PROJECT_STATUS_LABEL[project.status]}</Badge>
           {deadlineUrgency && (
             <Badge tone={deadlineUrgency === "overdue" ? "danger" : "waiting"}>
@@ -56,7 +56,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
       <div className="grid gap-6 md:grid-cols-3">
         <div className="space-y-6 md:col-span-2">
           <section className="card p-6">
-            <h2 className="font-display text-lg font-medium">Tijdlijn</h2>
+            <h2 className="font-display text-h3 font-semibold">tijdlijn.</h2>
             {project.project_timeline_events?.length ? (
               <ol className="mt-4 space-y-4 border-l border-border pl-4 dark:border-border-dark">
                 {project.project_timeline_events.map((event) => (
@@ -76,7 +76,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
 
           <section className="card p-6">
             <div className="flex items-center justify-between gap-2">
-              <h2 className="font-display text-lg font-medium">Feedback &amp; opleveringen</h2>
+              <h2 className="font-display text-h3 font-semibold">feedback en opleveringen.</h2>
               {canManage && <NewDeliverableDialog projectId={project.id} />}
             </div>
             {project.deliverables?.length ? (
@@ -106,7 +106,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
           </section>
 
           <section className="card p-6">
-            <h2 className="font-display text-lg font-medium">Opmerkingen</h2>
+            <h2 className="font-display text-h3 font-semibold">opmerkingen.</h2>
             <div className="mt-4 space-y-3">
               {comments.length ? (
                 comments.map((comment) => (
@@ -133,7 +133,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         <aside className="space-y-6">
           <section className="card p-6">
             <div className="flex items-center justify-between gap-2">
-              <h2 className="font-display text-base font-medium">Gekoppelde aanvragen</h2>
+              <h2 className="font-display text-h3 font-semibold">gekoppelde aanvragen.</h2>
               <Link
                 href={`/aanvragen/new?project=${project.id}`}
                 aria-label="Nieuwe aanvraag voor dit project"
@@ -156,7 +156,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
           </section>
 
           <section className="card p-6">
-            <h2 className="font-display text-base font-medium">Bestanden</h2>
+            <h2 className="font-display text-h3 font-semibold">bestanden.</h2>
             <ul className="mt-3 space-y-2 text-sm">
               {project.files?.length
                 ? project.files.map((f) => (

@@ -12,7 +12,7 @@ export default async function TicketsPage() {
     <div className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="font-display text-2xl font-semibold">Aanvragen</h1>
+          <h1 className="font-display text-h2 font-semibold sm:text-h1">aanvragen.</h1>
           <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
             Stel een vraag of meld een probleem — TDV antwoordt hier rechtstreeks.
           </p>

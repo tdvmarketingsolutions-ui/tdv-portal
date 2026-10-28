@@ -10,7 +10,7 @@ export default async function AdminAiPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="font-display text-2xl font-semibold">AI Assistent</h1>
+        <h1 className="font-display text-h2 font-semibold sm:text-h1">ai-assistent.</h1>
         <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
           Activiteit van de AI-assistent, over alle klanten heen.
         </p>
@@ -24,7 +24,7 @@ export default async function AdminAiPage() {
       <section className="card space-y-3 p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 className="font-display text-base font-medium">Kennisbank</h2>
+            <h2 className="font-display text-h3 font-semibold">kennisbank.</h2>
             <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
               Projecten, aanvragen, feedback en contentplanning worden hier omgezet naar doorzoekbare fragmenten in{" "}
               <code className="rounded bg-canvas px-1 py-0.5 dark:bg-canvas-dark">ai_documents</code>, zodat de
@@ -48,7 +48,7 @@ export default async function AdminAiPage() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-display text-base font-medium">Recente gesprekken</h2>
+        <h2 className="font-display text-h3 font-semibold">recente gesprekken.</h2>
         {recent.length === 0 ? (
           <EmptyState icon={Bot} title="Nog geen gesprekken" description="Zodra klanten de AI-assistent gebruiken, verschijnt dat hier." />
         ) : (
