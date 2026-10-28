@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Wordmark } from "@/components/brand/Wordmark";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,8 +44,7 @@ export default function RegisterPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center px-4 py-10">
       <Link href="/" className="mb-6">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-7 w-auto" />
+        <Wordmark className="w-[132px] text-ink" />
       </Link>
       <div className="card w-full max-w-sm p-8">
         <Link
@@ -54,7 +54,7 @@ export default function RegisterPage() {
           <ChevronLeft size={16} strokeWidth={1.75} />
           Terug naar inloggen
         </Link>
-        <h1 className="mt-4 font-display text-2xl font-semibold">Start je proefperiode</h1>
+        <h1 className="mt-4 font-display text-h2 font-semibold">start je proefperiode.</h1>
         <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
           14 dagen gratis, geen creditcard nodig. Je eigen klantenportaal staat na deze stap meteen klaar.
         </p>

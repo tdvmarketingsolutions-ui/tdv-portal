@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Wordmark } from "@/components/brand/Wordmark";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from "@/lib/supabase/client";
@@ -66,11 +67,10 @@ export default function ResetPasswordPage() {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center px-4">
       <Link href="/" className="mb-6">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-7 w-auto" />
+        <Wordmark className="w-[132px] text-ink" />
       </Link>
         <div className="card w-full max-w-sm p-8 text-center">
-          <h1 className="font-display text-xl font-semibold">Link verlopen of ongeldig</h1>
+          <h1 className="font-display text-h2 font-semibold">link verlopen of ongeldig.</h1>
           <p className="mt-2 text-sm text-ink-muted dark:text-ink-dark-muted">
             Vraag een nieuwe reset-link aan om je wachtwoord in te stellen.
           </p>
@@ -85,11 +85,10 @@ export default function ResetPasswordPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center px-4">
       <Link href="/" className="mb-6">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-7 w-auto" />
+        <Wordmark className="w-[132px] text-ink" />
       </Link>
       <div className="card w-full max-w-sm p-8">
-        <h1 className="font-display text-2xl font-semibold">Nieuw wachtwoord</h1>
+        <h1 className="font-display text-h2 font-semibold">nieuw wachtwoord.</h1>
         <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">Kies een nieuw wachtwoord voor je account.</p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4" noValidate>

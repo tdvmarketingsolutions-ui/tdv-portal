@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Wordmark } from "@/components/brand/Wordmark";
 import { ChevronLeft, MailCheck } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,8 +32,7 @@ export default function ForgotPasswordPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center px-4">
       <Link href="/" className="mb-6">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/logo.png" alt="TDV Marketing Solutions" className="h-7 w-auto" />
+        <Wordmark className="w-[132px] text-ink" />
       </Link>
       <div className="card w-full max-w-sm p-8">
         {sent ? (
@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent-soft dark:bg-accent/10">
               <MailCheck size={22} strokeWidth={1.75} className="text-accent-text" />
             </div>
-            <h1 className="mt-4 font-display text-xl font-semibold">Check je e-mail</h1>
+            <h1 className="mt-4 font-display text-h2 font-semibold">check je e-mail.</h1>
             <p className="mt-2 text-sm text-ink-muted dark:text-ink-dark-muted">
               Als dit e-mailadres bij ons bekend is, ontvang je een link om je wachtwoord opnieuw in te stellen.
             </p>
@@ -57,7 +57,7 @@ export default function ForgotPasswordPage() {
               <ChevronLeft size={16} strokeWidth={1.75} />
               Terug naar inloggen
             </Link>
-            <h1 className="mt-4 font-display text-2xl font-semibold">Wachtwoord vergeten</h1>
+            <h1 className="mt-4 font-display text-h2 font-semibold">wachtwoord vergeten.</h1>
             <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
               Vul je e-mailadres in en we sturen je een link om een nieuw wachtwoord in te stellen.
             </p>
