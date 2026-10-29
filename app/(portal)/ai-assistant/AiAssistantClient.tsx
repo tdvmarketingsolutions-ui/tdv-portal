@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Sparkles, Send, Plus, MessageSquare } from "lucide-react";
+import { Sparkles, Send, Plus, MessageSquare, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/ToastProvider";
 import type { AiConversation, AiMessage } from "@/lib/data/ai";
 import { loadConversationMessagesAction } from "./actions";
 
-type Message = { id?: string; role: "user" | "assistant"; content: string };
+// failed: een vraag waarop geen antwoord kwam. Blijft zichtbaar met
+// "Opnieuw proberen", maar gaat nooit mee in de geschiedenis naar de API;
+// een nieuwe vraag vervangt hem.
+type Message = { id?: string; role: "user" | "assistant"; content: string; failed?: boolean };
 
 export function AiAssistantClient({ initialConversations }: { initialConversations: AiConversation[] }) {
   const { push } = useToast();
@@ -44,58 +47,69 @@ export function AiAssistantClient({ initialConversations }: { initialConversatio
     }
   }
 
-  async function sendMessage(e: React.FormEvent) {
-    e.preventDefault();
-    const question = input.trim();
-    if (!question || loading) return;
+  function rememberConversation(conversationId: string, question: string) {
+    if (!activeConversationId) {
+      setActiveConversationId(conversationId);
+      const title = question.length > 60 ? `${question.slice(0, 57)}…` : question;
+      const now = new Date().toISOString();
+      setConversations((current) =>
+        current.some((c) => c.id === conversationId)
+          ? current
+          : [{ id: conversationId, title, created_at: now, updated_at: now }, ...current]
+      );
+    } else {
+      setConversations((current) => {
+        const updated = current.find((c) => c.id === activeConversationId);
+        if (!updated) return current;
+        return [
+          { ...updated, updated_at: new Date().toISOString() },
+          ...current.filter((c) => c.id !== activeConversationId),
+        ];
+      });
+    }
+  }
 
-    const nextMessages: Message[] = [...messages, { role: "user", content: question }];
+  async function ask(question: string, history: Message[]) {
+    const sent = history.filter((m) => !m.failed);
+    const nextMessages: Message[] = [...sent, { role: "user", content: question }];
     setMessages(nextMessages);
-    setInput("");
     setLoading(true);
 
     try {
       const res = await fetch("/api/ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: nextMessages, conversationId: activeConversationId ?? undefined }),
+        body: JSON.stringify({
+          messages: nextMessages.map(({ role, content }) => ({ role, content })),
+          conversationId: activeConversationId ?? undefined,
+        }),
       });
-
-      if (!res.ok) {
-        throw new Error(`Server antwoordde met status ${res.status}`);
-      }
-
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
+      const data: { reply?: string; conversationId?: string; error?: string } = await res.json().catch(() => ({}));
+      // Ook bij een fout kan er al een gesprek aangemaakt zijn: dan blijft
+      // "opnieuw proberen" in datzelfde gesprek.
+      if (data.conversationId) rememberConversation(data.conversationId, question);
+      if (!res.ok || !data.reply) throw new Error(data.error ?? "Kon geen antwoord ophalen. Controleer je verbinding en probeer opnieuw.");
 
       setMessages([...nextMessages, { role: "assistant", content: data.reply }]);
-
-      if (!activeConversationId && data.conversationId) {
-        setActiveConversationId(data.conversationId);
-        const title = question.length > 60 ? `${question.slice(0, 57)}…` : question;
-        setConversations((current) => [
-          { id: data.conversationId, title, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-          ...current,
-        ]);
-      } else if (activeConversationId) {
-        setConversations((current) => {
-          const updated = current.find((c) => c.id === activeConversationId);
-          if (!updated) return current;
-          return [
-            { ...updated, updated_at: new Date().toISOString() },
-            ...current.filter((c) => c.id !== activeConversationId),
-          ];
-        });
-      }
     } catch (err) {
       push(err instanceof Error ? err.message : "Kon geen antwoord ophalen.", "error");
-      setMessages([
-        ...nextMessages,
-        { role: "assistant", content: "Sorry, er ging iets mis. Probeer het straks opnieuw." },
-      ]);
+      setMessages([...sent, { role: "user", content: question, failed: true }]);
     } finally {
       setLoading(false);
     }
+  }
+
+  async function sendMessage(e: React.FormEvent) {
+    e.preventDefault();
+    const question = input.trim();
+    if (!question || loading) return;
+    setInput("");
+    await ask(question, messages);
+  }
+
+  function retry(question: string) {
+    if (loading) return;
+    void ask(question, messages);
   }
 
   return (
@@ -163,17 +177,37 @@ export function AiAssistantClient({ initialConversations }: { initialConversatio
               antwoordt op basis van jouw gegevens bij TDV, niet die van andere klanten.
             </div>
           ) : (
-            messages.map((m, i) => (
-              <div
-                key={m.id ?? i}
-                className={cn(
-                  "max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-3 text-sm",
-                  m.role === "user" ? "ml-auto bg-accent text-accent-fg" : "card"
-                )}
-              >
-                {m.content}
-              </div>
-            ))
+            messages.map((m, i) =>
+              m.failed ? (
+                <div key={m.id ?? i} className="ml-auto flex max-w-[85%] flex-col items-end gap-1.5">
+                  <div className="whitespace-pre-wrap rounded-2xl border border-dashed border-border-strong px-4 py-3 text-sm dark:border-border-strong-dark">
+                    {m.content}
+                  </div>
+                  <p className="flex items-center gap-2 text-xs text-ink-muted dark:text-ink-dark-muted">
+                    Geen antwoord ontvangen.
+                    <button
+                      type="button"
+                      onClick={() => retry(m.content)}
+                      disabled={loading}
+                      className="focus-ring inline-flex items-center gap-1 rounded-md font-medium text-accent-text hover:underline disabled:opacity-40"
+                    >
+                      <RotateCcw size={12} strokeWidth={2} />
+                      Opnieuw proberen
+                    </button>
+                  </p>
+                </div>
+              ) : (
+                <div
+                  key={m.id ?? i}
+                  className={cn(
+                    "max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-3 text-sm",
+                    m.role === "user" ? "ml-auto bg-accent text-accent-fg" : "card"
+                  )}
+                >
+                  {m.content}
+                </div>
+              )
+            )
           )}
           {loading && (
             <div className="card w-fit px-4 py-3 text-sm text-ink-muted dark:text-ink-dark-muted">Bezig met antwoorden…</div>

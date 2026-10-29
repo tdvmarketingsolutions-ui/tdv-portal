@@ -184,7 +184,10 @@ van het systeem.
 - **Instellingen**: naam en wachtwoord aanpasbaar, meldingsvoorkeur — niet
   langer alleen-lezen.
 - **AI-assistent**: chat-UI + RAG API-route + pgvector search RPC +
-  gespreksgeschiedenis, plus een kennisbank-ingestpipeline
+  gespreksgeschiedenis (mislukt een antwoord, dan geeft de route een 502
+  en bewaart ze niets; de vraag blijft staan met "Opnieuw proberen" in
+  hetzelfde gesprek, en een mislukte vraag gaat nooit mee als
+  geschiedenis), plus een kennisbank-ingestpipeline
   (`lib/data/admin/ai-ingest.ts`, te starten vanaf `/admin/ai`) die
   projecten, aanvragen, feedback en contentplanning omzet naar doorzoekbare
   chunks in `ai_documents`. Incrementeel by default: de watermark is

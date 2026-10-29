@@ -107,6 +107,17 @@ staat, zeg dat eerlijk — verzin niets.
 Context:
 ${context || "(geen relevante documenten gevonden)"}`;
 
+  // Mislukt de Anthropic-call, dan antwoorden we met een fout in plaats van
+  // een "sorry"-tekst als gewoon antwoord: zo'n tekst werd anders opgeslagen
+  // als assistentbericht en zat daarna voorgoed in de gespreksgeschiedenis
+  // (en in elke volgende prompt). conversationId gaat mee zodat de client
+  // bij "opnieuw proberen" in hetzelfde gesprek blijft.
+  const generationFailed = () =>
+    NextResponse.json(
+      { error: "De assistent kon nu geen antwoord geven. Probeer het opnieuw.", conversationId },
+      { status: 502 }
+    );
+
   let reply: string;
   if (!process.env.ANTHROPIC_API_KEY) {
     reply = "De AI-assistent is nog niet volledig geconfigureerd (ontbrekende API-key) — neem contact op met TDV.";
@@ -130,16 +141,18 @@ ${context || "(geen relevante documenten gevonden)"}`;
       if (!anthropicRes.ok) {
         const errBody = await anthropicRes.text();
         console.error("Anthropic API error:", anthropicRes.status, errBody);
-        reply = "Sorry, ik kon geen antwoord genereren. Probeer het straks opnieuw.";
-      } else {
-        const anthropicData = await anthropicRes.json();
-        reply =
-          anthropicData.content?.find((b: { type: string }) => b.type === "text")?.text ??
-          "Sorry, ik kon geen antwoord genereren.";
+        return generationFailed();
       }
+      const anthropicData = await anthropicRes.json();
+      const text = anthropicData.content?.find((b: { type: string }) => b.type === "text")?.text;
+      if (!text) {
+        console.error("Anthropic API gaf geen tekstblok terug:", anthropicData.stop_reason);
+        return generationFailed();
+      }
+      reply = text;
     } catch (err) {
       console.error("Anthropic API call failed:", err);
-      reply = "Sorry, er ging iets mis bij het genereren van een antwoord. Probeer het straks opnieuw.";
+      return generationFailed();
     }
   }
 
