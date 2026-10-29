@@ -38,10 +38,11 @@ export default async function AdminSettingsPage() {
         <div>
           <h2 className="font-display text-h3 font-semibold">branding.</h2>
           <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
-            Hoe jouw bureau zich toont in het portaal — logo, naam en accentkleur.
+            Hoe jouw bureau zich toont in het portaal — logo, favicon, naam en accentkleur.
           </p>
         </div>
         <AgencyLogoUpload agencyName={agency.brand_name ?? agency.name} logoUrl={agency.logo_url} />
+        <AgencyLogoUpload agencyName={agency.brand_name ?? agency.name} logoUrl={agency.favicon_url} kind="favicon" />
         <div className="border-t border-border pt-4 dark:border-border-dark">
           <BrandingForm brandName={agency.brand_name} accentColor={agency.accent_color} supportEmail={agency.support_email} />
         </div>

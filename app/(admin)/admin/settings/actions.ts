@@ -1,7 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { updateAgencyBranding, uploadAgencyLogo, removeAgencyLogo } from "@/lib/data/admin/agency-branding";
+import {
+  updateAgencyBranding,
+  uploadAgencyLogo,
+  removeAgencyLogo,
+  uploadAgencyFavicon,
+  removeAgencyFavicon,
+} from "@/lib/data/admin/agency-branding";
 import { brandingSchema, type BrandingFormValues } from "./branding-schema";
 
 export async function updateBrandingAction(input: BrandingFormValues): Promise<{ error?: string }> {
@@ -47,6 +53,35 @@ export async function removeAgencyLogoAction(): Promise<{ error?: string }> {
     await removeAgencyLogo();
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Kon logo niet verwijderen." };
+  }
+
+  revalidatePath("/admin/settings");
+  revalidatePath("/", "layout");
+  return {};
+}
+
+export async function uploadAgencyFaviconAction(formData: FormData): Promise<{ error?: string }> {
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) {
+    return { error: "Kies een bestand om te uploaden." };
+  }
+
+  try {
+    await uploadAgencyFavicon(file);
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Kon favicon niet uploaden." };
+  }
+
+  revalidatePath("/admin/settings");
+  revalidatePath("/", "layout");
+  return {};
+}
+
+export async function removeAgencyFaviconAction(): Promise<{ error?: string }> {
+  try {
+    await removeAgencyFavicon();
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Kon favicon niet verwijderen." };
   }
 
   revalidatePath("/admin/settings");
