@@ -421,7 +421,10 @@ opgesteld door de design-sessie:
   anders TDV-terracotta) alle accent-tokens af — `accent`, `accent-fg` (wit of
   #282828 volgens luminantie), `accent-dark` (hover), `accent-soft`,
   `accent-text` — volgens de HSL-regel uit de richtlijnen, met gegarandeerd
-  WCAG AA. Te lichte kleuren worden automatisch verdonkerd.
+  WCAG AA. Te lichte kleuren worden automatisch verdonkerd. In
+  `/admin/settings` → Branding toont het formulier live wat het portaal met
+  de gekozen kleur doet (knop en link, licht en donker), met een melding
+  als de kleur verdonkerd wordt.
 - `app/globals.css`: de basisklassen `.btn-*`, `.input`, `.card`,
   `.focus-ring`, `.link`.
 - `components/brand/`: het woordmerk en monogram als React-component (letters
