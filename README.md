@@ -285,9 +285,6 @@ van het systeem.
 Backlog voor de doorlopende 5-uurlijkse routine (zie onder) — één
 afgebakende PR per punt, in deze volgorde:
 
-- [ ] **Uploadveld voor `favicon_url`** in `/admin/settings` → Branding,
-      naar analogie van de bestaande logo-upload (bucket `agency-logos`).
-      Tot dan valt het favicon terug op `logo_url`.
 - [ ] **Performance-audit, vervolg**: optimistic UI voor de status-dropdowns,
       de ontbrekende indexen en de N+1-thumbnails zijn gedaan (zie "Wat er
       echt werkt" hierboven) — vervolg op de regio-fix (zie "Performance"
@@ -351,8 +348,9 @@ dus **expliciet niet voor de onbemande routine**, elke stap begeleid:
        (`app/manifest.ts`: naam, icoon, `theme_color`) volgt de agency van
        de ingelogde gebruiker, want de manifest-fetch draagt de sessie mee
        (`crossorigin="use-credentials"`); anoniem of zonder eigen branding
-       blijft het TDV. Nog open: een upload-veld voor `favicon_url` in
-       `/admin/settings`.
+       blijft het TDV. Het favicon is apart te uploaden in
+       `/admin/settings` → Branding (PNG/SVG/ICO, hoogstens 512 KB,
+       zelfde bucket `agency-logos`); zonder favicon geldt het logo.
 6. [ ] Facturatie via **Billit** (niet Stripe — bewuste keuze: geen
        betaalprovider/kaartincasso, agency's kiezen maand/kwartaal/jaar-ritme,
        het systeem maakt en verstuurt zelf facturen via de Billit API,
