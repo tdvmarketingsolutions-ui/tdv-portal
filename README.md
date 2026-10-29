@@ -278,7 +278,11 @@ van het systeem.
   portaal al had. Plus `dashboard` (meerdere parallelle queries, vaak de
   eerste pagina na inloggen) en `files/[folderId]` (had 'm wel op
   `/files` maar niet op een submap). Allemaal met dezelfde
-  `Skeleton`-aanpak als de bestaande routes.
+  `Skeleton`-aanpak als de bestaande routes. Nadien ook `rapportage`
+  (maandcijfers uit meerdere tabellen), `ai-assistant` (gesprekkenlijst),
+  `settings` en `aanvragen/new` (projectlijst voor de keuzelijst): elke
+  portaalroute die data ophaalt heeft nu een laadstaat, met de echte
+  paginatitel er al in zodat er niets verspringt.
 
 ## Wat nog moet worden bijgebouwd
 
