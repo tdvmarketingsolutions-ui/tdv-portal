@@ -4,9 +4,11 @@ import { getDeliverablesForCurrentUser } from "@/lib/data/deliverables";
 import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { FEEDBACK_STATUS_LABEL, FEEDBACK_STATUS_TONE } from "@/lib/feedback-status";
+import { getAgencyDisplayName } from "@/lib/data/agency-branding";
 
 export default async function FeedbackPage() {
   const deliverables = await getDeliverablesForCurrentUser();
+  const agencyName = await getAgencyDisplayName();
 
   const groups = new Map<string, typeof deliverables>();
   for (const d of deliverables) {
@@ -27,7 +29,7 @@ export default async function FeedbackPage() {
         <EmptyState
           icon={MessageSquareText}
           title="Nog niets om te beoordelen"
-          description="Zodra TDV werk oplevert, verschijnt het hier voor jouw feedback."
+          description={`Zodra ${agencyName} werk oplevert, verschijnt het hier voor jouw feedback.`}
         />
       ) : (
         Array.from(groups.entries()).map(([projectName, items]) => (

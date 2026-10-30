@@ -15,8 +15,10 @@ import {
 import { isStaffRole, getStaffViewCompanyId } from "@/lib/staff-view";
 import { NewProjectRequestDialog } from "./NewProjectRequestDialog";
 import { ProjectRequestPriceCard } from "./ProjectRequestPriceCard";
+import { getAgencyDisplayName } from "@/lib/data/agency-branding";
 
 export default async function ProjectsPage() {
+  const agencyName = await getAgencyDisplayName();
   const supabase = createClient();
   const {
     data: { user },
@@ -43,7 +45,7 @@ export default async function ProjectsPage() {
           <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
             {isStaff
               ? "Alle projecten, per klant."
-              : "Alle projecten die TDV voor jouw bedrijf uitvoert."}
+              : `Alle projecten die ${agencyName} voor jouw bedrijf uitvoert.`}
           </p>
         </div>
         {canActAsClient && (
@@ -51,7 +53,7 @@ export default async function ProjectsPage() {
             <Link href="/aanvragen/new" className="btn-secondary">
               Aanvraag stellen
             </Link>
-            <NewProjectRequestDialog />
+            <NewProjectRequestDialog agencyName={agencyName} />
           </div>
         )}
       </header>
@@ -62,7 +64,7 @@ export default async function ProjectsPage() {
           <ul className="space-y-3">
             {projectRequests.map((r) =>
               r.price_response === "pending" && r.indicative_price_range ? (
-                <ProjectRequestPriceCard key={r.id} request={r} />
+                <ProjectRequestPriceCard key={r.id} request={r} agencyName={agencyName} />
               ) : (
                 <li key={r.id} className="card flex items-center justify-between gap-4 p-5">
                   <div className="min-w-0 flex-1">
@@ -86,7 +88,7 @@ export default async function ProjectsPage() {
           <EmptyState
             icon={FolderKanban}
             title="Nog geen projecten"
-            description="Zodra TDV een project opstart, verschijnt het hier."
+            description={`Zodra ${agencyName} een project opstart, verschijnt het hier.`}
           />
         ) : (
           <ul className="space-y-3">

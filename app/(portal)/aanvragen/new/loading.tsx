@@ -5,9 +5,7 @@ export default function NewTicketLoading() {
     <div className="mx-auto max-w-xl space-y-6">
       <header>
         <h1 className="font-display text-h2 font-semibold sm:text-h1">nieuwe aanvraag.</h1>
-        <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
-          Stel een vraag of meld een probleem — TDV antwoordt hier rechtstreeks.
-        </p>
+        <Skeleton className="mt-2 h-4 w-96 max-w-full" />
       </header>
       {/* onderwerp, prioriteit, project, bericht, verzendknop */}
       <div className="space-y-4">

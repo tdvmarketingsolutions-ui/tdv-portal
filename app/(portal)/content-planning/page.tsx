@@ -10,6 +10,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { CalendarGrid } from "./CalendarGrid";
 import { NewContentItemDialog } from "./NewContentItemDialog";
 import { NewContentItemDialog as StaffNewContentItemDialog } from "@/app/(admin)/admin/content/NewContentItemDialog";
+import { getAgencyDisplayName } from "@/lib/data/agency-branding";
 
 export default async function ContentPlanningPage({ searchParams }: { searchParams: { month?: string } }) {
   const supabase = createClient();
@@ -26,9 +27,10 @@ export default async function ContentPlanningPage({ searchParams }: { searchPara
   // just narrowing which company's data shows.
   const canManage = isStaff && !getStaffViewCompanyId();
 
-  const [rawItems, companies] = await Promise.all([
+  const [rawItems, companies, agencyName] = await Promise.all([
     getContentItemsForCurrentUser(),
     canManage ? getAllCompaniesForSelect() : Promise.resolve([]),
+    getAgencyDisplayName(),
   ]);
   const items = await withVisualThumbnails(rawItems);
 
@@ -73,7 +75,7 @@ export default async function ContentPlanningPage({ searchParams }: { searchPara
         <EmptyState
           icon={CalendarDays}
           title="Nog geen content gepland"
-          description={canManage ? "Maak een content-item aan om te beginnen." : "Zodra TDV content inplant, verschijnt die hier."}
+          description={canManage ? "Maak een content-item aan om te beginnen." : `Zodra ${agencyName} content inplant, verschijnt die hier.`}
         />
       ) : (
         <CalendarGrid items={items} days={days} monthStart={monthStart} canManage={canManage} companies={companies} />

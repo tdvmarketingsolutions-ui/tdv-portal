@@ -5,11 +5,13 @@ import { CheckCircle2, Clock, MessageSquare, Sparkles } from "lucide-react";
 import { getDashboardData } from "@/lib/data/dashboard";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Badge } from "@/components/ui/Badge";
+import { getAgencyDisplayName } from "@/lib/data/agency-branding";
 
 export const dynamic = "force-dynamic"; // always fresh — this is a live status view
 
 export default async function DashboardPage() {
   const data = await getDashboardData();
+  const agencyName = await getAgencyDisplayName();
 
   if (data.companyOnboardingStatus === "pending_review") {
     return (
@@ -19,7 +21,7 @@ export default async function DashboardPage() {
         </div>
         <h1 className="mt-4 font-display text-h2 font-semibold sm:text-h1">bedankt voor je registratie.</h1>
         <p className="mt-2 max-w-md text-sm text-ink-muted dark:text-ink-dark-muted">
-          TDV neemt je account door. Zodra dat is gebeurd, krijg je hier toegang tot projecten, contentplanning en de
+          {agencyName} neemt je account door. Zodra dat is gebeurd, krijg je hier toegang tot projecten, contentplanning en de
           rest van het portaal.
         </p>
       </div>
