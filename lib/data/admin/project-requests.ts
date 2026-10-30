@@ -1,6 +1,7 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { createNotifications } from "@/lib/data/notifications";
+import { getAgencyDisplayName } from "@/lib/data/agency-branding";
 import type { ProjectRequest, ProjectRequestStatus } from "@/types/domain";
 
 export interface AdminProjectRequest extends ProjectRequest {
@@ -38,9 +39,12 @@ export async function updateProjectRequestStatusAdmin(id: string, status: Projec
   const request = requestData as { title: string; requested_by: string } | null;
   if (!request) return;
 
+  // Staff en klant horen bij dezelfde agency, dus de naam van de ingelogde
+  // staff-agency is ook die van de klant.
+  const agencyName = await getAgencyDisplayName();
   const STATUS_MESSAGE: Record<ProjectRequestStatus, string> = {
     requested: "is opnieuw geopend",
-    awaiting_quote: "is aanvaard — TDV start de voorbereiding op",
+    awaiting_quote: `is aanvaard — ${agencyName} start de voorbereiding op`,
     project_active: "is goedgekeurd, het project is actief",
     declined: "wordt niet uitgevoerd",
   };

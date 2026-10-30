@@ -12,7 +12,13 @@ import { loadConversationMessagesAction } from "./actions";
 // een nieuwe vraag vervangt hem.
 type Message = { id?: string; role: "user" | "assistant"; content: string; failed?: boolean };
 
-export function AiAssistantClient({ initialConversations }: { initialConversations: AiConversation[] }) {
+export function AiAssistantClient({
+  initialConversations,
+  agencyName,
+}: {
+  initialConversations: AiConversation[];
+  agencyName: string;
+}) {
   const { push } = useToast();
   const [conversations, setConversations] = useState(initialConversations);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
@@ -174,7 +180,7 @@ export function AiAssistantClient({ initialConversations }: { initialConversatio
           ) : messages.length === 0 ? (
             <div className="card p-5 text-sm text-ink-muted dark:text-ink-dark-muted">
               Stel een vraag over je projecten, aanvragen, content of facturen — de assistent
-              antwoordt op basis van jouw gegevens bij TDV, niet die van andere klanten.
+              antwoordt op basis van jouw gegevens bij {agencyName}, niet die van andere klanten.
             </div>
           ) : (
             messages.map((m, i) =>

@@ -369,7 +369,12 @@ dus **expliciet niet voor de onbemande routine**, elke stap begeleid:
        (`app/manifest.ts`: naam, icoon, `theme_color`) volgt de agency van
        de ingelogde gebruiker, want de manifest-fetch draagt de sessie mee
        (`crossorigin="use-credentials"`); anoniem of zonder eigen branding
-       blijft het TDV. Het favicon is apart te uploaden in
+       blijft het TDV. Klantteksten in het portaal (lege staten, paginatekst,
+       meldingen, de AI-assistent) noemen het bureau via
+       `getAgencyDisplayName()` (`brand_name`, anders `name`, anders TDV), nooit
+       vast "TDV". Bewust nog TDV-specifiek: de prijsprompt in
+       `lib/ai/indicative-price.ts` (prijspositionering is een beslissing per
+       agency). Het favicon is apart te uploaden in
        `/admin/settings` → Branding (PNG/SVG/ICO, hoogstens 512 KB,
        zelfde bucket `agency-logos`); zonder favicon geldt het logo.
 6. [ ] Facturatie via **Billit** (niet Stripe — bewuste keuze: geen

@@ -10,7 +10,7 @@ import { PROJECT_REQUEST_TYPE_LABEL } from "@/lib/project-request-status";
 import type { ProjectRequest } from "@/types/domain";
 import { respondToProjectRequestPriceAction } from "./actions";
 
-export function ProjectRequestPriceCard({ request }: { request: ProjectRequest }) {
+export function ProjectRequestPriceCard({ request, agencyName }: { request: ProjectRequest; agencyName: string }) {
   const router = useRouter();
   const { push } = useToast();
   const [loading, setLoading] = useState<"accept" | "decline" | null>(null);
@@ -24,7 +24,7 @@ export function ProjectRequestPriceCard({ request }: { request: ProjectRequest }
       push(result.error, "error");
       return;
     }
-    push(accepted ? "Bedankt! TDV start de voorbereiding van je project." : "Aanvraag geweigerd.");
+    push(accepted ? `Bedankt! ${agencyName} start de voorbereiding van je project.` : "Aanvraag geweigerd.");
     router.refresh();
   }
 

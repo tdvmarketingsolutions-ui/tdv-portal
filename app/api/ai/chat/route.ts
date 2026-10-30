@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { embedText } from "@/lib/ai/embeddings";
+import { getAgencyDisplayName } from "@/lib/data/agency-branding";
 
 export const runtime = "nodejs";
 
@@ -95,13 +96,16 @@ export async function POST(req: Request) {
   }
 
   // --- Generation ------------------------------------------------------------
-  const systemPrompt = `Je bent de AI Assistent van het TDV klantenportaal. Je antwoordt in de stijl en met de
+  // Het bureau van de klant, niet vast TDV: een klant van een andere agency
+  // moet een assistent van zijn eigen bureau krijgen.
+  const agencyName = await getAgencyDisplayName();
+  const systemPrompt = `Je bent de AI Assistent van het klantenportaal van ${agencyName}. Je antwoordt in de stijl en met de
 kennis van een medior marketing manager: professioneel, ter zake, met concrete en praktische
 adviezen — geen algemeenheden, geen overdreven verkooppraat. Je legt vaktermen kort uit als dat
 nuttig is, maar praat als een collega, niet als een handleiding.
 
 Je beantwoordt vragen van één specifieke klant, uitsluitend op basis van de onderstaande context
-(hun eigen projecten, aanvragen, content en facturen bij TDV). Als het antwoord niet in de context
+(hun eigen projecten, aanvragen, content en facturen bij ${agencyName}). Als het antwoord niet in de context
 staat, zeg dat eerlijk — verzin niets.
 
 Context:
@@ -120,7 +124,7 @@ ${context || "(geen relevante documenten gevonden)"}`;
 
   let reply: string;
   if (!process.env.ANTHROPIC_API_KEY) {
-    reply = "De AI-assistent is nog niet volledig geconfigureerd (ontbrekende API-key) — neem contact op met TDV.";
+    reply = `De AI-assistent is nog niet volledig geconfigureerd (ontbrekende API-key) — neem contact op met ${agencyName}.`;
   } else {
     try {
       const anthropicRes = await fetch("https://api.anthropic.com/v1/messages", {

@@ -4,6 +4,7 @@ import { isStaffRole, getStaffViewCompanyId } from "@/lib/staff-view";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CONTENT_CHANNEL_LABEL } from "@/lib/content-status";
 import { BarChart3 } from "lucide-react";
+import { getAgencyDisplayName } from "@/lib/data/agency-branding";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,7 @@ export default async function RapportagePage() {
   const viewingAsClient = !isStaff || getStaffViewCompanyId() !== null;
 
   const report = await getMonthlyReportForCurrentUser();
+  const agencyName = await getAgencyDisplayName();
   const periodLabel = `${new Date(report.periodStart).toLocaleDateString("nl-BE")} — ${new Date(report.periodEnd).toLocaleDateString("nl-BE")}`;
   const totalActivity =
     report.contentPublishedCount + report.ticketsResolvedCount + report.deliverablesApprovedCount + report.projectsCompletedCount;
@@ -30,7 +32,7 @@ export default async function RapportagePage() {
         <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
           {isStaff && !viewingAsClient
             ? `Wat er over alle klanten heen is afgerond, afgelopen 30 dagen (${periodLabel}).`
-            : `Wat TDV de afgelopen 30 dagen voor je heeft afgerond (${periodLabel}).`}
+            : `Wat ${agencyName} de afgelopen 30 dagen voor je heeft afgerond (${periodLabel}).`}
         </p>
       </header>
 

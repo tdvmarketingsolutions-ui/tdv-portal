@@ -3,7 +3,7 @@ import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type { Agency } from "@/types/domain";
 
-export type AgencyBranding = Pick<Agency, "id" | "brand_name" | "logo_url" | "favicon_url" | "accent_color">;
+export type AgencyBranding = Pick<Agency, "id" | "name" | "brand_name" | "logo_url" | "favicon_url" | "accent_color">;
 
 /**
  * Resolves the signed-in user's own agency branding — client or staff, both
@@ -33,10 +33,25 @@ export const getCurrentAgencyBranding = cache(async (): Promise<AgencyBranding |
 
   const { data, error } = await supabase
     .from("agencies")
-    .select("id, brand_name, logo_url, favicon_url, accent_color")
+    .select("id, name, brand_name, logo_url, favicon_url, accent_color")
     .eq("id", agencyId)
     .maybeSingle();
 
   if (error) throw new Error(`Kon agency-branding niet laden: ${error.message}`);
   return data as AgencyBranding | null;
 });
+
+/**
+ * De naam waarmee het portaal het bureau aanspreekt in klantteksten
+ * ("Zodra Atelier Noord een project opstart…"): weergavenaam, anders de
+ * bureaunaam, en TDV als niets bekend is (uitgelogd of fout). Zo ziet een
+ * klant van een andere agency nooit "TDV" in zijn eigen portaal.
+ */
+export async function getAgencyDisplayName(): Promise<string> {
+  try {
+    const branding = await getCurrentAgencyBranding();
+    return branding?.brand_name?.trim() || branding?.name?.trim() || "TDV";
+  } catch {
+    return "TDV";
+  }
+}

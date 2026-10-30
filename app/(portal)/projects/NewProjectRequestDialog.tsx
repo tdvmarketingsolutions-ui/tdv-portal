@@ -15,7 +15,7 @@ import { PROJECT_REQUEST_TYPE_LABEL, BUDGET_INDICATION_LABEL } from "@/lib/proje
 import { newProjectRequestSchema, type NewProjectRequestFormValues } from "./schema";
 import { createProjectRequestAction } from "./actions";
 
-export function NewProjectRequestDialog() {
+export function NewProjectRequestDialog({ agencyName }: { agencyName: string }) {
   const router = useRouter();
   const { push } = useToast();
   const [open, setOpen] = useState(false);
@@ -48,7 +48,7 @@ export function NewProjectRequestDialog() {
       <Dialog open={open} onClose={() => setOpen(false)} title="Project aanvragen">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
           <p className="text-sm text-ink-muted dark:text-ink-dark-muted">
-            Een paar keuzes en je krijgt meteen een prijsvoorstel van TDV te zien.
+            Een paar keuzes en je krijgt meteen een prijsvoorstel van {agencyName} te zien.
           </p>
           <Input label="Titel" placeholder="Bv. Nieuwe website" error={errors.title?.message} {...register("title")} />
           <div className="grid gap-4 sm:grid-cols-2">

@@ -10,8 +10,10 @@ import { NewFolderDialog } from "./NewFolderDialog";
 import { FolderTile } from "./FolderTile";
 import { BreadcrumbNav } from "./BreadcrumbNav";
 import { FileList } from "./FileList";
+import { getAgencyDisplayName } from "@/lib/data/agency-branding";
 
 export async function FolderBrowser({ folderId }: { folderId: string | null }) {
+  const agencyName = await getAgencyDisplayName();
   const supabase = createClient();
   const {
     data: { user },
@@ -56,7 +58,7 @@ export async function FolderBrowser({ folderId }: { folderId: string | null }) {
             <h1 className="font-display text-h2 font-semibold sm:text-h1">{folder ? folder.name : "bestanden."}</h1>
             {!folder && (
               <p className="mt-1 text-sm text-ink-muted dark:text-ink-dark-muted">
-                Logo&apos;s, huisstijl, foto&apos;s en andere bestanden die je met TDV deelt.
+                Logo&apos;s, huisstijl, foto&apos;s en andere bestanden die je met {agencyName} deelt.
               </p>
             )}
           </div>
