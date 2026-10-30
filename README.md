@@ -38,6 +38,20 @@ de ingelogde sessie en dat als verplichte parameter doorgeeft aan de
 `match_ai_documents` functie. Dubbele afscherming voor het gevoeligste stuk
 van het systeem.
 
+**Rechten en tenant wijzig je niet vanuit de app.** RLS bepaalt welke rijen
+iemand mag wijzigen, niet welke kolommen. Twee `BEFORE UPDATE`-triggers
+(migratie `0034_guard_privileged_columns.sql`) sluiten dat gat:
+- **profiles:**
+  - `agency_id` en `is_platform_admin` veranderen alleen server-side (service
+    role of rechtstreeks in de database);
+  - `role` en `company_id` mag enkel staff van dezelfde agency wijzigen (het
+    `/admin/users`-scherm).
+- **agencies:** van buitenaf zijn alleen de brandingkolommen te wijzigen.
+  Status, plan, trial en facturatie lopen enkel server-side. Dat is een
+  allow-list: een nieuwe kolom is standaard afgesloten.
+
+Registratie en uitnodigingen gebruiken de service role en blijven dus werken.
+
 ## Wat er echt werkt (volg dit patroon voor de rest)
 
 - **Auth**: login, registratie, wachtwoord vergeten/resetten, sessiebeheer
